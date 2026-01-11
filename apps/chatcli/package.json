@@ -1,8 +1,8 @@
 {
-  "name": "@leipzigtreechat/chatcli",
+  "name": "chatcli",
   "scripts": {
     "build": "bun --bun build src/index.ts",
-    "start": "bun --bun run src/index.ts"
+    "dev": "bun --bun run src/index.ts"
   },
   "devDependencies": {
     "typescript": "latest",

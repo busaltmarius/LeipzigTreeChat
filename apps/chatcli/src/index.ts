@@ -8,6 +8,11 @@ import { type AgentState, getLastAIMessage, getMessageContent } from "@leipzigtr
 import { Effect, Logger, LogLevel } from "effect";
 import { readLine } from "./readline";
 import { handleSystemSignalError, type SystemSignalError } from "./system-signal";
+import { setConfig } from "@leipzigtreechat/chatbot/config";
+
+setConfig({
+    OPENROUTER_API_KEY: ""
+})
 
 const program = Effect.gen(function* () {
   const state: AgentState = {
@@ -21,7 +26,7 @@ const program = Effect.gen(function* () {
     gathered_order_info: false,
     pizzas: new Map(),
     user_name: undefined,
-    current_pizza_name: undefined,
+    current_slot: undefined,
   };
 
   return yield* run(state);
