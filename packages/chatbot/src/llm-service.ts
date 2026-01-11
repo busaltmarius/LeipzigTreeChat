@@ -2,9 +2,8 @@ import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { generateText } from "ai";
 
 import { Config, ConfigProvider, Context, Effect, Layer, Redacted } from "effect";
-
-import { ASSISTANT_DOCSTRING } from "./constants.js";
 import { getConfig } from "./config.js";
+import { ASSISTANT_DOCSTRING } from "./constants.js";
 
 export type OpenRouterClient = ReturnType<typeof createOpenRouter>;
 
