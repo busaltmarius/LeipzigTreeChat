@@ -4,15 +4,15 @@ import { BunRuntime, BunTerminal } from "@effect/platform-bun";
 import { AIMessage } from "@langchain/core/messages";
 
 import { ChatBotGraph } from "@leipzigtreechat/chatbot";
+import { setConfig } from "@leipzigtreechat/chatbot/config";
 import { type AgentState, getLastAIMessage, getMessageContent } from "@leipzigtreechat/chatbot/state";
 import { Effect, Logger, LogLevel } from "effect";
 import { readLine } from "./readline";
 import { handleSystemSignalError, type SystemSignalError } from "./system-signal";
-import { setConfig } from "@leipzigtreechat/chatbot/config";
 
 setConfig({
-    OPENROUTER_API_KEY: ""
-})
+  OPENROUTER_API_KEY: "",
+});
 
 const program = Effect.gen(function* () {
   const state: AgentState = {
