@@ -16,18 +16,18 @@ export class OpenRouter extends Context.Tag("OpenRouter")<
 >() {
   static Live = Layer.effect(
     this,
-          Effect.withConfigProvider(
-            Effect.gen(function* () {
-                const apiKey = yield* Config.redacted("OPENROUTER_API_KEY");
-                const openrouterClient = createOpenRouter({
-                apiKey: Redacted.value(apiKey),
-                });
-                return {
-                client: () => Effect.succeed(openrouterClient),
-                };
-            }),
-            ConfigProvider.fromJson(getConfig())
-        )
+    Effect.withConfigProvider(
+      Effect.gen(function* () {
+        const apiKey = yield* Config.redacted("OPENROUTER_API_KEY");
+        const openrouterClient = createOpenRouter({
+          apiKey: Redacted.value(apiKey),
+        });
+        return {
+          client: () => Effect.succeed(openrouterClient),
+        };
+      }),
+      ConfigProvider.fromJson(getConfig())
+    )
   );
 }
 
