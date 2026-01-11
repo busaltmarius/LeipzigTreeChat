@@ -13,6 +13,10 @@
     "./state": {
       "types": "./src/state.ts",
       "default": "./dist/state.js"
+    },
+    "./config": {
+      "types": "./src/config.ts",
+      "default": "./dist/config.js"
     }
   },
   "devDependencies": {

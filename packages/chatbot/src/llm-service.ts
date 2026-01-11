@@ -1,9 +1,10 @@
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { generateText } from "ai";
 
-import { Config, Context, Effect, Layer, Redacted } from "effect";
+import { Config, ConfigProvider, Context, Effect, Layer, Redacted } from "effect";
 
 import { ASSISTANT_DOCSTRING } from "./constants.js";
+import { getConfig } from "./config.js";
 
 export type OpenRouterClient = ReturnType<typeof createOpenRouter>;
 
@@ -15,15 +16,18 @@ export class OpenRouter extends Context.Tag("OpenRouter")<
 >() {
   static Live = Layer.effect(
     this,
-    Effect.gen(function* () {
-      const apiKey = yield* Config.redacted("OPENROUTER_API_KEY");
-      const openrouterClient = createOpenRouter({
-        apiKey: Redacted.value(apiKey),
-      });
-      return {
-        client: () => Effect.succeed(openrouterClient),
-      };
-    })
+          Effect.withConfigProvider(
+            Effect.gen(function* () {
+                const apiKey = yield* Config.redacted("OPENROUTER_API_KEY");
+                const openrouterClient = createOpenRouter({
+                apiKey: Redacted.value(apiKey),
+                });
+                return {
+                client: () => Effect.succeed(openrouterClient),
+                };
+            }),
+            ConfigProvider.fromJson(getConfig())
+        )
   );
 }
 
