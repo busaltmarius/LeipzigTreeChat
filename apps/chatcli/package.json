@@ -1,0 +1,22 @@
+{
+  "name": "@leipzigtreechat/chatcli",
+  "scripts": {
+    "build": "bun --bun build src/index.ts",
+    "start": "bun --bun run src/index.ts"
+  },
+  "devDependencies": {
+    "typescript": "latest",
+    "@types/bun": "latest"
+  },
+  "dependencies": {
+    "@effect/platform": "^0.94.1",
+    "@effect/platform-bun": "^0.87.0",
+    "@langchain/core": "^1.1.12",
+    "@langchain/langgraph": "^1.0.14",
+    "@leipzigtreechat/chatbot": "workspace: *",
+    "effect": "^3.19.14"
+  },
+  "module": "src/index.ts",
+  "type": "module",
+  "private": true
+}

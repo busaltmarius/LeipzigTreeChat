@@ -1,0 +1,30 @@
+{
+  "name": "@leipzigtreechat/chatbot",
+  "type": "module",
+  "scripts": {
+    "dev": "tsc --watch",
+    "build": "tsc"
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./dist/index.js"
+    },
+    "./state": {
+      "types": "./src/state.ts",
+      "default": "./dist/state.js"
+    }
+  },
+  "devDependencies": {
+    "@leipzigtreechat/typescript-config": "workspace: *",
+    "typescript": "latest"
+  },
+  "dependencies": {
+    "@effect/platform": "^0.94.1",
+    "@langchain/core": "^1.1.12",
+    "@langchain/langgraph": "^1.0.14",
+    "@openrouter/ai-sdk-provider": "^1.5.4",
+    "ai": "^6.0.27",
+    "effect": "^3.19.14"
+  }
+}
