@@ -83,6 +83,26 @@ bun run build --filter=@leipzigtreechat/chatbot
 
 ## Code Style
 
+### Commits
+
+This project follows the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification.
+
+Commit messages should follow the format:
+
+```
+<type>[optional scope]: <description>
+```
+
+Common types:
+
+- `feat`: A new feature
+- `fix`: A bug fix
+- `docs`: Documentation changes
+- `style`: Code style changes (formatting, etc.)
+- `refactor`: Code refactoring
+- `test`: Adding or updating tests
+- `chore`: Maintenance tasks
+
 ### Effect
 
 This project uses [Effect](https://effect.website/) for type-safe functional programming. Key patterns:
