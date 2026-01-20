@@ -7,11 +7,12 @@ On a high level, the system consists of two processing modes:
 
 ```mermaid
 flowchart TD
+    U{User Input} --> R
     R{Router} -->|LLM Chatting| LLM
     R -->|Question Answering| Qanary
     Qanary --> QueryDatasource
     QueryDatasource --> LLM
-    LLM --> R
+    LLM --> U
 ```
 
 ## Router (Dialog Manager?)
