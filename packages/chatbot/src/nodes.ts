@@ -1,11 +1,13 @@
 import { AIMessage, type BaseMessage, HumanMessage } from "@langchain/core/messages";
 import { Command } from "@langchain/langgraph";
 
-import { Effect, Either, Logger, Match, Option } from "effect";
+import { FetchHttpClient, HttpClient } from "@effect/platform"
+import { Effect, Either, Logger, Match, Option, Schema } from "effect";
 import { type InvalidInputError, MissingMessageError } from "./errors.js";
 import { runLangGraphRuntime } from "./langgraph-runtime.js";
 import type { AgentState } from "./state.js";
 import type { Unit } from "./unit.js";
+import { LLMService } from "./llm-service.js";
 
 export enum OrderSlots {
   PIZZA_NAME = "current_pizza_name",
@@ -270,5 +272,88 @@ export const Nodes = <const N extends string[]>(..._nodes: N) => {
           program.pipe(Effect.provide(Logger.replace(Logger.defaultLogger, NodeLogger("RetrievalNode"))))
         );
       },
+
+    AddressWatering:
+      (routingConfig: { nextNode: NodeID; requestNode: NodeID; endNode: NodeID }) => async (state: AgentState) => {
+        const { nextNode, requestNode, endNode } = routingConfig;
+        const program = Effect.gen(function* () {
+          yield* Effect.logDebug("State: ", state);
+
+          const _input = state.input.toLowerCase();
+
+          const parseAddressSchema = Schema.decodeUnknown(
+            Schema.TemplateLiteralParser(
+              Schema.String,
+              Schema.Literal("Bezirk", "Stadtteil", "Stadtbezirk"),
+              " ",
+              Schema.NonEmptyString,
+              " ",
+              Schema.String
+            )
+          )
+          
+          const parseResult = yield* Effect.either(parseAddressSchema(_input));
+
+          if (Either.isLeft(parseResult)) {
+            yield* Effect.logDebug("Error while parsing", parseResult.left)
+            
+            state.messages.push(new AIMessage("Entschuldigung, ich konnte leider in deiner Anfrage keinen Stadtbezirk finden. Bitte stelle sicher, dass dieser korrekt geschrieben ist und vor diesem eines dieser Wörter steht: 'Bezirk', 'Stadtbezirk' oder 'Stadtteil'."));
+
+            return command({
+              update: {
+                input: "",
+                messages: state.messages
+              },
+              goto: endNode,
+            });
+          } else {
+            const bezirk = parseResult.right[3]
+            const sparqlRequest = `
+            PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+            PREFIX bkv: <urn:de:leipzig:trees:vocab:baumkataster:>
+            PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+            PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+            SELECT ?tree ?gattung ?longitutde ?latitude ?daysSinceWatering WHERE {
+              ?tree rdf:type bkv:Tree ;
+                    bkv:ot "${bezirk}";
+                    bkv:gattung ?gattung ;
+                    geo:lat ?latitude;
+                    geo:long ?longitutde;
+                    bkv:letzte_bewaesserung ?bewaesserungString .
+              BIND(xsd:dateTime(?bewaesserungString) AS ?bewaesserungDate)
+              BIND((now() - "P30D"^^xsd:duration) AS ?thirtyDaysAgo)
+              FILTER(?bewaesserungDate < ?thirtyDaysAgo)
+              BIND((now() - ?bewaesserungDate) AS ?daysSinceWatering)
+            }
+            `
+            const result = "";
+            const llmService = yield* LLMService;
+            const output = yield* llmService.ask(
+              `
+              Frage: ${_input}
+              Daten: ${result}
+
+              Nutze die Daten um die Frage zu beantworten. Erfindede keine eigenen Informationen, sondern beantworte die Frage aussließlich mit den bereitgestellten Daten.
+              `
+            )
+
+            state.messages.push(new AIMessage(output));
+
+
+            return command({
+              update: {
+                input: "",
+                messages: state.messages
+              },
+              goto: endNode,
+            });
+          }      
+
+        })
+
+        return await runLangGraphRuntime(
+          program.pipe(Effect.provide(Logger.replace(Logger.defaultLogger, NodeLogger("AddressWatering"))))
+        );
+      }
   };
 };
