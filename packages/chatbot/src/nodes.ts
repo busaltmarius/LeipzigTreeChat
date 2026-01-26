@@ -39,6 +39,7 @@ export const Nodes = <const N extends string[]>(..._nodes: N) => {
   const command = (commandArgs: { update?: Partial<AgentState>; goto: NodeID }) => new Command(commandArgs);
 
   return {
+    UserInputNode: (routingConfig: { nextNode: NodeID }) => async (state: AgentState) => {},
     /**
      * This node handles the ordering process by asking for missing information
      * @param routingConfig The routing configuration for nextNode (when still missing information) and endNode (when order is complete)

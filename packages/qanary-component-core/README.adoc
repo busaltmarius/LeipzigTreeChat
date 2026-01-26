@@ -1,0 +1,46 @@
+= Qanary Component Core
+:toc:
+
+A documentation and guide for setting up a qanary component.
+
+== Basic
+
+A Qanary component is a RESTful server that provides a set of endpoints for the Qanary pipeline. The component must register itself to the Qanary pipeline, to be precise, it must register to the Spring Boot Admin Server. After registration it will be available for the pipeline.
+
+The pipeline will call the component via a POST request to a defined endpoint. The component itself must be able to handle the request and return a response. The response must be a JSON object that contains a defined set of fields.
+
+== Endpoints
+
+The component must provide the following endpoints:
+
+- /health (GET) - returns the health status of the component
+- /about (GET) (optional but recommended) - returns the information about the component
+- / (GET) (optional but recommended) - returns the information about the component
+- /annotation (POST) - handles the request from the pipeline and defines the behaviour of the component
+
+== SpringBootAdminServerInstances
+
+== Health
+
+The `health` endpoint is used by the Spring Boot Admin Server to check the health and uptime status of the component. For the Spring Boot Admin Server to correctly display the component as active the endpoint must return a `200` http status code and the following JSON object:
+
+[source,json]
+----
+{
+  "status": "UP"
+}
+----
+
+== About
+
+The `about` endpoint is used to document the component. It is not required but recommended.
+The endpoint can return any content that the developer wants to provide. The endpoint must return a `200` http status code.
+
+== Handling a request
+
+The `annotatequestion` endpoint is used to handle the request from the pipeline. The core functionality of the component is implemented here.
+The pipeline provides the following information to the component:
+
+- the url of the sparql endpoint that contains the knowledge graph
+- the url of the input graph that contains the question and previous annotations
+- the url of the output graph that the component must use to store the new annotations

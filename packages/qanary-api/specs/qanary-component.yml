@@ -1,0 +1,175 @@
+openapi: 3.0.1
+
+info:
+  title: OpenAPI definition
+  version: 3.5.1
+
+servers:
+  - url: http://localhost:40500
+    description: Default Qanary component server url
+
+paths:
+  "/about":
+    get:
+      tags:
+        - Qanary Service Controller
+      summary: "Provides additional information about the component"
+      description: "Provides additional information about the component"
+      operationId: readAbout
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/IQanaryComponentAbout"
+              example:
+                name: "qanary-component"
+                description: "A description of the component"
+                version: "1.0.0"
+        "404":
+          description: Not Found when the optional endpoint is not implemented
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IQanaryComponentError'
+              example:
+                timestamp: "2023-02-02T22:17:54.667+00:00"
+                status: 404
+                error: "Not Found"
+                path: "/about"
+        "500":
+          description: Something in the service went wrong
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IQanaryComponentError'
+              example:
+                timestamp: "2023-02-02T22:17:54.667+00:00"
+                status: 500
+                error: "Internal Server Error"
+                path: "/about"
+
+  "/annotatequestion":
+    post:
+      tags:
+        - Qanary Service Controller
+      summary: "Each Qanary process will implement this endpoint as it is required"
+      description: "For annotating a question from a given knowledge graph"
+      operationId: createAnnotation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/IQanaryMessage"
+            example:
+              values:
+                'urn:qanary#endpoint': 'http://qanary-pipeline:40111/sparql'
+                'urn:qanary#inGraph': 'urn:graph:8379d40d-7da1-4956-ab02-b5b760c67a0a'
+                'urn:qanary#outGraph': 'urn:graph:8379d40d-7da1-4956-ab02-b5b760c67a0a'
+              endpoint: "http://qanary-pipeline:40111/sparql"
+              inGraph: "urn:graph:9bfa0f41-295c-4d26-9a25-b8beccd51595"
+              outGraph: "urn:graph:9bfa0f41-295c-4d26-9a25-b8beccd51595"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/IQanaryMessage"
+        "400":
+          description: Bad Request when request body is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IQanaryComponentError'
+              example:
+                timestamp: "2023-02-02T22:17:54.667+00:00"
+                status: 400
+                error: "Bad Request"
+                path: "/annotatequestion"
+        "500":
+          description: Something in the service went wrong
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IQanaryComponentError'
+              example:
+                timestamp: "2023-02-02T22:17:54.667+00:00"
+                status: 500
+                error: "Internal Server Error"
+                path: "/annotatequestion"
+
+  "/health":
+    get:
+      tags:
+        - Qanary Service Controller
+      summary: "Provides additional information about the component"
+      description: "Provides additional information about the component"
+      operationId: readHealth
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/IQanaryComponentHealth"
+              example:
+                status: "UP"
+        "500":
+          description: Something in the service went wrong
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/IQanaryComponentHealth"
+              example:
+                status: "DOWN"
+
+components:
+  schemas:
+    IQanaryComponentAbout:
+      description: "The meta data that will be provided to the Spring Boot Admin"
+      type: object
+      properties:
+        name:
+          description: "The name of the qanary component"
+          type: string
+        description:
+          description: "The description of the qanary component"
+          type: string
+        version:
+          description: "The version of the qanary component"
+          type: string
+          format: string
+    IQanaryMessage:
+      $ref: "./qanary-pipeline.yml#/components/schemas/IQanaryMessage"
+    IQanaryComponentHealth:
+      description: "An object describing the overall status of the service"
+      type: object
+      properties:
+        status:
+          description: "The overall status of the service"
+          type: string
+          enum:
+            - UP
+            - DOWN
+    IQanaryComponentError:
+      description: "Bad Request when request body is invalid"
+      type: object
+      properties:
+        timestamp:
+          description: "A timestamp when the error has occurred"
+          type: string
+          format: date-time
+        status:
+          description: "The status code of the error"
+          type: integer
+        error:
+          description: "The error message"
+          type: string
+        path:
+          description: "The endpoint where error has occurred"
+          type: string
+          format: uri
+

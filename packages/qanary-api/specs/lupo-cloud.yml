@@ -1,0 +1,147 @@
+openapi: '3.0.3'
+
+info:
+  title: 'LUPO Cloud'
+  description: 'LUPO Cloud Data'
+  version: '0.0.0'
+
+servers:
+  - url: 'https://lupo-cloud.de/'
+
+paths:
+  '/air/metric/{metric}':
+    get:
+      tags:
+        - 'LUPO Air Metric Controller'
+      summary: 'LUQX Data'
+      description: 'Returns air quality index data'
+      operationId: 'readMetric'
+      parameters:
+        - $ref: '#/components/parameters/ILupoMeasuringPathParamAirMetric'
+        - $ref: '#/components/parameters/ILupoMeasuringQueryParamFrom'
+        - $ref: '#/components/parameters/ILupoMeasuringQueryParamTo'
+        - $ref: '#/components/parameters/ILupoMeasuringQueryParamLabels'
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/ILupoMeasuringDataList'
+
+components:
+  parameters:
+    ILupoMeasuringPathParamAirMetric:
+      in: path
+      name: metric
+      required: true
+      schema:
+        $ref: '#/components/schemas/ILupoAirMetric'
+      description: 'The measurand of interest'
+    ILupoMeasuringQueryParamFrom:
+      in: query
+      name: from
+      schema:
+        type: 'string'
+        pattern: '^\d*(y|w|d|h)-ago$'
+        example: '2d-ago'
+        nullable: true
+      description: 'Filter for time start dates'
+    ILupoMeasuringQueryParamTo:
+      in: query
+      name: to
+      schema:
+        type: 'string'
+        pattern: '^\d*(y|w|d|h)-ago$'
+        example: '2d-ago'
+        nullable: true
+      description: 'Filter for time end dates'
+    ILupoMeasuringQueryParamLabels:
+      in: query
+      name: labels
+      schema:
+        type: 'string'
+        pattern: '^station:\w{4}\d{3}$'
+        example: "station:DEBW039"
+        nullable: true
+      description: 'Filter for label contents'
+  schemas:
+    ILupoAirMetric:
+      description: 'The measurand key of the collected data'
+      type: 'string'
+      example: 'kit.iai.test.o3'
+      enum:
+        - 'kit.iai.test.luqx'
+        - 'kit.iai.test.no2'
+        - 'kit.iai.test.o3'
+        - 'kit.iai.test.pm10'
+        - 'kit.iai.test.pm25k'
+    ILupoAirComp:
+      description: 'The measurand name of the collected data'
+      type: 'string'
+      example: 'O3'
+      enum:
+        - 'LuQX'
+        - 'NO2'
+        - 'O3'
+        - 'PM10'
+        - 'PM25'
+    ILupoAirMeasuringLabels:
+      description: 'An object specifying the origin of the data'
+      type: 'object'
+      properties:
+        station:
+          description: 'The id of a station'
+          type: 'string'
+          example: 'DEBW039'
+        comp:
+          $ref: '#/components/schemas/ILupoAirComp'
+    ILupoMeasuringData:
+      description: 'A data object containing the measurements of the station'
+      type: 'object'
+      properties:
+        metric:
+          $ref: '#/components/schemas/ILupoAirMetric'
+        labels:
+          $ref: '#/components/schemas/ILupoAirMeasuringLabels'
+        metaData:
+          description: 'Meta data'
+          type: 'object'
+        times:
+          description: 'UNIX timestamps with a corresponding value at the same index'
+          type: 'array'
+          items:
+            type: 'integer'
+        values:
+          description: 'Measured values with a corresponding time at the same index'
+          type: 'array'
+          items:
+            type: 'integer'
+            nullable: true
+    ILupoMeasuringDataList:
+      description: 'A list of data measurement data objects'
+      type: 'array'
+      items:
+        $ref: '#/components/schemas/ILupoMeasuringData'
+    ILupoMeasuringURLSearchParams:
+      description: 'The URLSearchParams interface for LUPO cloud URLs'
+      type: 'object'
+      properties:
+        from:
+          description: 'Filter for time start dates'
+          type: 'string'
+          pattern: '^\d*(y|w|d|h)-ago$'
+          example: '2d-ago'
+          nullable: true
+        to:
+          description: 'Filter for time end dates'
+          type: 'string'
+          pattern: '^\d*(y|w|d|h)-ago$'
+          example: '1d-ago'
+          nullable: true
+        labels:
+          description: 'Filter for label contents'
+          type: 'string'
+          pattern: '^station:\w*\d*$'
+          example: "station:DEBW039"
+          nullable: true

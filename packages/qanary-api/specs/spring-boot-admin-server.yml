@@ -1,0 +1,111 @@
+openapi: 3.0.1
+
+info:
+  title: OpenAPI definition
+  version: 3.5.1
+
+paths:
+  "/instances":
+    post:
+      tags:
+        - Spring Boot Admin Server
+      summary: "Provides an endpoint to register new components at the Spring Boot Admin Server"
+      description: "Provides an endpoint to register new components at the Spring Boot Admin Server"
+      operationId: createInstances
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/IComponentRegistrationInfo"
+            example:
+              name: "my-own-qanary-component"
+              serviceUrl: "http://localhost:40500"
+              healthUrl: "http://localhost:40500/health"
+              metadata:
+                start: "2023-02-03T21:56:19.626Z"
+                description: "My own qanary component is doing magic!"
+                about: "http://localhost:40500/about"
+                "written_in": "TypeScript"
+        required: true
+      responses:
+        "201":
+          description: "OK if registration is successful"
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ISpringBootAdminServerInstancesSuccess"
+              example:
+                locked: false
+                state: "readable"
+                supportsBYOB: false
+        "500":
+          description: Internal Server Error when registration of component fails
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ISpringBootAdminServerInstancesFailure"
+              example:
+                locked: false
+                state: "readable"
+                supportsBYOB: false
+
+components:
+  schemas:
+    IComponentRegistrationInfo:
+      description: "The request body that needs to be send to the Spring Boot Admin Server for registering a new component"
+      type: object
+      properties:
+        name:
+          description: "The name of the component"
+          type: string
+        serviceUrl:
+          description: "The url of the component. The Spring Boot Admin Server can communicate with the component via this url"
+          type: string
+          format: URL
+        healthUrl:
+          description: "The url of the health endpoint of the component. The Spring Boot Admin Server can check the health of the component via this endpoint "
+          type: string
+          format: URL
+        metadata:
+          "$ref": "#/components/schemas/IQanaryComponentCoreMetadata"
+    IQanaryComponentCoreMetadata:
+      description: "Provides meta data of the component"
+      type: object
+      properties:
+        start:
+          description: "The start tme of the component as a formatted date string"
+          type: string
+          format: date-time
+        description:
+          description: "A description of the component"
+          type: string
+        about:
+          description: "The url of the about endpoint"
+          type: string
+          format: URL
+        written_in:
+          description: "The programming language in which the component is written"
+          type: string
+          default: "TypeScript"
+    ISpringBootAdminServerInstancesSuccess:
+      description: "The successful response after registration a new component at the Spring Boot Admin Server"
+      type: object
+      properties:
+        locked:
+          type: boolean
+        state:
+          type: string
+          default: "readable"
+        supportsBYOB:
+          type: boolean
+    ISpringBootAdminServerInstancesFailure:
+      description: "The erroneous response for registering a new component at the Spring Boot Admin Server"
+      type: object
+      properties:
+        locked:
+          type: boolean
+        state:
+          type: string
+          default: "readable"
+        supportsBYOB:
+          type: boolean

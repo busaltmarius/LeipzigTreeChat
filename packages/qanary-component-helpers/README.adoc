@@ -1,0 +1,161 @@
+= Qanary Component Helpers
+:toc:
+
+A collection of utility functions for Qanary components written in `TypeScript`.
+
+== Utility functions
+
+=== `createAnnotationInKnowledgeGraph`
+
+A utility function to create an annotation in the knowledge graph.
+
+Parameters:
+
+|===
+| Name | Type | Description
+| message | `QanaryMessage` | The Qanary message received when starting the component
+| componentName | `string` | The name of the component that creates the annotation
+| annotation | `IAnnotationInformation` | the information about the annotation that should be created
+| annotationType | `string` | the type of the annotation that should be created (e.g. `qa:AnnotationOfAnswer`)
+|===
+
+IAnnotationInformation-Interface:
+|===
+| Name | Type | Description
+| value | `string` | The value of the annotation
+| range | `IAnnotationInformationRange` | The range of the annotation
+| confidence | `number` | The confidence of the annotation
+|===
+
+IAnnotationInformationRange-Interface:
+|===
+| Name | Type | Description
+| start | `number` | The start of the annotation range
+| end | `number` | The end of the annotation range
+|===
+
+Returns: `Promise<void>`
+
+=== `getQuestionUri`
+
+A utility function to get the question uri from the knowledge graph.
+
+Parameters:
+
+|===
+| Name | Type | Description
+| message | `QanaryMessage` | The Qanary message received when starting the component
+|===
+
+Returns: `Promise<string | null>`
+
+=== `getQuestion`
+
+A utility function to get the question from the knowledge graph.
+
+Parameters:
+
+|===
+| Name | Type | Description
+| message | `QanaryMessage` | The Qanary message received when starting the component
+|===
+
+Returns: `Promise<string | null>`
+
+=== `getEndpoint`
+
+A utility function to get the endpoint from the Qanary message object.
+
+Parameters:
+
+|===
+| Name | Type | Description
+| message | `QanaryMessage` | The Qanary message received when starting the component
+|===
+
+Returns: `string | undefined`
+
+=== `getInGraph`
+
+A utility function to get the url of the inGraph from the Qanary message object.
+
+Parameters:
+
+|===
+| Name | Type | Description
+| message | `QanaryMessage` | The Qanary message received when starting the component
+|===
+
+Returns: `string | undefined`
+
+=== `getOutGraph`
+
+A utility function to get the url of the outGraph from the Qanary message object.
+
+Parameters:
+
+|===
+| Name | Type | Description
+| message | `QanaryMessage` | The Qanary message received when starting the component
+|===
+
+Returns: `string | undefined`
+
+=== `queryFileLoader`
+
+A utility function to load a SPARQL query from a file and replace placeholders.
+
+Parameters:
+|===
+| Name | Type | Description
+| filePath | `string` | The path to the file containing the SPARQL query
+|sparqlQueryReplacements | `Array<ISparqlQueryReplacement>` | An array of replacements that should be applied to the query
+|===
+
+ISparqlQueryReplacement-Interface:
+|===
+| Name | Type | Description
+| key | `string` | The name of the placeholder
+| replacement | `string` | The value that should be used to replace the placeholder
+|===
+
+Returns: `string`
+
+=== `selectSparql`
+
+A utility function to execute a SPARQL Select query.
+
+Parameters:
+|===
+| Name | Type | Description
+| endpoint | `string` | The endpoint to execute the query against
+| query | `string` | The SPARQL query
+|===
+
+Returns: `Promise<Array<T>>`
+
+=== `askSparql`
+
+A utility function to execute a SPARQL Ask query.
+
+Parameters:
+|===
+| Name | Type | Description
+| endpoint | `string` | The endpoint to execute the query against
+| query | `string` | The SPARQL query
+|===
+
+Returns: `Promise<boolean>`
+
+=== `updateSparql`
+
+A utility function to execute a SPARQL Update query.
+
+Parameters:
+|===
+| Name | Type | Description
+| endpoint | `string` | The endpoint to execute the query against
+| query | `string` | The SPARQL query
+|===
+
+Returns: `Promise<void>`

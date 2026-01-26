@@ -1,0 +1,4 @@
+= Qanary Shared
+:toc:
+
+This package contains shared code across the Qanary components.

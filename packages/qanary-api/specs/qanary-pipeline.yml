@@ -1,0 +1,87 @@
+openapi: 3.0.1
+
+info:
+  title: Qanary Pipeline
+  version: 1.6.0
+
+servers:
+  - url: http://localhost:8000
+    description: Default Qanary pipeline server url
+
+paths:
+  "/startquestionansweringwithtextquestion":
+    post:
+      tags:
+        - qanary-question-answering-controller
+      summary: "Start a process directly with a textual question"
+      description: "Start a process directly with a textual question"
+      operationId: createStartQuestionAnsweringWithTextQuestion
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/IRequestQuestionAnsweringProcess"
+            example:
+              question: "What is the real name of Batman?"
+              componentlist:
+                - "NED-DBpediaSpotlight"
+                - "QB-SimpleRealNameOfSuperHero"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/IQanaryMessage"
+              example:
+                values:
+                  "urn:qanary#endpoint": "http://qanary-pipeline:40111/sparql"
+                  "urn:qanary#inGraph": "urn:graph:8379d40d-7da1-4956-ab02-b5b760c67a0a"
+                  "urn:qanary#outGraph": "urn:graph:8379d40d-7da1-4956-ab02-b5b760c67a0a"
+                endpoint: "http://qanary-pipeline:40111/sparql"
+                inGraph: "urn:graph:9bfa0f41-295c-4d26-9a25-b8beccd51595"
+                outGraph: "urn:graph:9bfa0f41-295c-4d26-9a25-b8beccd51595"
+
+components:
+  schemas:
+    IRequestQuestionAnsweringProcess:
+      type: object
+      properties:
+        question:
+          description: "A question to be answered"
+          type: string
+        componentlist:
+          description: "A list of components to be applied to the question"
+          type: array
+          items:
+            type: string
+        additionalTriples:
+          description: "Inserts additional data"
+          type: string
+    IQanaryMessage:
+      description: "The qanary message that is received/send by the component"
+      type: object
+      properties:
+        values:
+          description: "Additional values"
+          type: object
+          additionalProperties:
+            type: string
+            format: uri
+        inGraph:
+          description: "The graph uri of the knowledge graph that contains information for the incoming request"
+          type: string
+          format: uri
+        endpoint:
+          description: "The sparql endpoint as url"
+          type: string
+          format: url
+        outGraph:
+          description: "The graph uri of the knowledge graph that contains information for the outgoing response"
+          type: string
+          format: uri
+        question:
+          description: "The url of the stored question"
+          type: string
+          format: url

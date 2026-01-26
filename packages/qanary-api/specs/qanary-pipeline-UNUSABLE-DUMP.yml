@@ -1,0 +1,976 @@
+openapi: 3.0.1
+info:
+  title: MyQanaryPipeline
+  description:
+    Provides central functionality for each Qanary component (registration)
+    and endpoints for users.
+  termsOfService: http://swagger.io/terms/
+  license:
+    name: Apache 2.0
+    url: http://springdoc.org
+  version: 1.6.0
+servers:
+  - url: http://localhost:8000
+    description: Generated server url
+paths:
+  "/questionanswering/{runId}":
+    get:
+      tags:
+        - qanary-question-answering-controller
+      summary: Return information about a specific question answering run
+      description: "(not yet implemented) The run is identified by the provided runId"
+      operationId: getQuestionAnsweringGraphInformation
+      parameters:
+        - name: runId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+    put:
+      tags:
+        - qanary-question-answering-controller
+      summary: Update information about a specific question answering run
+      description: "(not yet implemented) The run is identified by the provided runId"
+      operationId: createOrUpdateQuestionAnsweringGraph
+      parameters:
+        - name: runId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+    delete:
+      tags:
+        - qanary-question-answering-controller
+      summary: Delete information about a specific question answering run
+      description: "(not yet implemented) The run is identified by the provided runId"
+      operationId: deleteQuestionAnsweringGraph
+      parameters:
+        - name: runId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+  "/startquestionansweringwithtextquestion":
+    get:
+      tags:
+        - qanary-question-answering-controller
+      summary: Return a simple HTML input form for starting a question answering process
+      operationId: startquestionansweringwithtextquestion_1
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: string
+    post:
+      tags:
+        - qanary-question-answering-controller
+      summary: Start a process directly with a textual question
+      description:
+        'Parameters are supplied via JSON. Only the question parameter
+        is required. Examples: {"question": "What is the capital of Germany?"}, {"question":
+        "Person born in France?"}'
+      operationId: startquestionansweringwithtextquestion_1_1
+      parameters:
+        - name: question
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: componentlist[]
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+            default: []
+        - name: language
+          in: query
+          required: false
+          schema:
+            type: string
+            default: ""
+        - name: targetdata
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+            default: []
+        - name: priorConversation
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uri
+            default: ""
+        - name: additionaltriples
+          in: query
+          required: false
+          schema:
+            "$ref": "#/components/schemas/AdditionalTriples"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/RequestQuestionAnsweringProcess"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+      deprecated: true
+  "/startquestionansweringwithaudioquestion":
+    get:
+      tags:
+        - qanary-question-answering-controller
+      summary:
+        Return a simple HTML form for starting a question answering process
+        with an audio question
+      operationId: startquestionansweringwithaudioquestion_1
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: string
+    post:
+      tags:
+        - qanary-question-answering-controller
+      summary: Start a process directly with an audio question
+      description: "Only the audio question is required. Examples: t.b.a"
+      operationId: startquestionansweringwithaudioquestion
+      parameters:
+        - name: componentlist[]
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+            default: []
+        - name: language
+          in: query
+          required: false
+          schema:
+            type: string
+            default: ""
+        - name: targetdata
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+            default: []
+        - name: priorConversation
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uri
+            default: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+                - question
+              type: object
+              properties:
+                question:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+  "/questionansweringfull":
+    post:
+      tags:
+        - qanary-question-answering-controller
+      summary: Create a new Question Answering Process
+      description: No parameters are required.
+      operationId: createQuestionAnsweringFull
+      parameters:
+        - name: textquestion
+          in: query
+          required: false
+          schema:
+            type: string
+            default: ""
+        - name: graph
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uri
+            default: ""
+        - name: componentlist[]
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+            default: []
+        - name: language
+          in: query
+          required: false
+          schema:
+            type: string
+            default: ""
+        - name: targetdata
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+            default: []
+        - name: priorConversation
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uri
+            default: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                audioquestion:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+  "/questionanswering":
+    post:
+      tags:
+        - qanary-question-answering-controller
+      summary: Create a new Question Answering Process
+      description: No parameters are required.
+      operationId: createQuestionAnswering
+      parameters:
+        - name: textquestion
+          in: query
+          required: false
+          schema:
+            type: string
+            default: ""
+        - name: graph
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uri
+            default: ""
+        - name: componentlist[]
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+            default: []
+        - name: language
+          in: query
+          required: false
+          schema:
+            type: string
+            default: ""
+        - name: targetdata
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+            default: []
+        - name: priorConversation
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uri
+            default: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                audioquestion:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+  "/question_audio":
+    post:
+      tags:
+        - qanary-question-controller
+      summary: Synchronous call o sart a QA process wih an audio file
+      description:
+        Start a question answering process with an audio file via synchronous
+        POST and return the URL of the created question. Requires an audio file.
+      operationId: createAudioQuestion
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+                - question
+              type: object
+              properties:
+                question:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+  "/question":
+    post:
+      tags:
+        - qanary-question-controller
+      summary: Synchronous call o sart a QA process
+      description:
+        Start a question answering process via synchronous POST request
+        and return the URL of the created question. Requires a question string.
+      operationId: createQuestion
+      parameters:
+        - name: question
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+  "/qa":
+    post:
+      tags:
+        - qanary-embedded-qa-web-frontend-controller
+      summary: start a pre-configured question answering process
+      description: |-
+        Use the qanary.componentList defined in local properties file.
+        Example: curl -d question='Capital of France?' http://localhost:8080/qa
+      operationId: qa
+      parameters:
+        - name: question
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: string
+  "/gerbil":
+    get:
+      tags:
+        - qanary-gerbil-controller
+      summary: expose an HTML frontend for generating a Gerbil URL endpoint
+      description:
+        Generate a URL endpoint for Gerbil for QA (http://gerbil-qa.aksw.org/gerbil/config)
+        through a simple HTML input form.
+      operationId: startquestionansweringwithtextquestion_2
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: string
+    post:
+      tags:
+        - qanary-gerbil-controller
+      summary: expose an HTML frontend for a Gerbil URL endpoint
+      description: Generate a URL endpoint for Gerbil QA from a list of compoents.
+      operationId: gerbilGenerator
+      parameters:
+        - name: componentlist[]
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+            default: []
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: string
+  "/gerbil-execute/{components}":
+    post:
+      tags:
+        - qanary-gerbil-controller
+      summary: Start a Gerbil QA process with a list of components
+      description:
+        "examples: curl -X POST http://localhost:8080/gerbil-execute/QAnswerQueryBuilderAndExecutor
+        -d query='What is the capital of France?'  or curl -X POST http://localhost:8080/gerbil-execute/NED-DBpediaSpotlight
+        -d query='What is the capital of France?'"
+      operationId: gerbil
+      parameters:
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: lang
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: priorConversation
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uri
+            default: ""
+        - name: components
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/GerbilExecuteResponse"
+  "/feedback":
+    post:
+      tags:
+        - qanary-feedback-controller
+      operationId: startquestionansweringwithtextquestion
+      parameters:
+        - name: question
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: sparql
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: correct
+          in: query
+          required: true
+          schema:
+            type: boolean
+        - name: language
+          in: query
+          required: false
+          schema:
+            type: string
+            default: en
+        - name: knowledgebase
+          in: query
+          required: false
+          schema:
+            type: string
+            default: dbpedia
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+  "/configuration":
+    get:
+      tags:
+        - qanary-pipeline-configuration-controller
+      operationId: getConfigurablePipelineProperties
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/JSONObject"
+    post:
+      tags:
+        - qanary-pipeline-configuration-controller
+      operationId: updateLocalPipelineProperties
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/JSONObject"
+        required: true
+      responses:
+        "200":
+          description: OK
+  "/api/applications":
+    post:
+      tags:
+        - qanary-spring-boot-admin-compatibility-redirect-controller
+      operationId: registrationOfOldSpringBootAdminClient
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/Result"
+  "/sparql":
+    get:
+      tags:
+        - qanary-sparql-protocol-controller
+      operationId: getSparqlAsXML_1
+      parameters:
+        - name: accept
+          in: header
+          required: false
+          schema:
+            type: string
+        - name: query
+          in: query
+          required: false
+          schema:
+            type: string
+            default: someValue
+      responses:
+        "200":
+          description: OK
+          content:
+            application/sparql-results+xml:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+            application/xml:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+            application/sparql-results+json:
+              schema:
+                type: string
+  "/question/{question}/status":
+    get:
+      tags:
+        - qanary-question-controller
+      summary: Fetch the processing status of a given question
+      description: "(Not yet implemented) Requires the URL of the question."
+      operationId: getStatusOfQuestion
+      parameters:
+        - name: questionuri
+          in: path
+          required: true
+          schema:
+            type: string
+            format: url
+        - name: Accept
+          in: header
+          schema:
+            type: string
+            enum:
+              - application/json
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: string
+  "/question/{questionid}":
+    get:
+      tags:
+        - qanary-question-controller
+      summary: Return links to all information of a given question
+      description: 'Specify the question with its ID. Example: "/question/1"'
+      operationId: getQuestion
+      parameters:
+        - name: questionid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/QanaryQuestionInformation"
+    delete:
+      tags:
+        - qanary-question-controller
+      summary: Delete a given question
+      description: "(Not yet implemented) Requires the question ID."
+      operationId: deleteQuestion
+      parameters:
+        - name: questionid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+  "/question/{questionid}/raw":
+    get:
+      tags:
+        - qanary-question-controller
+      summary: Return raw data for a given question
+      description: 'Requires the ID of the question. Example: "/question/1/raw"'
+      operationId: getQuestionRawData
+      parameters:
+        - name: questionid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain;charset=UTF-8:
+              schema:
+                type: string
+                format: binary
+  "/question/":
+    get:
+      tags:
+        - qanary-question-controller
+      summary: Reurn links to all questions
+      description: No parameters are required
+      operationId: getQuestions
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/QanaryAvailableQuestions"
+  "/qanaryOntology.ttl":
+    get:
+      tags:
+        - qanary-question-answering-controller
+      summary: Expose the Qanary ontology
+      description: View or download the Qanary ontology.
+      operationId: getFile2
+      responses:
+        "200":
+          description: OK
+          content:
+            text/turtle:
+              schema:
+                type: string
+                format: binary
+  "/oa.owl":
+    get:
+      tags:
+        - qanary-question-answering-controller
+      summary: Expose the OA commons
+      description: View or download the Open Annotation Data Model.
+      operationId: getFile1
+      responses:
+        "200":
+          description: OK
+          content:
+            application/sparql-results+xml:
+              schema:
+                type: string
+                format: binary
+  "/numberOfAnnotations/":
+    get:
+      tags:
+        - qanary-question-answering-controller
+      summary: Get the number of annotations created by a component
+      description:
+        Filter all annotations created for the current question answering
+        run to find how many were created by a specific component. Requires the correct
+        component name (case sensitive) and the graph.
+      operationId: getNumberOfAnnotationsForComponent
+      parameters:
+        - name: component
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: graph
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/NumberOfAnnotationsResponse"
+  "/components":
+    get:
+      tags:
+        - qanary-configuration-controller
+      summary: get a list of all registered components
+      description:
+        Returns a list of registered and available components, containing
+        their name and url.
+      operationId: getAvailableComponents
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                properties:
+                  expandElements:
+                    type: boolean
+                  array:
+                    type: boolean
+                  empty:
+                    type: boolean
+                items:
+                  type: object
+  "/components/{componentName}":
+    get:
+      tags:
+        - qanary-components-management-controller
+      operationId: getServiceDescriptionOfComponentAsJsonLD
+      parameters:
+        - name: componentName
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/x-javascript:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: string
+            application/ld+json:
+              schema:
+                type: string
+            application/xml:
+              schema:
+                type: string
+            application/rdf+xml:
+              schema:
+                type: string
+            application/n-triples:
+              schema:
+                type: string
+            text/n3:
+              schema:
+                type: string
+            text/turtle:
+              schema:
+                type: string
+  "/checktriplestoreconnection":
+    get:
+      tags:
+        - qanary-sparql-protocol-controller
+      operationId: checkTriplestoreConnection
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: string
+  "/additional-triples/{id}":
+    get:
+      tags:
+        - qanary-question-answering-controller
+      summary: Expose additonal Triples
+      description:
+        View additional triples that were passed and stored when starting
+        the question answering process. Requires a valid ID.
+      operationId: getAdditionalTriples
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            text/turtle:
+              schema:
+                type: string
+                format: binary
+components:
+  schemas:
+    AdditionalTriples:
+      type: object
+      properties:
+        stringFilePath:
+          type: string
+        uuidstring:
+          type: string
+        uriFilePath:
+          type: string
+          format: uri
+    RequestQuestionAnsweringProcess:
+      type: object
+      properties:
+        question:
+          type: string
+        getcomponentlist:
+          type: array
+          items:
+            type: string
+        language:
+          type: string
+        targetdata:
+          type: array
+          items:
+            type: string
+        priorConversation:
+          type: string
+          format: uri
+    GerbilExecuteResponse:
+      type: object
+      properties:
+        questions:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Question"
+    JsonNode:
+      type: object
+    QueryObj:
+      type: object
+      properties:
+        sparql:
+          type: string
+    Question:
+      type: object
+      properties:
+        question:
+          type: array
+          items:
+            "$ref": "#/components/schemas/QuestionData"
+        query:
+          "$ref": "#/components/schemas/QueryObj"
+        answers:
+          type: array
+          items:
+            "$ref": "#/components/schemas/JsonNode"
+    QuestionData:
+      type: object
+      properties:
+        string:
+          type: string
+        language:
+          type: string
+    JSONObject:
+      type: object
+    Result:
+      type: object
+      properties:
+        id:
+          type: string
+    QanaryQuestionInformation:
+      type: object
+      properties:
+        rawdata:
+          type: string
+          format: url
+        questionID:
+          type: string
+    QanaryAvailableQuestions:
+      type: object
+      properties:
+        availableQuestions:
+          type: array
+          items:
+            type: string
+            format: url
+    NumberOfAnnotationsResponse:
+      type: object
+      properties:
+        componentUrl:
+          type: string
+        annotationCount:
+          type: integer
+          format: int32
+        graph:
+          type: string
+        sparqlGet:
+          type: string

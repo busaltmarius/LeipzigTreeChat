@@ -1,8 +1,8 @@
 {
   "name": "chatcli",
   "scripts": {
-    "build": "bun --bun build src/index.ts",
-    "dev": "bun --bun run src/index.ts"
+    "build": "bun --bun build --target bun src/index.ts",
+    "dev": "bun --bun run --target bun src/index.ts"
   },
   "devDependencies": {
     "typescript": "latest",

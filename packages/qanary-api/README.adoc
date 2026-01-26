@@ -1,0 +1,17 @@
+= API Specs
+:toc:
+
+This package contains multiple API specifications for the various APIs that are used within the project. The API specifications are written in the OpenAPI 3.0.0 format.
+
+== Details
+
+[width="100%",cols="30%,70%",options="header",]
+|===
+|Spec-Name |Description
+|action-server | The API specification for the action server as required by `rasa`
+| lupo-cloud | The API specification for the Lupo Cloud API, used to query the measurand values
+| qanary-component | The API specification for a Qanary component, specifying the needed endpoints to register at the Qanary pipeline
+| qanary-pipeline | The (valid) API specification for the Qanary pipeline, specifying endpoints to start a pipeline
+| rasa | The API specification for the server started by `rasa`
+| spring-boot-admin-server | The API specification for the Spring Boot Admin Server, used to monitor and register services
+|===

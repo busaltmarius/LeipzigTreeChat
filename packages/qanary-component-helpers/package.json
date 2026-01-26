@@ -1,0 +1,53 @@
+{
+  "name": "@leipzigtreechat/qanary-component-helpers",
+  "version": "1.0.0",
+  "description": "Helper library for Qanary components written in TypeScript",
+  "license": "SEE LICENSE IN LICENSE",
+  "author": "",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "dev": "tsc --watch",
+    "build": "tsc",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "format": "prettier --c src",
+    "format:fix": "prettier --w src",
+    "prepublishOnly": "npm run build",
+    "test": "jest --coverage --detectOpenHandles"
+  },
+  "dependencies": {
+    "@leipzigtreechat/qanary-component-core": "workspace: *",
+    "@leipzigtreechat/shared": "workspace: *",
+    "axios": "^1.13.2",
+    "nodemon": "3.1.11",
+    "rdf-js": "^4.0.2",
+    "sparql-http-client": "^2.4.2",
+    "ts-node": "1.7.1"
+  },
+  "devDependencies": {
+    "@leipzigtreechat/jest-config": "workspace: *",
+    "@leipzigtreechat/qanary-api": "workspace: *",
+    "@leipzigtreechat/typescript-config": "workspace: *",
+    "@types/axios": "^0.14.4",
+    "@types/jest": "^29.4.0",
+    "@types/node": "^18.11.18",
+    "@types/rdf-js": "^4.0.2",
+    "@types/sparql-http-client": "^2.2.8",
+    "jest": "^29.4.1",
+    "openapi-types": "12.1.0",
+    "ts-jest": "^29.2.5",
+    "typescript": "^4.9.5"
+  },
+  "jest": {
+    "preset": "@leipzigtreechat/jest-config"
+  }
+}
