@@ -272,9 +272,9 @@ export const Nodes = <const N extends string[]>(..._nodes: N) => {
         return await runLangGraphRuntime(
           program.pipe(Effect.provide(Logger.replace(Logger.defaultLogger, NodeLogger("RetrievalNode"))))
         );
-      },
+      }
 
-    AddressWatering:
+    /*AddressWatering:
       (routingConfig: { nextNode: NodeID; requestNode: NodeID; endNode: NodeID }) => async (state: AgentState) => {
         const { nextNode, requestNode, endNode } = routingConfig;
         const program = Effect.gen(function* () {
@@ -355,6 +355,6 @@ export const Nodes = <const N extends string[]>(..._nodes: N) => {
         return await runLangGraphRuntime(
           program.pipe(Effect.provide(Logger.replace(Logger.defaultLogger, NodeLogger("AddressWatering"))))
         );
-      }
+      }*/
   };
 };
