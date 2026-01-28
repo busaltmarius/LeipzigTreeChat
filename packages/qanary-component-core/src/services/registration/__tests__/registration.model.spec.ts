@@ -154,11 +154,11 @@ describe("#Component RegistrationInfo", () => {
     const expectedInfo = {
       name: pkg.name,
       serviceUrl: SPRING_BOOT_CLIENT_URL.origin,
-      healthUrl: SPRING_BOOT_CLIENT_URL.origin + "/health",
+      healthUrl: `${SPRING_BOOT_CLIENT_URL.origin}/health`,
       metadata: {
         start: expect.any(String),
         description: pkg.description,
-        about: SPRING_BOOT_CLIENT_URL.origin + "/about",
+        about: `${SPRING_BOOT_CLIENT_URL.origin}/about`,
         written_in: "TypeScript",
       },
     } as RegistrationInfo;
@@ -187,11 +187,11 @@ describe("#Component RegistrationInfo", () => {
     const expectedInfo = {
       name: SPRING_BOOT_CLIENT_URL.hostname,
       serviceUrl: SPRING_BOOT_CLIENT_URL.origin,
-      healthUrl: SPRING_BOOT_CLIENT_URL.origin + "/health",
+      healthUrl: `${SPRING_BOOT_CLIENT_URL.origin}/health`,
       metadata: {
         start: expect.any(String),
         description: "",
-        about: SPRING_BOOT_CLIENT_URL.origin + "/about",
+        about: `${SPRING_BOOT_CLIENT_URL.origin}/about`,
         written_in: "TypeScript",
       },
     } as RegistrationInfo;

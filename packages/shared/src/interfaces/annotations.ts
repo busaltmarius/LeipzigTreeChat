@@ -1,4 +1,4 @@
-import { BlankNode, Literal, NamedNode } from "rdf-js";
+import type { BlankNode, Literal, NamedNode } from "rdf-js";
 
 /**
  * The qanary raw annotations received by querying the sparql endpoint

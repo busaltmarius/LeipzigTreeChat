@@ -1,4 +1,4 @@
-import fs from "fs";
+import fs from "node:fs";
 
 import { queryFileLoader, RESERVED_KEYWORD_IN_SPARQL_QUERY } from "../query-file-loader.js";
 

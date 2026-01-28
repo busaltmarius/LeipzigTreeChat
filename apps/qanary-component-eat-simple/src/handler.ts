@@ -1,7 +1,7 @@
+import { URL } from "node:url";
 import type { IQanaryComponentMessageHandler } from "@leipzigtreechat/qanary-component-core";
 import { createAnnotationInKnowledgeGraph } from "@leipzigtreechat/qanary-component-helpers";
 import { getQuestion, type IQanaryMessage, QANARY_EAT_PREFIX, QANARY_PREFIX } from "@leipzigtreechat/shared";
-import { URL } from "url";
 
 /**
  * An event handler for incoming messages of the Qanary pipeline
@@ -23,7 +23,7 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
   // Step 2: compute EAT for question
   const expectedEntityTypeMatch = await getExpectedEntityTypeMatch(question);
   const expectedEntityType = expectedEntityTypeMatch?.expectedEntityType ?? null;
-  console.log("Expected entity type for question '" + question + "':", expectedEntityType);
+  console.log(`Expected entity type for question '${question}':`, expectedEntityType);
 
   // Step 3: store expected entity type in Qanary triplestore
   const componentName = "qanary-component-eat-simple";
@@ -35,7 +35,7 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
       range: { start: 0, end: expectedEntityTypeMatch?.prefix.length ?? 0 },
       confidence: 1,
     },
-    annotationType: QANARY_PREFIX + "AnnotationOfExpectedAnswerType",
+    annotationType: `${QANARY_PREFIX}AnnotationOfExpectedAnswerType`,
   });
 
   return message;
@@ -49,13 +49,13 @@ export const getExpectedEntityType = async (question: string) => {
 const getExpectedEntityTypeMatch = async (question: string) => {
   const lowerQuestion = question.toLowerCase();
   const rules: Array<[string, URL]> = [
-    ["where", new URL(QANARY_EAT_PREFIX + "location")],
-    ["who", new URL(QANARY_EAT_PREFIX + "person")],
-    ["when", new URL(QANARY_EAT_PREFIX + "datetime")],
-    ["what time", new URL(QANARY_EAT_PREFIX + "datetime")],
-    ["what date", new URL(QANARY_EAT_PREFIX + "datetime")],
-    ["how many", new URL(QANARY_EAT_PREFIX + "number")],
-    ["how much", new URL(QANARY_EAT_PREFIX + "number")],
+    ["where", new URL(`${QANARY_EAT_PREFIX}location`)],
+    ["who", new URL(`${QANARY_EAT_PREFIX}person`)],
+    ["when", new URL(`${QANARY_EAT_PREFIX}datetime`)],
+    ["what time", new URL(`${QANARY_EAT_PREFIX}datetime`)],
+    ["what date", new URL(`${QANARY_EAT_PREFIX}datetime`)],
+    ["how many", new URL(`${QANARY_EAT_PREFIX}number`)],
+    ["how much", new URL(`${QANARY_EAT_PREFIX}number`)],
   ];
 
   for (const [prefix, expectedEntityType] of rules) {
@@ -64,6 +64,6 @@ const getExpectedEntityTypeMatch = async (question: string) => {
     }
   }
 
-  console.warn("No expected entity type found for question '" + question + "'");
+  console.warn(`No expected entity type found for question '${question}'`);
   return null;
 };

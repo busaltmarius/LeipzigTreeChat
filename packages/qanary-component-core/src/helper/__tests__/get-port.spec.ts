@@ -1,6 +1,4 @@
-import EventEmitter from "events";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { createServer } from "net";
+import EventEmitter from "node:events";
 
 import { getPort } from "../get-port.js";
 

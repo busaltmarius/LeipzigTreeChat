@@ -1,4 +1,4 @@
-import { PassThrough } from "stream";
+import { PassThrough } from "node:stream";
 
 import { askSparql, selectSparql, updateSparql } from "../query-sparql.js";
 

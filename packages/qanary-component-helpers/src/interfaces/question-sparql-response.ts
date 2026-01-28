@@ -1,4 +1,4 @@
-import { NamedNode } from "rdf-js";
+import type { NamedNode } from "rdf-js";
 
 /**
  * The response of a SPARQL query to the Qanary Question endpoint fetching the question url.
