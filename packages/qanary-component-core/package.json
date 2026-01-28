@@ -24,7 +24,9 @@
     "test": "jest --coverage --detectOpenHandles"
   },
   "dependencies": {
-    "@leipzigtreechat/qanary-api": "workspace: *"
+    "@leipzigtreechat/qanary-api": "workspace: *",
+    "cors": "^2.8.6",
+    "express": "^5.2.1"
   },
   "devDependencies": {
     "@leipzigtreechat/jest-config": "workspace: *",
