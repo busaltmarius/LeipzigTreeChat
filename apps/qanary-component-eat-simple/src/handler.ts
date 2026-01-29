@@ -49,13 +49,13 @@ export const getExpectedEntityType = async (question: string) => {
 const getExpectedEntityTypeMatch = async (question: string) => {
   const lowerQuestion = question.toLowerCase();
   const rules: Array<[string, URL]> = [
-    ["where", new URL(`${QANARY_EAT_PREFIX}location`)],
-    ["who", new URL(`${QANARY_EAT_PREFIX}person`)],
-    ["when", new URL(`${QANARY_EAT_PREFIX}datetime`)],
-    ["what time", new URL(`${QANARY_EAT_PREFIX}datetime`)],
-    ["what date", new URL(`${QANARY_EAT_PREFIX}datetime`)],
-    ["how many", new URL(`${QANARY_EAT_PREFIX}number`)],
-    ["how much", new URL(`${QANARY_EAT_PREFIX}number`)],
+    ["wo", new URL(`${QANARY_EAT_PREFIX}object`)],
+    ["wer", new URL(`${QANARY_EAT_PREFIX}object`)],
+    ["wann", new URL(`${QANARY_EAT_PREFIX}datetime`)],
+    ["wie viel", new URL(`${QANARY_EAT_PREFIX}number`)],
+    ["wie viele", new URL(`${QANARY_EAT_PREFIX}number`)],
+    ["welche", new URL(`${QANARY_EAT_PREFIX}list`)],
+    ["welchen", new URL(`${QANARY_EAT_PREFIX}object`)],
   ];
 
   for (const [prefix, expectedEntityType] of rules) {
