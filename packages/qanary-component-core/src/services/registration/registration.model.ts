@@ -27,8 +27,8 @@ export class SpringBootAdminUrl extends URL {
   private static getDefault(): string {
     const defaultUrl = "http://localhost:40111";
 
-    if (process.env["SPRING_BOOT_ADMIN_URL"]) {
-      return process.env["SPRING_BOOT_ADMIN_URL"];
+    if (process.env.SPRING_BOOT_ADMIN_URL) {
+      return process.env.SPRING_BOOT_ADMIN_URL;
     }
 
     return defaultUrl;
@@ -118,11 +118,11 @@ export class RegistrationInfo implements SpringBootAdminServerApi.IComponentRegi
     return new RegistrationInfo({
       name: componentName,
       serviceUrl: config.springBootAdminClientInstanceServiceBaseUrl.origin,
-      healthUrl: config.springBootAdminClientInstanceServiceBaseUrl.origin + "/health",
+      healthUrl: `${config.springBootAdminClientInstanceServiceBaseUrl.origin}/health`,
       metadata: {
         start: new Date().toISOString(),
         description: pkg.description ?? "",
-        about: config.springBootAdminClientInstanceServiceBaseUrl.origin + "/about",
+        about: `${config.springBootAdminClientInstanceServiceBaseUrl.origin}/about`,
         written_in: "TypeScript",
       },
     });

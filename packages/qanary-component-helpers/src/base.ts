@@ -13,7 +13,7 @@
  */
 
 // Some imports not used depending on template conditions
-import globalAxios, { type AxiosInstance, AxiosPromise, type AxiosRequestConfig } from "axios";
+import globalAxios, { type AxiosInstance, type AxiosRequestConfig } from "axios";
 import type { Configuration } from "./configuration.js";
 
 export const BASE_PATH = "http://localhost:40500".replace(/\/+$/, "");

@@ -1,9 +1,9 @@
 import cors from "cors";
-import express, { Express } from "express";
+import express, { type Express } from "express";
 
 import { errorRequestHandler } from "./middlewares/error/error.middleware.js";
 import { aboutRouter } from "./resources/about/about.router.js";
-import { IQanaryComponentMessageHandler } from "./resources/annotatequestion/annotatequestion.model.js";
+import type { IQanaryComponentMessageHandler } from "./resources/annotatequestion/annotatequestion.model.js";
 import { annotateQuestionRouter } from "./resources/annotatequestion/annotatequestion.router.js";
 import { healthRouter } from "./resources/health/health.router.js";
 import { QanaryComponentCoreServiceConfig } from "./services/registration/registration.model.js";

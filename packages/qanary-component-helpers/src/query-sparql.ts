@@ -1,5 +1,5 @@
+import type internal from "node:stream";
 import SparqlClient from "sparql-http-client";
-import internal from "stream";
 
 /**
  * Transforms a stream to a promise

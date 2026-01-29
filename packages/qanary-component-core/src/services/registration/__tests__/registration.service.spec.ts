@@ -1,5 +1,5 @@
 import { sleep } from "../../../helper/sleep.js";
-import { QanaryComponentCoreServiceConfig, RegistrationInfo } from "../registration.model.js";
+import { type QanaryComponentCoreServiceConfig, RegistrationInfo } from "../registration.model.js";
 import { callAdminServer, registrationService } from "../registration.service.js";
 
 jest.mock("../registration.model", () => {

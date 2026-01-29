@@ -1,9 +1,9 @@
 import cors from "cors";
-import express, { Express } from "express";
+import express, { type Express } from "express";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { errorRequestHandler } from "../middlewares/error/error.middleware.js";
-import { IQanaryComponentCoreOptions, QanaryComponentCore } from "../qanary-component-core.js";
+import { type IQanaryComponentCoreOptions, QanaryComponentCore } from "../qanary-component-core.js";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { aboutRouter } from "../resources/about/about.router.js";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -21,7 +21,7 @@ jest.mock("express", () => {
   const mockExpress: any = jest.fn(() => {
     mockApp = {
       use: jest.fn(),
-      listen: jest.fn().mockImplementation((port: number, callback: () => void) => {
+      listen: jest.fn().mockImplementation((_port: number, callback: () => void) => {
         callback();
       }),
     } as unknown as Express;
@@ -65,7 +65,7 @@ describe("#Component QanaryComponentCore", () => {
     Promise.resolve({
       springBootAdminUrl: SPRING_BOOT_ADMIN_URL,
       springBootAdminClientInstanceServiceBaseUrl: SPRING_BOOT_CLIENT_URL,
-    }),
+    })
   );
   (QanaryComponentCoreServiceConfig.create as jest.Mock) = mockQanaryComponentCoreServiceConfigCreate;
 

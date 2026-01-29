@@ -13,17 +13,13 @@
  */
 
 import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from "axios";
-import { BASE_PATH, BaseAPI, COLLECTION_FORMATS, type RequestArgs, RequiredError } from "./base.js";
+import { BASE_PATH, type RequestArgs } from "./base.js";
 // Some imports not used depending on template conditions
 import {
   assertParamExists,
   createRequestFunction,
   DUMMY_BASE_URL,
   serializeDataIfNeeded,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
   setSearchParams,
   toPathString,
 } from "./common.js";
@@ -175,7 +171,7 @@ export const QanaryServiceControllerApiAxiosParamCreator = (configuration?: Conf
     localVarHeaderParameter["Content-Type"] = "application/json";
 
     setSearchParams(localVarUrlObj, localVarQueryParameter);
-    const headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+    const headersFromBaseOptions = baseOptions?.headers ? baseOptions.headers : {};
     localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
     localVarRequestOptions.data = serializeDataIfNeeded(iQanaryMessage, localVarRequestOptions, configuration);
 
@@ -204,7 +200,7 @@ export const QanaryServiceControllerApiAxiosParamCreator = (configuration?: Conf
     const localVarQueryParameter = {} as any;
 
     setSearchParams(localVarUrlObj, localVarQueryParameter);
-    const headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+    const headersFromBaseOptions = baseOptions?.headers ? baseOptions.headers : {};
     localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
 
     return {
@@ -232,7 +228,7 @@ export const QanaryServiceControllerApiAxiosParamCreator = (configuration?: Conf
     const localVarQueryParameter = {} as any;
 
     setSearchParams(localVarUrlObj, localVarQueryParameter);
-    const headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+    const headersFromBaseOptions = baseOptions?.headers ? baseOptions.headers : {};
     localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
 
     return {

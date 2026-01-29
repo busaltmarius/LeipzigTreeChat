@@ -1,13 +1,10 @@
 import { AIMessage, type BaseMessage, HumanMessage } from "@langchain/core/messages";
 import { Command } from "@langchain/langgraph";
-
-import { FetchHttpClient, HttpClient } from "@effect/platform"
-import { Effect, Either, Logger, Match, Option, Schema } from "effect";
+import { Effect, Either, Logger, Match, Option } from "effect";
 import { type InvalidInputError, MissingMessageError } from "./errors.js";
 import { runLangGraphRuntime } from "./langgraph-runtime.js";
 import type { AgentState } from "./state.js";
 import type { Unit } from "./unit.js";
-import { LLMService } from "./llm-service.js";
 
 export enum OrderSlots {
   PIZZA_NAME = "current_pizza_name",
@@ -39,7 +36,7 @@ export const Nodes = <const N extends string[]>(..._nodes: N) => {
   const command = (commandArgs: { update?: Partial<AgentState>; goto: NodeID }) => new Command(commandArgs);
 
   return {
-    UserInputNode: (routingConfig: { nextNode: NodeID }) => async (state: AgentState) => {},
+    UserInputNode: (_routingConfig: { nextNode: NodeID }) => async (_state: AgentState) => {},
     /**
      * This node handles the ordering process by asking for missing information
      * @param routingConfig The routing configuration for nextNode (when still missing information) and endNode (when order is complete)
@@ -274,7 +271,7 @@ export const Nodes = <const N extends string[]>(..._nodes: N) => {
         );
       },
 
-    AddressWatering:
+    /*AddressWatering:
       (routingConfig: { nextNode: NodeID; requestNode: NodeID; endNode: NodeID }) => async (state: AgentState) => {
         const { nextNode, requestNode, endNode } = routingConfig;
         const program = Effect.gen(function* () {
@@ -355,6 +352,6 @@ export const Nodes = <const N extends string[]>(..._nodes: N) => {
         return await runLangGraphRuntime(
           program.pipe(Effect.provide(Logger.replace(Logger.defaultLogger, NodeLogger("AddressWatering"))))
         );
-      }
+      }*/
   };
 };

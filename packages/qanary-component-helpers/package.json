@@ -37,7 +37,6 @@
     "@leipzigtreechat/jest-config": "workspace: *",
     "@leipzigtreechat/qanary-api": "workspace: *",
     "@leipzigtreechat/typescript-config": "workspace: *",
-    "@types/axios": "^0.14.4",
     "@types/jest": "^29.4.0",
     "@types/node": "^18.11.18",
     "@types/rdf-js": "^4.0.2",

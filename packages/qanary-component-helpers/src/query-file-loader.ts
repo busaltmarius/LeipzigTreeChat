@@ -1,4 +1,4 @@
-import fs from "fs";
+import fs from "node:fs";
 
 /**
  * These are text fragments that can be substituted into SparQL query files to make parameterized queries.

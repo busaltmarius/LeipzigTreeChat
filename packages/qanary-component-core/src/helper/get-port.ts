@@ -1,4 +1,4 @@
-import { createServer, type Server } from "net";
+import { createServer, type Server } from "node:net";
 
 /**
  * A function that determines the next free port starting from a given port.
