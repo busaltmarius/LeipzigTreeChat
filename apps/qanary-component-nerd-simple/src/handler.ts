@@ -50,14 +50,6 @@ const getNerdAnnotations = async (question: string): Promise<Array<IAnnotationIn
       return [
         {
           value: JSON.stringify({
-            entity: "Wasserentnahmestelle",
-            type: "Infrastruktur",
-          }),
-          range: {start: 7, end: 28},
-          confidence: 1
-        },
-        {
-          value: JSON.stringify({
             entity: "Karl-Liebknecht-Str.",
             type: "Straße",
           }),
@@ -93,14 +85,6 @@ const getNerdAnnotations = async (question: string): Promise<Array<IAnnotationIn
       return [
         {
           value: JSON.stringify({
-            entity: "Baum",
-            type: "Infrastruktur",
-          }),
-          range: {start: 8, end: 12},
-          confidence: 1
-        },
-        {
-          value: JSON.stringify({
             entity: "Karl-Liebknecht-Str.",
             type: "Straße",
           }),
@@ -131,15 +115,23 @@ const getNerdAnnotations = async (question: string): Promise<Array<IAnnotationIn
           range: {start: 78, end: 85},
           confidence: 1
         },
+        {
+          value: JSON.stringify({
+            entity: "heute",
+            type: "Datum",
+          }),
+          range: {start: 86, end: 91},
+          confidence: 1
+        },
       ]
     case "Was kannst du mir über die Bäume in Leipzig erklären?":
       return [
         {
           value: JSON.stringify({
-            entity: "Baum",
-            type: "Vegetation",
+            entity: "Leipzig",
+            type: "Stadt",
           }),
-          range: {start: 27, end: 32},
+          range: {start: 36, end: 43},
           confidence: 1
         },
       ]
