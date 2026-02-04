@@ -1,11 +1,12 @@
+import { beforeEach, describe, expect, mock, test } from "bun:test";
 import type { Request, Response } from "express";
 
 import { errorRequestHandler } from "../error.middleware.js";
 
 describe("#Component errorRequestHandler", () => {
-  const mockCallback: jest.Mock = jest.fn();
-  const mockResponseStatus: jest.Mock = jest.fn();
-  const mockResponseJson: jest.Mock = jest.fn();
+  const mockCallback = mock();
+  const mockResponseStatus = mock();
+  const mockResponseJson = mock();
   const ERROR_CODE = 500;
 
   const error = new Error("test error");
@@ -13,16 +14,24 @@ describe("#Component errorRequestHandler", () => {
     path: "test path",
   } as Request;
   const response = {} as Response;
-  (response.status as jest.Mock) = mockResponseStatus;
-  (response.json as jest.Mock) = mockResponseJson;
+  // @ts-expect-error - mocking
+  response.status = mockResponseStatus.mockReturnValue(response);
+  // @ts-expect-error - mocking
+  response.json = mockResponseJson;
 
-  it("should call callback once", async () => {
+  beforeEach(() => {
+    mockCallback.mockClear();
+    mockResponseStatus.mockClear();
+    mockResponseJson.mockClear();
+  });
+
+  test("should call callback once", async () => {
     errorRequestHandler(error, request, response, mockCallback);
 
     expect(mockCallback).toHaveBeenCalledTimes(1);
   });
 
-  it("should call res.status and res.json with correct data", async () => {
+  test("should call res.status and res.json with correct data", async () => {
     errorRequestHandler(error, request, response, mockCallback);
 
     expect(mockResponseStatus).toHaveBeenCalledWith(ERROR_CODE);

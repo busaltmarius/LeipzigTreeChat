@@ -16,13 +16,7 @@
   },
   "scripts": {
     "dev": "tsc --watch",
-    "build": "tsc",
-    "lint": "eslint src",
-    "lint:fix": "eslint src --fix",
-    "format": "prettier --c src",
-    "format:fix": "prettier --w src",
-    "prepublishOnly": "npm run build",
-    "test": "bun test src --coverage"
+    "build": "tsc"
   },
   "dependencies": {
     "@leipzigtreechat/qanary-component-core": "workspace: *",

@@ -1,18 +1,25 @@
-import { describe, expect, mock, spyOn, test } from "bun:test";
+import { afterEach, beforeEach, describe, expect, mock, spyOn, test } from "bun:test";
 import type { IQanaryMessage } from "../api.js";
 
 import { createAnnotationInKnowledgeGraph, type IAnnotationInformation } from "../create-annotation.js";
 
 import { updateSparql } from "../query-sparql.js";
 
-mock.module("../query-sparql.js", () => ({
-  updateSparql: mock(() => Promise.resolve()),
-  selectSparql: mock(() => Promise.resolve([{ questionUrl: { value: "qanary-question-uri" } }])),
-}));
+beforeEach(() => {
+    mock.module("../query-sparql.js", () => ({
+        updateSparql: mock(() => Promise.resolve()),
+        selectSparql: mock(() => Promise.resolve([{ questionUrl: { value: "qanary-question-uri" } }])),
+    }));
 
-mock.module("../get-question-uri.js", () => ({
-  getQuestionUri: mock(() => Promise.resolve("qanary-question-uri")),
-}));
+    mock.module("../get-question-uri.js", () => ({
+        getQuestionUri: mock(() => Promise.resolve("qanary-question-uri")),
+    }));
+});
+
+afterEach(() => {
+    mock.restore();
+    mock.clearAllMocks();
+});
 
 describe("createAnnotationInKnowledgeGraph", () => {
   const qanaryMessage: IQanaryMessage = {

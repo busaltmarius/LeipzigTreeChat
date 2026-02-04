@@ -1,28 +1,31 @@
-import { describe, expect, mock, test } from "bun:test";
+import { describe, expect, mock, test, beforeEach, afterEach } from "bun:test";
 import { PassThrough } from "node:stream";
 
-import { askSparql, selectSparql, updateSparql } from "../query-sparql.js";
-
 const mockReadStream = new PassThrough();
-const mockSelect = mock(() => mockReadStream);
-const mockAsk = mock(() => true);
-const mockUpdate = mock();
+const mockSelect = mock(async () => { console.error("#### mockSelect")});
+const mockAsk = mock(async () => { console.log("#### mockAsk");  return true; });
+const mockUpdate = mock(async () => { console.log("#### mockUpdate");  });
 
-mock.module("sparql-http-client", () => {
-  return {
-    default: mock(function () {
-      return {
-        query: {
-          select: mockSelect,
-          ask: mockAsk,
-          update: mockUpdate,
-        },
-      };
-    }),
-  };
+beforeEach(() => {
+    mock.module("sparql-http-client", () => ({
+            default: mock(() => ({
+                query: {
+                select: mockSelect,
+                ask: mockAsk,
+                update: mockUpdate,
+                },
+            })),
+        }),
+    );
+})
+
+afterEach(() => {
+    mock.restore();
+    mock.clearAllMocks();
 });
 
-describe("query sparql", () => {
+describe("query sparql", async () => {
+  const { askSparql, selectSparql, updateSparql } = await import("../query-sparql.js");
   describe("selectSparl", () => {
     test("should return the result of the query as array", async () => {
       const endpoint = "http://qanary-pipeline:40111/sparql";

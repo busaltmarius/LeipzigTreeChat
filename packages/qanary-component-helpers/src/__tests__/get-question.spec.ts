@@ -1,21 +1,28 @@
-import { beforeEach, describe, expect, mock, spyOn, test } from "bun:test";
+import { beforeEach, afterEach, describe, expect, mock, spyOn, test } from "bun:test";
 import type { QanaryComponentApi } from "@leipzigtreechat/qanary-api";
 
 import { getQuestion } from "../get-question.js";
 
 import { selectSparql } from "../query-sparql.js";
 
-mock.module("../query-sparql.js", () => ({
-  selectSparql: mock(() =>
-    Promise.resolve([
-      {
-        questionUri: {
-          value: "http://qanary-pipeline:40111/question/urn:inGraph",
-        },
-      },
-    ])
-  ),
-}));
+beforeEach(() => {
+    mock.module("../query-sparql.js", () => ({
+      selectSparql: mock(() =>
+        Promise.resolve([
+          {
+            questionUri: {
+              value: "http://qanary-pipeline:40111/question/urn:inGraph",
+            },
+          },
+        ])
+      ),
+    }));
+})
+
+afterEach(() => {
+    mock.restore();
+    mock.clearAllMocks();
+});
 
 describe("getQuestion", () => {
   const expectedQuestion = "What is the capital of Germany?";

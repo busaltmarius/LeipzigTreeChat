@@ -1,85 +1,119 @@
-import cors from "cors";
-import express, { type Express } from "express";
+import { beforeEach, describe, expect, mock, test } from "bun:test";
+import type { Express } from "express";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { errorRequestHandler } from "../middlewares/error/error.middleware.js";
-import { type IQanaryComponentCoreOptions, QanaryComponentCore } from "../qanary-component-core.js";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { aboutRouter } from "../resources/about/about.router.js";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { annotateQuestionRouter } from "../resources/annotatequestion/annotatequestion.router.js";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { healthRouter } from "../resources/health/health.router.js";
-import { QanaryComponentCoreServiceConfig } from "../services/registration/registration.model.js";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { registrationService } from "../services/registration/registration.service.js";
+import type { IQanaryComponentCoreOptions } from "../qanary-component-core.js";
 
 let mockApp: Express;
 
-jest.mock("express", () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const mockExpress: any = jest.fn(() => {
+const mockAboutRouterResponse = {};
+const mockAboutRouter = mock(() => Promise.resolve(mockAboutRouterResponse));
+
+const mockAnnotateQuestionRouterResponse = {};
+const mockAnnotateQuestionRouter = mock(() => Promise.resolve(mockAnnotateQuestionRouterResponse));
+
+const mockHealthRouterResponse = {};
+const mockHealthRouter = mock(() => Promise.resolve(mockHealthRouterResponse));
+
+const mockErrorRequestHandler = mock(() => Promise.resolve({}));
+
+const SPRING_BOOT_ADMIN_URL = new URL("http://spring-boot-url.test:1234");
+const SPRING_BOOT_CLIENT_URL = new URL("http://service-base-url.test:1234");
+
+const mockQanaryComponentCoreServiceConfigCreate = mock(() =>
+  Promise.resolve({
+    springBootAdminUrl: SPRING_BOOT_ADMIN_URL,
+    springBootAdminClientInstanceServiceBaseUrl: SPRING_BOOT_CLIENT_URL,
+  })
+);
+
+const mockRegistrationService = mock(() => Promise.resolve({}));
+
+mock.module("express", () => {
+  const mockExpress = mock(() => {
     mockApp = {
-      use: jest.fn(),
-      listen: jest.fn().mockImplementation((_port: number, callback: () => void) => {
+      use: mock(),
+      listen: mock((_port: number, callback: () => void) => {
         callback();
       }),
     } as unknown as Express;
     return mockApp;
   });
-  mockExpress.json = jest.fn();
-  mockExpress.urlencoded = jest.fn();
+  mockExpress.json = mock();
+  mockExpress.urlencoded = mock();
 
-  return mockExpress;
+  return { default: mockExpress };
 });
 
-jest.mock("cors", () => {
-  return jest.fn();
+mock.module("cors", () => {
+  return { default: mock() };
 });
+
+mock.module("../resources/about/about.router.js", () => ({
+  aboutRouter: mockAboutRouter,
+}));
+
+mock.module("../resources/annotatequestion/annotatequestion.router.js", () => ({
+  annotateQuestionRouter: mockAnnotateQuestionRouter,
+}));
+
+mock.module("../resources/health/health.router.js", () => ({
+  healthRouter: mockHealthRouter,
+}));
+
+mock.module("../middlewares/error/error.middleware.js", () => ({
+  errorRequestHandler: mockErrorRequestHandler,
+}));
+
+mock.module("../services/registration/registration.model.js", () => ({
+  QanaryComponentCoreServiceConfig: {
+    create: mockQanaryComponentCoreServiceConfigCreate,
+  },
+}));
+
+mock.module("../services/registration/registration.service.js", () => ({
+  registrationService: mockRegistrationService,
+}));
+
+import cors from "cors";
+import express from "express";
+import { QanaryComponentCore } from "../qanary-component-core.js";
+import { QanaryComponentCoreServiceConfig } from "../services/registration/registration.model.js";
 
 describe("#Component QanaryComponentCore", () => {
-  const mockAboutRouterResponse = {};
-  const mockAboutRouter: jest.Mock = jest.fn(() => Promise.resolve(mockAboutRouterResponse));
-  (aboutRouter as jest.Mock) = mockAboutRouter;
-
-  const mockAnnotateQuestionRouterResponse = {};
-  const mockAnnotateQuestionRouter: jest.Mock = jest.fn(() => Promise.resolve(mockAnnotateQuestionRouterResponse));
-  (annotateQuestionRouter as jest.Mock) = mockAnnotateQuestionRouter;
-
-  const mockHealthRouterResponse = {};
-  const mockHealthRouter: jest.Mock = jest.fn(() => Promise.resolve(mockHealthRouterResponse));
-  (healthRouter as jest.Mock) = mockHealthRouter;
-
-  const mockErrorRequestHandler: jest.Mock = jest.fn(() => Promise.resolve({}));
-  (errorRequestHandler as jest.Mock) = mockErrorRequestHandler;
-
-  const mockHandler = jest.fn();
+  const mockHandler = mock();
   const options = {
     handler: mockHandler,
   } as IQanaryComponentCoreOptions;
 
-  const SPRING_BOOT_ADMIN_URL = new URL("http://spring-boot-url.test:1234");
-  const SPRING_BOOT_CLIENT_URL = new URL("http://service-base-url.test:1234");
+  beforeEach(() => {
+    // Clear all mock call counts
+    (express as any).mockClear();
+    (express.json as any).mockClear();
+    (express.urlencoded as any).mockClear();
+    (cors as any).mockClear();
+    mockAboutRouter.mockClear();
+    mockAnnotateQuestionRouter.mockClear();
+    mockHealthRouter.mockClear();
+    mockErrorRequestHandler.mockClear();
+    mockQanaryComponentCoreServiceConfigCreate.mockClear();
+    mockRegistrationService.mockClear();
+    // Only clear mockApp if it exists
+    if (mockApp && mockApp.use) {
+      (mockApp.use as any).mockClear();
+    }
+    if (mockApp && mockApp.listen) {
+      (mockApp.listen as any).mockClear();
+    }
+  });
 
-  const mockQanaryComponentCoreServiceConfigCreate = jest.fn(() =>
-    Promise.resolve({
-      springBootAdminUrl: SPRING_BOOT_ADMIN_URL,
-      springBootAdminClientInstanceServiceBaseUrl: SPRING_BOOT_CLIENT_URL,
-    })
-  );
-  (QanaryComponentCoreServiceConfig.create as jest.Mock) = mockQanaryComponentCoreServiceConfigCreate;
-
-  const mockRegistrationService: jest.Mock = jest.fn(() => Promise.resolve({}));
-  (registrationService as jest.Mock) = mockRegistrationService;
-
-  it("should create and return express server", async () => {
+  test("should create and return express server", async () => {
     const app = await QanaryComponentCore(options);
 
     expect(express).toHaveBeenCalledTimes(1);
     expect(app).toStrictEqual(mockApp);
   });
 
-  it("should add application/json parsing configuration", async () => {
+  test("should add application/json parsing configuration", async () => {
     await QanaryComponentCore(options);
 
     expect(express.json).toHaveBeenCalledTimes(1);
@@ -87,41 +121,41 @@ describe("#Component QanaryComponentCore", () => {
     expect(cors).toHaveBeenCalledTimes(1);
   });
 
-  it("should add about route", async () => {
+  test("should add about route", async () => {
     await QanaryComponentCore(options);
 
     expect(mockAboutRouter).toHaveBeenCalledTimes(1);
     expect(mockApp.use).toHaveBeenCalledWith("/", mockAboutRouterResponse);
   });
 
-  it("should add annotatequestion route", async () => {
+  test("should add annotatequestion route", async () => {
     await QanaryComponentCore(options);
 
     expect(mockAnnotateQuestionRouter).toHaveBeenCalledWith(mockHandler);
     expect(mockApp.use).toHaveBeenCalledWith("/annotatequestion", mockAnnotateQuestionRouterResponse);
   });
 
-  it("should add health route", async () => {
+  test("should add health route", async () => {
     await QanaryComponentCore(options);
 
     expect(mockHealthRouter).toHaveBeenCalledTimes(1);
     expect(mockApp.use).toHaveBeenCalledWith("/health", mockHealthRouterResponse);
   });
 
-  it("should add error request handler", async () => {
+  test("should add error request handler", async () => {
     await QanaryComponentCore(options);
 
     expect(mockApp.use).toHaveBeenCalledWith(mockErrorRequestHandler);
   });
 
-  it("should create service config and start server", async () => {
+  test("should create service config and start server", async () => {
     await QanaryComponentCore(options);
 
     expect(QanaryComponentCoreServiceConfig.create).toHaveBeenCalledTimes(1);
     expect(mockApp.listen).toHaveBeenCalledWith(SPRING_BOOT_CLIENT_URL.port, expect.any(Function));
   });
 
-  it("should register server through service", async () => {
+  test("should register server through service", async () => {
     await QanaryComponentCore(options);
 
     expect(mockRegistrationService).toHaveBeenCalledWith({

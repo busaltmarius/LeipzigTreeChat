@@ -16,12 +16,7 @@
   },
   "scripts": {
     "dev": "tsc --watch",
-    "build": "tsc",
-    "lint": "eslint src",
-    "lint:fix": "eslint src --fix",
-    "prettier": "prettier --c src",
-    "prettier:fix": "prettier --w src",
-    "prepublishOnly": "npm run build"
+    "build": "tsc"
   },
   "dependencies": {
     "date-fns": "^2.29.3",
@@ -30,7 +25,6 @@
     "ts-node": "1.7.1"
   },
   "devDependencies": {
-    "@leipzigtreechat/jest-config": "workspace: *",
     "@leipzigtreechat/qanary-api": "workspace: *",
     "@leipzigtreechat/typescript-config": "workspace: *",
     "@types/jest": "^29.4.0",

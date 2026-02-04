@@ -1,22 +1,34 @@
-import { Router } from "express";
+import { beforeEach, describe, expect, mock, test } from "bun:test";
+import type { Router } from "express";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { readAbout } from "../about.controller.js";
+const routerObject = {} as Router;
+const mockGet = mock();
+// @ts-expect-error - mocking
+routerObject.get = mockGet;
+
+const mockRouter = mock(() => routerObject);
+
+const mockRequestHandler = mock();
+const mockReadAbout = mock(() => Promise.resolve(mockRequestHandler));
+
+mock.module("express", () => ({
+  Router: mockRouter,
+}));
+
+mock.module("../about.controller.js", () => ({
+  readAbout: mockReadAbout,
+}));
+
 import { aboutRouter } from "../about.router.js";
 
 describe("#Component aboutRouter", () => {
-  it("should return a router with get on '/' and '/about' routes and a request handler", async () => {
-    const routerObject = {} as Router;
-    const mockGet: jest.Mock = jest.fn();
-    (routerObject.get as jest.Mock) = mockGet;
+  beforeEach(() => {
+    mockRouter.mockClear();
+    mockReadAbout.mockClear();
+    mockGet.mockClear();
+  });
 
-    const mockRouter: jest.Mock = jest.fn().mockReturnValue(routerObject);
-    (Router as jest.Mock) = mockRouter;
-
-    const mockRequestHandler: jest.Mock = jest.fn();
-    const mockReadAbout: jest.Mock = jest.fn(() => Promise.resolve(mockRequestHandler));
-    (readAbout as jest.Mock) = mockReadAbout;
-
+  test("should return a router with get on '/' and '/about' routes and a request handler", async () => {
     const router = await aboutRouter();
 
     expect(router).not.toBeNull();

@@ -1,17 +1,18 @@
+import { describe, expect, mock, test } from "bun:test";
 import type { Request, Response } from "express";
 
 import { createAnnotateQuestion } from "../annotatequestion.controller.js";
 
 describe("#Component createAnnotateQuestion", () => {
-  const mockHandler: jest.Mock = jest.fn(() => Promise.resolve());
+  const mockHandler = mock(() => Promise.resolve());
 
-  it("should return request handler function", async () => {
+  test("should return request handler function", async () => {
     const requestHandler = await createAnnotateQuestion(mockHandler);
 
     expect(requestHandler).not.toBeNull();
   });
 
-  it("should return request handler that calls handler and res.json", async () => {
+  test("should return request handler that calls handler and res.json", async () => {
     const request = {
       body: {
         endpoint: "test-endpoint",
@@ -21,10 +22,11 @@ describe("#Component createAnnotateQuestion", () => {
     } as Request;
 
     const response = {} as Response;
-    const mockResponseJson: jest.Mock = jest.fn();
-    (response.json as jest.Mock) = mockResponseJson;
+    const mockResponseJson = mock();
+    // @ts-expect-error - mocking
+    response.json = mockResponseJson;
 
-    const mockNext: jest.Mock = jest.fn();
+    const mockNext = mock();
 
     const requestHandler = await createAnnotateQuestion(mockHandler);
     await requestHandler(request, response, mockNext);
@@ -33,13 +35,13 @@ describe("#Component createAnnotateQuestion", () => {
     expect(mockResponseJson).toHaveBeenCalledWith(request.body);
   });
 
-  it("should return request handler that calls next on invalid message in req.body", async () => {
+  test("should return request handler that calls next on invalid message in req.body", async () => {
     const request = {
       body: {},
     } as Request;
     const response = {} as Response;
 
-    const mockNext: jest.Mock = jest.fn();
+    const mockNext = mock();
 
     const requestHandler = await createAnnotateQuestion(mockHandler);
     await requestHandler(request, response, mockNext);

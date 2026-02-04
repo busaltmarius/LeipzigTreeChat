@@ -1,3 +1,4 @@
+import { describe, expect, test } from "bun:test";
 import type { Request } from "express";
 
 import { ErrorResponse } from "../error.model.js";
@@ -5,7 +6,7 @@ import { ErrorResponse } from "../error.model.js";
 describe("#Component ErrorResponse", () => {
   const ERROR_CODE = 500;
 
-  it("should create new ErrorResponse instance from provided error and response", async () => {
+  test("should create new ErrorResponse instance from provided error and response", async () => {
     const error = new Error("test error");
     const request = {
       path: "test path",
@@ -19,7 +20,7 @@ describe("#Component ErrorResponse", () => {
     expect(errorResponse.path).toStrictEqual(request.path);
   });
 
-  it("should create new ErrorResponse instance with defaults", async () => {
+  test("should create new ErrorResponse instance with defaults", async () => {
     const error = new Error();
     const request = {} as Request;
     const errorResponse = ErrorResponse.from(error, request);
