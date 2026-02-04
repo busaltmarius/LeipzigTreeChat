@@ -2,7 +2,6 @@ import { Terminal } from "@effect/platform";
 import type { PlatformError } from "@effect/platform/Error";
 import { BunRuntime, BunTerminal } from "@effect/platform-bun";
 import { AIMessage } from "@langchain/core/messages";
-
 import { ChatBotGraph } from "@leipzigtreechat/chatbot";
 import { setConfig } from "@leipzigtreechat/chatbot/config";
 import { type AgentState, getLastAIMessage, getMessageContent } from "@leipzigtreechat/chatbot/state";
@@ -16,17 +15,13 @@ setConfig({
 
 const program = Effect.gen(function* () {
   const state: AgentState = {
+    has_ended: false,
     input: "",
     messages: [
       new AIMessage({
-        content: "Hi! I am a pizza bot. I can help you order a pizza. What would you like to order?",
+        content: "Hallo, ich bin der Baumwächter von Leipzig. Wie kann ich dir helfen?",
       }),
     ],
-    active_order: false,
-    gathered_order_info: false,
-    pizzas: new Map(),
-    user_name: undefined,
-    current_slot: undefined,
   };
 
   return yield* run(state);
@@ -38,12 +33,12 @@ const printChatbotMessage = (state: AgentState) =>
     const lastMessage = yield* getLastAIMessage(state);
     const lastMessageContent = yield* getMessageContent(lastMessage);
 
-    yield* terminal.display(`-- Chatbot: ${lastMessageContent}\n`);
+    yield* terminal.display(`-- Baumwächter: ${lastMessageContent}\n`);
   });
 
 const runGraphWithUserInput = (state: AgentState) =>
   Effect.gen(function* () {
-    const input = yield* Effect.scoped(readLine("-> Your response: "));
+    const input = yield* Effect.scoped(readLine("-> Deine Nachricht: "));
 
     return yield* Effect.tryPromise(async () => ChatBotGraph.invoke({ ...state, input }));
   });
@@ -55,7 +50,7 @@ const run: RunType = (state) =>
   Effect.gen(function* () {
     yield* printChatbotMessage(state);
 
-    if (state.gathered_order_info) {
+    if (state.has_ended) {
       return state;
     }
 

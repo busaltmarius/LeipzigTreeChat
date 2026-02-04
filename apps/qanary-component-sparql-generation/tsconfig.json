@@ -6,7 +6,7 @@
     "types": ["bun-types"],
     "module": "ESNext",
     "target": "ESNext",
-    "moduleResolution": "bundler",
+    "moduleResolution": "bundler"
   },
-  "include": ["src"],
+  "include": ["src"]
 }

@@ -3,7 +3,6 @@ import { generateText } from "ai";
 
 import { Config, ConfigProvider, Context, Effect, Layer, Redacted } from "effect";
 import { getConfig } from "./config.js";
-import { ASSISTANT_DOCSTRING } from "./constants.js";
 
 export type OpenRouterClient = ReturnType<typeof createOpenRouter>;
 
@@ -58,16 +57,11 @@ async function ask(openrouterClient: OpenRouterClient, user_input: string) {
         role: "system",
         content: [
           "You are a Named Entity Recognition Tool. ",
-          "Recognize named entities and output the structured data as a JSON. \n",
+          "Recognize named entities and output the structured data as a JSON.\n",
           "**Output ONLY the structured data.**",
           "Below is a text for you to analyze.",
         ].join(""),
       },
-      {
-        role: "user",
-        content: "My address is Gustav-Freytag Straße 12A in Leipzig.",
-      },
-      { role: "assistant", content: ASSISTANT_DOCSTRING },
       { role: "user", content: user_input },
     ],
   });
