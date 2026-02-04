@@ -25,7 +25,7 @@ bun run build --workspace=api && \
   bun run build --workspace=qanary-component-helpers && \
   bun run build --workspace=shared && \
   bun run build --workspace=qanary-component-core && \
-  bun run build --workspace=qanary-component-eat-simple
+  bun run build --workspace=qanary-component-sparql-generation
 
 # build core component
 CORE_DIST_ROOT="$ROOT_DIR/packages/qanary-component-core/dist"
@@ -42,13 +42,13 @@ fi
 
 # 2) run all tests
 echo "Running tests"
-cd "$ROOT_DIR/apps/qanary-component-eat-simple" && bun test
+cd "$ROOT_DIR/apps/qanary-component-sparql-generation" && bun test
 
 # 3) start the application (Bun runtime)
-cd "$ROOT_DIR/apps/qanary-component-eat-simple"
+cd "$ROOT_DIR/apps/qanary-component-sparql-generation"
 env "SPRING_BOOT_ADMIN_CLIENT_INSTANCE_SERVICE-BASE-URL=$SPRING_BOOT_ADMIN_URL" \
   "SPRING_BOOT_ADMIN_URL=$SPRING_BOOT_ADMIN_URL" \
-  "QANARY_COMPONENT_PACKAGE_JSON=$ROOT_DIR/apps/qanary-component-eat-simple/package.json" \
+  "QANARY_COMPONENT_PACKAGE_JSON=$ROOT_DIR/apps/qanary-component-sparql-generation/package.json" \
   "SKIP_REGISTRATION=true" \
   bun src/index.ts
 
