@@ -1,10 +1,8 @@
-  import {
-  selectSparql,
-} from "@leipzigtreechat/qanary-component-helpers";
 import { FetchHttpClient, HttpClient, HttpClientRequest, HttpClientResponse } from "@effect/platform";
 import { AIMessage, type BaseMessage, HumanMessage } from "@langchain/core/messages";
 import { Command } from "@langchain/langgraph";
-import { Effect, Either, Logger, Match, Config, Schema } from "effect";
+import { selectSparql } from "@leipzigtreechat/qanary-component-helpers";
+import { Config, Effect, Either, Logger, Match, Schema } from "effect";
 import { type InvalidInputError, MissingMessageError } from "./errors.js";
 import { runLangGraphRuntime } from "./langgraph-runtime.js";
 import { LLMService } from "./llm-service.js";
@@ -61,58 +59,56 @@ export const Nodes = <const N extends string[]>(
           program.pipe(Effect.provide(Logger.replace(Logger.defaultLogger, NodeLogger("UserInputNode"))))
         );
       },
-      QanaryNode: (routingConfig: { nextNode: NodeID }) => async (state: AgentState) => {
-          const { nextNode } = routingConfig;
-          const program = Effect.gen(function* () {
-              yield* Effect.logDebug("State: ", state);
+    QanaryNode: (routingConfig: { nextNode: NodeID }) => async (state: AgentState) => {
+      const { nextNode } = routingConfig;
+      const program = Effect.gen(function* () {
+        yield* Effect.logDebug("State: ", state);
 
-              // 1. Access the HTTP Client from the context
-              const client = yield* HttpClient.HttpClient;
+        // 1. Access the HTTP Client from the context
+        const client = yield* HttpClient.HttpClient;
 
-              const components = [
-                  "qanary-component-eat-simple",
-                  "qanary-component-nerd-simple",
-                  "qanary-component-dis",
-                  "qanary-component-relation-detection",
-                  "qanary-component-sparql-generation",
-              ];
-              const apiBaseUrl = yield* Config.url("QANARY_API_BASE_URL");
+        const components = [
+          "qanary-component-nerd-simple",
+          "qanary-component-dis",
+          "qanary-component-eat-simple",
+          "qanary-component-relation-detection",
+          "qanary-component-sparql-generation",
+        ];
+        const apiBaseUrl = yield* Config.url("QANARY_API_BASE_URL");
 
-              const QanaryResponse = Schema.Struct({
-                inGraph: Schema.String,
-              })
+        const QanaryResponse = Schema.Struct({
+          inGraph: Schema.String,
+        });
 
-              const result = yield* HttpClientRequest.post(
-                  `${apiBaseUrl}/questionanswering`
-              ).pipe(
-                  HttpClientRequest.setUrlParams({
-                      textquestion: state.input,
-                      "componentlist[]": components,
-                  }),
-                  client.execute,
-                  Effect.flatMap(HttpClientResponse.filterStatusOk),
-                  Effect.flatMap(HttpClientResponse.schemaBodyJson(QanaryResponse)),
-                  Effect.timeout("60 seconds"),
-                  Effect.scoped
-              );
+        const result = yield* HttpClientRequest.post(`${apiBaseUrl}/questionanswering`).pipe(
+          HttpClientRequest.setUrlParams({
+            textquestion: state.input,
+            "componentlist[]": components,
+          }),
+          client.execute,
+          Effect.flatMap(HttpClientResponse.filterStatusOk),
+          Effect.flatMap(HttpClientResponse.schemaBodyJson(QanaryResponse)),
+          Effect.timeout("60 seconds"),
+          Effect.scoped
+        );
 
-              yield* Effect.logDebug("Qanary Result: ", result);
+        yield* Effect.logDebug("Qanary Result: ", result);
 
-              return command({
-                  update: {
-                      graph_uri: result.inGraph,
-                  },
-                  goto: nextNode, // always route to question answering for now
-              });
-          });
+        return command({
+          update: {
+            graph_uri: result.inGraph,
+          },
+          goto: nextNode, // always route to question answering for now
+        });
+      });
 
-          return await runLangGraphRuntime(
-              program.pipe(
-                  Effect.provide(FetchHttpClient.layer),
-                  Effect.provide(Logger.replace(Logger.defaultLogger, NodeLogger("QanaryNode")))
-              )
-          );
-      },
+      return await runLangGraphRuntime(
+        program.pipe(
+          Effect.provide(FetchHttpClient.layer),
+          Effect.provide(Logger.replace(Logger.defaultLogger, NodeLogger("QanaryNode")))
+        )
+      );
+    },
     RouterNode:
       (routingConfig: {
         questionAnsweringNode: NodeID;
@@ -222,9 +218,9 @@ export const Nodes = <const N extends string[]>(
         yield* Effect.logDebug("State: ", state);
         const llmService = yield* LLMService;
 
-          let responseData: any[] = [];
-          if (state.graph_uri !== "") {
-              const getDataQuery = `
+        let responseData: any[] = [];
+        if (state.graph_uri !== "") {
+          const getDataQuery = `
               PREFIX qa: <http://www.wdaqua.eu/qa#>
               PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
               SELECT ?answer WHERE {
@@ -235,18 +231,15 @@ export const Nodes = <const N extends string[]>(
               }
               `;
 
+          const triplestoreUrl = yield* Config.string("TRIPLESTORE_URL");
 
-              const triplestoreUrl = yield* Config.string("TRIPLESTORE_URL")
+          responseData = yield* Effect.tryPromise({
+            try: () => selectSparql(triplestoreUrl, getDataQuery),
+            catch: (unknown: any) => new Error(`Error querying SPARQL endpoint: ${unknown}`),
+          }).pipe(Effect.catchAll((error: any) => Effect.logError(error).pipe(Effect.as([]))));
+        }
 
-              responseData = yield* Effect.tryPromise({
-                  try: () => selectSparql(triplestoreUrl, getDataQuery),
-                  catch: (unknown: any) => new Error(`Error querying SPARQL endpoint: ${unknown}`),
-              }).pipe(
-                  Effect.catchAll((error: any) => Effect.logError(error).pipe(Effect.as([])))
-              );
-          }
-
-          const chatbotResponseContent = yield* llmService.generateChatbotResponse(state.input, { data: responseData });
+        const chatbotResponseContent = yield* llmService.generateChatbotResponse(state.input, { data: responseData });
 
         const msg = new AIMessage({ content: chatbotResponseContent });
         yield* printMessageEffect(msg);

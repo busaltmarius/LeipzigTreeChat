@@ -25,7 +25,7 @@ const getUserInput = async () => {
   return Effect.runPromise(
     Effect.scoped(
       readLine("-> Deine Nachricht: ").pipe(
-          Effect.map((input) => input.trim()),
+        Effect.map((input) => input.trim()),
         Effect.catchTag("SystemSignalError", handleSystemSignalError),
         Effect.provide(BunTerminal.layer)
       )
