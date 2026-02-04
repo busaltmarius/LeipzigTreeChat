@@ -73,13 +73,13 @@ const resolveAnnotation = async (entity: string, entityType: string): Promise<Ar
     case "Leipzig|Stadt":
       return [
         {
-          candidates: [{}],
+          candidates: [],
         },
       ];
     case "Karl-Liebknecht-Str.|Straße":
       return [
         {
-          candidates: [{}],
+          candidates: [],
         },
       ];
     case "heute|Datum":
@@ -87,7 +87,7 @@ const resolveAnnotation = async (entity: string, entityType: string): Promise<Ar
         {
           candidates: [
             {
-              urn: Date.now,
+              date: Date.now,
               confidence: 1.0,
             },
           ],
