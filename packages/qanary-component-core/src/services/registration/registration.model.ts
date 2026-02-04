@@ -54,6 +54,10 @@ export class SpringBootAdminClientInstanceServiceBaseUrl extends URL {
     if (process.env["SPRING_BOOT_ADMIN_CLIENT_INSTANCE_SERVICE-BASE-URL"]) {
       return process.env["SPRING_BOOT_ADMIN_CLIENT_INSTANCE_SERVICE-BASE-URL"];
     }
+
+    if (process.env["QANARY_HOST"] && process.env["QANARY_PORT"]) {
+        return `http://${process.env["QANARY_HOST"]}:${process.env["QANARY_PORT"]}`;
+    }
     return `http://localhost:${await getPort()}`;
   }
 
