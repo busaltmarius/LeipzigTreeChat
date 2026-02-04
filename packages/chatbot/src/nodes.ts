@@ -33,20 +33,27 @@ export const Nodes = <const N extends string[]>(..._nodes: N) => {
 
   return {
     UserInputNode: (_routingConfig: { nextNode: NodeID }) => async (_state: AgentState) => {},
-    RouterNode: (routingConfig: { questionAnsweringNode: NodeID, responseNode: NodeID, endNode: NodeID, userInputNode: NodeID}) => async (state: AgentState) => {
-      const {  questionAnsweringNode  } = routingConfig;
-      const program = Effect.gen(function* () {
-        yield* Effect.logDebug("State: ", state);
+    RouterNode:
+      (routingConfig: {
+        questionAnsweringNode: NodeID;
+        responseNode: NodeID;
+        endNode: NodeID;
+        userInputNode: NodeID;
+      }) =>
+      async (state: AgentState) => {
+        const { questionAnsweringNode } = routingConfig;
+        const program = Effect.gen(function* () {
+          yield* Effect.logDebug("State: ", state);
 
-        return command({
-          goto: questionAnsweringNode, // always route to question answering for now
+          return command({
+            goto: questionAnsweringNode, // always route to question answering for now
+          });
         });
-      });
 
-      return await runLangGraphRuntime(
-        program.pipe(Effect.provide(Logger.replace(Logger.defaultLogger, NodeLogger("RouterNode"))))
-      );
-    },
+        return await runLangGraphRuntime(
+          program.pipe(Effect.provide(Logger.replace(Logger.defaultLogger, NodeLogger("RouterNode"))))
+        );
+      },
     /**
      * This node validates the last user message with a provided function
      * @param validationFunction The function to validate the user message
