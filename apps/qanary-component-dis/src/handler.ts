@@ -62,51 +62,53 @@ const resolveAnnotation = async (entity: string, entityType: string): Promise<Ar
     case "Connewitz|Stadtteil":
       return [
         {
-          entity: JSON.stringify({
-            urn: "urn:de:leipzig:trees:resource:ortsteile:30",
-          }),
+          urn: "urn:de:leipzig:trees:resource:ortsteile:30",
           confidence: 0.99,
+          candidates: [
+              {
+              urn: "urn:de:leipzig:trees:resource:ortsteile:30", 
+              confidence: 0.99,
+              },
+          ],
         },
       ];
     case "Leipzig|Stadt":
       return [
         {
-          entity: JSON.stringify({
-            urn: "null"
-          }),
-          disambiguation: {
-            status: "unresolved",
-            candidates: [
-              {},
-            ],
-          },
+          urn: "null",
+          confidence: 0.00,
+          candidates: [
+              {
+              urn: "null", 
+              confidence: 0.00,
+              },
+          ],
         },
       ];
     case "Karl-Liebknecht-Str.|Straße":
       return [
         {
-          entity: JSON.stringify({
-            urn: "null"
-          }),
-          disambiguation: {
-            status: "unresolved",
-            candidates: [
-              {},
-            ],
-          },
+          urn: "null",
+          confidence: 0.00,
+          candidates: [
+              {
+              urn: "null", 
+              confidence: 0.00,
+              },
+          ],
         },
       ];
     case "heute|Datum":
       return [
         {
-          entity: JSON.stringify({
-            date: "date.now" 
-          }),
-          disambiguation: {
-            status: "resolved",
-            method: "relative-date-resolution",
-            confidence: 1.0,
-          },
+          urn: "heute",
+          confidence: 1.00,
+          candidates: [
+              {
+              urn: "heute", 
+              confidence: 1.00,
+              },
+          ],
         },
       ];
     default:
