@@ -1,3 +1,4 @@
+import { FetchHttpClient, HttpClient, HttpClientRequest, HttpClientResponse } from "@effect/platform";
 import { AIMessage, type BaseMessage, HumanMessage } from "@langchain/core/messages";
 import { Command } from "@langchain/langgraph";
 import { Effect, Either, Logger, Match } from "effect";
@@ -56,6 +57,53 @@ export const Nodes = <const N extends string[]>(
         return await runLangGraphRuntime(
           program.pipe(Effect.provide(Logger.replace(Logger.defaultLogger, NodeLogger("UserInputNode"))))
         );
+      },
+      QanaryNode: (routingConfig: { nextNode: NodeID }) => async (state: AgentState) => {
+          const { nextNode } = routingConfig;
+          const program = Effect.gen(function* () {
+              yield* Effect.logDebug("State: ", state);
+
+              // 1. Access the HTTP Client from the context
+              const client = yield* HttpClient.HttpClient;
+
+              const components = [
+                  "qanary-component-eat-simple",
+                  "qanary-component-nerd-simple",
+                  "qanary-component-relation-detection",
+                  "qanary-component-sparql-generation",
+              ];
+              const apiBaseUrl = "http://localhost:8050";
+
+              const request = HttpClientRequest.post(`${apiBaseUrl}/questionanswering`).pipe(
+                  HttpClientRequest.setUrlParams({
+                      textquestion: state.input,
+                      "componentlist[]": components,
+                  })
+              );
+
+              const result = yield* client.execute(request).pipe(
+                  Effect.flatMap(HttpClientResponse.filterStatusOk),
+                  Effect.flatMap((response) => response.json),
+                  Effect.timeout("60 seconds"),
+                  Effect.scoped
+              ) as Effect.Effect<{ inGraph: string }, any, never>;
+
+              yield* Effect.logDebug("Qanary Result: ", result);
+
+              return command({
+                  update: {
+                      graph_uri: result.inGraph,
+                  },
+                  goto: nextNode, // always route to question answering for now
+              });
+          });
+
+          return await runLangGraphRuntime(
+              program.pipe(
+                  Effect.provide(FetchHttpClient.layer),
+                  Effect.provide(Logger.replace(Logger.defaultLogger, NodeLogger("QanaryNode")))
+              )
+          );
       },
     RouterNode:
       (routingConfig: {
