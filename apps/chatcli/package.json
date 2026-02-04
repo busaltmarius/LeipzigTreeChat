@@ -6,7 +6,8 @@
   },
   "devDependencies": {
     "typescript": "latest",
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "@leipzigtreechat/typescript-config": "workspace: *"
   },
   "dependencies": {
     "@effect/platform": "^0.94.1",
