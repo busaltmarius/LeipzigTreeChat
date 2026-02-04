@@ -19,14 +19,9 @@ const program = Effect.gen(function* () {
     input: "",
     messages: [
       new AIMessage({
-        content: "Hi! I am a pizza bot. I can help you order a pizza. What would you like to order?",
+        content: "Hallo, ich bin der Baumwächter von Leipzig. Wie kann ich dir helfen?",
       }),
     ],
-    active_order: false,
-    gathered_order_info: false,
-    pizzas: new Map(),
-    user_name: undefined,
-    current_slot: undefined,
   };
 
   return yield* run(state);
@@ -38,12 +33,12 @@ const printChatbotMessage = (state: AgentState) =>
     const lastMessage = yield* getLastAIMessage(state);
     const lastMessageContent = yield* getMessageContent(lastMessage);
 
-    yield* terminal.display(`-- Chatbot: ${lastMessageContent}\n`);
+    yield* terminal.display(`-- Baumwächter: ${lastMessageContent}\n`);
   });
 
 const runGraphWithUserInput = (state: AgentState) =>
   Effect.gen(function* () {
-    const input = yield* Effect.scoped(readLine("-> Your response: "));
+    const input = yield* Effect.scoped(readLine("-> Deine Nachricht: "));
 
     return yield* Effect.tryPromise(async () => ChatBotGraph.invoke({ ...state, input }));
   });

@@ -5,22 +5,12 @@ import { Effect } from "effect";
 
 import { MissingMessageError } from "./errors.js";
 
-type PizzaName = string;
-type PizzaAmount = number;
-
-export type Slots = "PIZZA_NAME" | "USER_NAME";
-
 export const AgentStateAnnotation = Annotation.Root({
   messages: Annotation<BaseMessage[], Messages>({
     reducer: messagesStateReducer,
     default: () => [],
   }),
   input: Annotation<string>(),
-  active_order: Annotation<boolean>(),
-  gathered_order_info: Annotation<boolean>(),
-  current_slot: Annotation<Slots | undefined>(),
-  pizzas: Annotation<Map<PizzaName, PizzaAmount>>(),
-  user_name: Annotation<string | undefined>(),
 });
 
 export type AgentState = typeof AgentStateAnnotation.State;
