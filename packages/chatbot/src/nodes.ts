@@ -3,6 +3,7 @@ import { Command } from "@langchain/langgraph";
 import { Effect, Either, Logger, Match } from "effect";
 import { type InvalidInputError, MissingMessageError } from "./errors.js";
 import { runLangGraphRuntime } from "./langgraph-runtime.js";
+import { LLMService } from "./llm-service.js";
 import type { AgentState } from "./state.js";
 import type { Unit } from "./unit.js";
 
@@ -190,5 +191,33 @@ export const Nodes = <const N extends string[]>(..._nodes: N) => {
           program.pipe(Effect.provide(Logger.replace(Logger.defaultLogger, NodeLogger("AddressWatering"))))
         );
       }*/
+    /**
+     * This Node generates a human-readable chatbot response using the current gathered data stored in the state.
+     * @param routingConfig The routing configuration for the next node
+     * @returns The configured Node usable by LangGraph
+     */
+    ResponseNode: (routingConfig: { nextNode: NodeID }) => async (state: AgentState) => {
+      const { nextNode } = routingConfig;
+      const program = Effect.gen(function* () {
+        yield* Effect.logDebug("State: ", state);
+        const llmService = yield* LLMService;
+
+        const chatbotReponseContent = yield* llmService.generateChatbotResponse(state.input, { nice_data: true });
+
+        state.messages.push(new AIMessage({ content: chatbotReponseContent }));
+
+        return command({
+          update: {
+            input: "",
+            messages: state.messages,
+          },
+          goto: nextNode,
+        });
+      });
+
+      return await runLangGraphRuntime(
+        program.pipe(Effect.provide(Logger.replace(Logger.defaultLogger, NodeLogger("ResponseNode"))))
+      );
+    },
   };
 };
