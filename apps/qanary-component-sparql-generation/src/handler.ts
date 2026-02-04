@@ -1,7 +1,6 @@
 import type { IQanaryComponentMessageHandler } from "@leipzigtreechat/qanary-component-core";
-import { createAnnotationInKnowledgeGraph, selectSparql, getEndpoint } from "@leipzigtreechat/qanary-component-helpers";
-import { getQuestion, type IQanaryMessage, QANARY_EAT_PREFIX, QANARY_PREFIX } from "@leipzigtreechat/shared";
-import { URL } from "url";
+import { createAnnotationInKnowledgeGraph, getEndpoint, selectSparql } from "@leipzigtreechat/qanary-component-helpers";
+import { type IQanaryMessage, QANARY_PREFIX } from "@leipzigtreechat/shared";
 
 /**
  * An event handler for incoming messages of the Qanary pipeline
@@ -12,36 +11,36 @@ import { URL } from "url";
 export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMessage) => {
   console.log(message);
 
-  const get_relation_query = ""
+  const get_relation_query = "";
 
   // Step 1: get relation annotation from qanary triplestore
   const relationResponse = await selectSparql({
     endpointUrl: getEndpoint(message),
-    query: get_relation_query
+    query: get_relation_query,
   });
 
-  const relation = relationResponse
+  const relation = relationResponse;
 
-  const template = await mapRelationToTemplate(relation)
+  const template = await mapRelationToTemplate(relation);
 
-  const get_answer_query = template
+  const get_answer_query = template;
 
-  const componentName = "qanary-component-sparql-generation"
+  const componentName = "qanary-component-sparql-generation";
   await createAnnotationInKnowledgeGraph({
     message: message,
     componentName: componentName,
     annotation: {
       value: get_answer_query,
     },
-    annotationType: QANARY_PREFIX + "AnnotationOfSparqlQuery"
-  })
+    annotationType: `${QANARY_PREFIX}AnnotationOfSparqlQuery`,
+  });
 
   const answerResponse = await selectSparql({
     endpointUrl: "",
-    query: get_answer_query
-  })
+    query: get_answer_query,
+  });
 
-  const answer = answerResponse
+  const answer = answerResponse;
 
   await createAnnotationInKnowledgeGraph({
     message: message,
@@ -49,13 +48,10 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
     annotation: {
       value: answer,
     },
-    annotationType: QANARY_PREFIX + "AnnotationOfAnswer"
-  })
-
+    annotationType: `${QANARY_PREFIX}AnnotationOfAnswer`,
+  });
 
   return message;
 };
 
-export const mapRelationToTemplate = async(relation: string) => {
-
-}
+export const mapRelationToTemplate = async (_relation: string) => {};
