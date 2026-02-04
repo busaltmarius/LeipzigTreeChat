@@ -1,4 +1,4 @@
-import { beforeEach, afterEach, describe, expect, mock, spyOn, test } from "bun:test";
+import { afterEach, beforeEach, describe, expect, mock, spyOn, test } from "bun:test";
 import type { QanaryComponentApi } from "@leipzigtreechat/qanary-api";
 
 import { getQuestion } from "../get-question.js";
@@ -6,22 +6,22 @@ import { getQuestion } from "../get-question.js";
 import { selectSparql } from "../query-sparql.js";
 
 beforeEach(() => {
-    mock.module("../query-sparql.js", () => ({
-      selectSparql: mock(() =>
-        Promise.resolve([
-          {
-            questionUri: {
-              value: "http://qanary-pipeline:40111/question/urn:inGraph",
-            },
+  mock.module("../query-sparql.js", () => ({
+    selectSparql: mock(() =>
+      Promise.resolve([
+        {
+          questionUri: {
+            value: "http://qanary-pipeline:40111/question/urn:inGraph",
           },
-        ])
-      ),
-    }));
-})
+        },
+      ])
+    ),
+  }));
+});
 
 afterEach(() => {
-    mock.restore();
-    mock.clearAllMocks();
+  mock.restore();
+  mock.clearAllMocks();
 });
 
 describe("getQuestion", () => {
@@ -34,11 +34,10 @@ describe("getQuestion", () => {
   };
 
   beforeEach(() => {
-    spyOn(global, "fetch").mockImplementation(() =>
+    spyOn(global, "fetch").mockImplementation((() =>
       Promise.resolve({
         text: () => Promise.resolve(expectedQuestion),
-      } as Response)
-    );
+      } as Response)) as any);
   });
 
   test("should return the question", async () => {
@@ -47,7 +46,7 @@ describe("getQuestion", () => {
   });
 
   test("should return null if something went wrong", async () => {
-    spyOn(global, "fetch").mockImplementation(() => Promise.reject("error"));
+    spyOn(global, "fetch").mockImplementation((() => Promise.reject("error")) as any);
     const question = await getQuestion(message);
     expect(question).toBeNull();
   });
