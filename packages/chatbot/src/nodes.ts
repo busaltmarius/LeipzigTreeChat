@@ -1,7 +1,10 @@
+  import {
+  selectSparql,
+} from "@leipzigtreechat/qanary-component-helpers";
 import { FetchHttpClient, HttpClient, HttpClientRequest, HttpClientResponse } from "@effect/platform";
 import { AIMessage, type BaseMessage, HumanMessage } from "@langchain/core/messages";
 import { Command } from "@langchain/langgraph";
-import { Effect, Either, Logger, Match } from "effect";
+import { Effect, Either, Logger, Match, Config, Schema } from "effect";
 import { type InvalidInputError, MissingMessageError } from "./errors.js";
 import { runLangGraphRuntime } from "./langgraph-runtime.js";
 import { LLMService } from "./llm-service.js";
@@ -69,24 +72,29 @@ export const Nodes = <const N extends string[]>(
               const components = [
                   "qanary-component-eat-simple",
                   "qanary-component-nerd-simple",
+                  "qanary-component-dis",
                   "qanary-component-relation-detection",
                   "qanary-component-sparql-generation",
               ];
-              const apiBaseUrl = "http://localhost:8050";
+              const apiBaseUrl = yield* Config.url("QANARY_API_BASE_URL");
 
-              const request = HttpClientRequest.post(`${apiBaseUrl}/questionanswering`).pipe(
+              const QanaryResponse = Schema.Struct({
+                inGraph: Schema.String,
+              })
+
+              const result = yield* HttpClientRequest.post(
+                  `${apiBaseUrl}/questionanswering`
+              ).pipe(
                   HttpClientRequest.setUrlParams({
                       textquestion: state.input,
                       "componentlist[]": components,
-                  })
-              );
-
-              const result = yield* client.execute(request).pipe(
+                  }),
+                  client.execute,
                   Effect.flatMap(HttpClientResponse.filterStatusOk),
-                  Effect.flatMap((response) => response.json),
+                  Effect.flatMap(HttpClientResponse.schemaBodyJson(QanaryResponse)),
                   Effect.timeout("60 seconds"),
                   Effect.scoped
-              ) as Effect.Effect<{ inGraph: string }, any, never>;
+              );
 
               yield* Effect.logDebug("Qanary Result: ", result);
 
@@ -203,88 +211,6 @@ export const Nodes = <const N extends string[]>(
           program.pipe(Effect.provide(Logger.replace(Logger.defaultLogger, NodeLogger("ValidationNode"))))
         );
       },
-    /*AddressWatering:
-      (routingConfig: { nextNode: NodeID; requestNode: NodeID; endNode: NodeID }) => async (state: AgentState) => {
-        const { nextNode, requestNode, endNode } = routingConfig;
-        const program = Effect.gen(function* () {
-          yield* Effect.logDebug("State: ", state);
-
-          const _input = state.input.toLowerCase();
-
-          const parseAddressSchema = Schema.decodeUnknown(
-            Schema.TemplateLiteralParser(
-              Schema.String,
-              Schema.Literal("Bezirk", "Stadtteil", "Stadtbezirk"),
-              " ",
-              Schema.NonEmptyString,
-              " ",
-              Schema.String
-            )
-          )
-
-          const parseResult = yield* Effect.either(parseAddressSchema(_input));
-
-          if (Either.isLeft(parseResult)) {
-            yield* Effect.logDebug("Error while parsing", parseResult.left)
-
-            state.messages.push(new AIMessage("Entschuldigung, ich konnte leider in deiner Anfrage keinen Stadtbezirk finden. Bitte stelle sicher, dass dieser korrekt geschrieben ist und vor diesem eines dieser Wörter steht: 'Bezirk', 'Stadtbezirk' oder 'Stadtteil'."));
-
-            return command({
-              update: {
-                input: "",
-                messages: state.messages
-              },
-              goto: endNode,
-            });
-          } else {
-            const bezirk = parseResult.right[3]
-            const sparqlRequest = `
-            PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-            PREFIX bkv: <urn:de:leipzig:trees:vocab:baumkataster:>
-            PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
-            PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-            SELECT ?tree ?gattung ?longitutde ?latitude ?daysSinceWatering WHERE {
-              ?tree rdf:type bkv:Tree ;
-                    bkv:ot "${bezirk}";
-                    bkv:gattung ?gattung ;
-                    geo:lat ?latitude;
-                    geo:long ?longitutde;
-                    bkv:letzte_bewaesserung ?bewaesserungString .
-              BIND(xsd:dateTime(?bewaesserungString) AS ?bewaesserungDate)
-              BIND((now() - "P30D"^^xsd:duration) AS ?thirtyDaysAgo)
-              FILTER(?bewaesserungDate < ?thirtyDaysAgo)
-              BIND((now() - ?bewaesserungDate) AS ?daysSinceWatering)
-            }
-            `
-            const result = "";
-            const llmService = yield* LLMService;
-            const output = yield* llmService.ask(
-              `
-              Frage: ${_input}
-              Daten: ${result}
-
-              Nutze die Daten um die Frage zu beantworten. Erfindede keine eigenen Informationen, sondern beantworte die Frage aussließlich mit den bereitgestellten Daten.
-              `
-            )
-
-            state.messages.push(new AIMessage(output));
-
-
-            return command({
-              update: {
-                input: "",
-                messages: state.messages
-              },
-              goto: endNode,
-            });
-          }
-
-        })
-
-        return await runLangGraphRuntime(
-          program.pipe(Effect.provide(Logger.replace(Logger.defaultLogger, NodeLogger("AddressWatering"))))
-        );
-      }*/
     /**
      * This Node generates a human-readable chatbot response using the current gathered data stored in the state.
      * @param routingConfig The routing configuration for the next node
@@ -296,7 +222,31 @@ export const Nodes = <const N extends string[]>(
         yield* Effect.logDebug("State: ", state);
         const llmService = yield* LLMService;
 
-        const chatbotResponseContent = yield* llmService.generateChatbotResponse(state.input, { nice_data: true });
+          let responseData: any[] = [];
+          if (state.graph_uri !== "") {
+              const getDataQuery = `
+              PREFIX qa: <http://www.wdaqua.eu/qa#>
+              PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
+              SELECT ?answer WHERE {
+                GRAPH <${state.graph_uri}> {
+                  ?relationAnnotationId a qa:AnnotationOfAnswer ;
+                    oa:hasBody ?answer .
+                }
+              }
+              `;
+
+
+              const triplestoreUrl = yield* Config.string("TRIPLESTORE_URL")
+
+              responseData = yield* Effect.tryPromise({
+                  try: () => selectSparql(triplestoreUrl, getDataQuery),
+                  catch: (unknown: any) => new Error(`Error querying SPARQL endpoint: ${unknown}`),
+              }).pipe(
+                  Effect.catchAll((error: any) => Effect.logError(error).pipe(Effect.as([])))
+              );
+          }
+
+          const chatbotResponseContent = yield* llmService.generateChatbotResponse(state.input, { data: responseData });
 
         const msg = new AIMessage({ content: chatbotResponseContent });
         yield* printMessageEffect(msg);
