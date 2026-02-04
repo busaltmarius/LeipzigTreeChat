@@ -1,27 +1,33 @@
-import { describe, expect, mock, test, beforeEach, afterEach } from "bun:test";
+import { afterEach, beforeEach, describe, expect, mock, test } from "bun:test";
 import { PassThrough } from "node:stream";
 
 const mockReadStream = new PassThrough();
-const mockSelect = mock(async () => { console.error("#### mockSelect")});
-const mockAsk = mock(async () => { console.log("#### mockAsk");  return true; });
-const mockUpdate = mock(async () => { console.log("#### mockUpdate");  });
+const mockSelect = mock(async () => {
+  console.error("#### mockSelect");
+});
+const mockAsk = mock(async () => {
+  console.log("#### mockAsk");
+  return true;
+});
+const mockUpdate = mock(async () => {
+  console.log("#### mockUpdate");
+});
 
 beforeEach(() => {
-    mock.module("sparql-http-client", () => ({
-            default: mock(() => ({
-                query: {
-                select: mockSelect,
-                ask: mockAsk,
-                update: mockUpdate,
-                },
-            })),
-        }),
-    );
-})
+  mock.module("sparql-http-client", () => ({
+    default: mock(() => ({
+      query: {
+        select: mockSelect,
+        ask: mockAsk,
+        update: mockUpdate,
+      },
+    })),
+  }));
+});
 
 afterEach(() => {
-    mock.restore();
-    mock.clearAllMocks();
+  mock.restore();
+  mock.clearAllMocks();
 });
 
 describe("query sparql", async () => {
