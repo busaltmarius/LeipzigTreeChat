@@ -1,7 +1,7 @@
 {
   "name": "qanary-component-dis",
   "version": "1.0.0",
-  "description": "A simple Qanary component template for NED and NER.",
+  "description": "A simple Qanary component template for disambiguation",
   "license": "SEE LICENSE IN LICENSE",
   "scripts": {
     "build": "bun build --target bun src/index.ts",
