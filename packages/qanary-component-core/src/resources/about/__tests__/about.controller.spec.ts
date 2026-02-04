@@ -48,10 +48,8 @@ describe("#Component readAbout", () => {
     const response = {} as Response;
     const mockResponseStatus = mock().mockReturnValue(response);
     const mockResponseJson = mock();
-    // @ts-expect-error - mocking
-    response.status = mockResponseStatus;
-    // @ts-expect-error - mocking
-    response.json = mockResponseJson;
+    response.status = mockResponseStatus as any;
+    response.json = mockResponseJson as any;
 
     const mockNext = mock();
 
@@ -60,9 +58,10 @@ describe("#Component readAbout", () => {
 
     expect(mockResponseStatus).toHaveBeenCalledWith(STATUS_OK);
     expect(mockResponseJson).toHaveBeenCalled();
-    expect(mockResponseJson.mock.calls[0][0].name).toStrictEqual(mockPkg.name);
-    expect(mockResponseJson.mock.calls[0][0].description).toStrictEqual(mockPkg.description);
-    expect(mockResponseJson.mock.calls[0][0].version).toStrictEqual(mockPkg.version);
+    const callArg = mockResponseJson.mock.calls[0]?.[0];
+    expect(callArg?.name).toStrictEqual(mockPkg.name);
+    expect(callArg?.description).toStrictEqual(mockPkg.description);
+    expect(callArg?.version).toStrictEqual(mockPkg.version);
     expect(mockNext).not.toHaveBeenCalled();
   });
 });

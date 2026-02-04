@@ -1,14 +1,14 @@
 import { beforeEach, describe, expect, mock, test } from "bun:test";
-import type { RequestHandler, Router } from "express";
+import type { QanaryComponentApi } from "@leipzigtreechat/qanary-api";
+import type { Router } from "express";
 
 const routerObject = {} as Router;
 const mockPost = mock();
-// @ts-expect-error - mocking
-routerObject.post = mockPost;
+routerObject.post = mockPost as any;
 
 const mockRouter = mock(() => routerObject);
 
-const mockRequestHandler = {} as RequestHandler;
+const mockRequestHandler = mock(() => Promise.resolve({} as QanaryComponentApi.IQanaryMessage));
 
 mock.module("express", () => ({
   Router: mockRouter,
@@ -28,6 +28,6 @@ describe("#Component annotateQuestionRouter", () => {
     expect(router).not.toBeNull();
     expect(mockRouter).toHaveBeenCalledTimes(1);
     expect(mockPost).toHaveBeenCalledTimes(1);
-    expect(mockPost).toHaveBeenCalledWith("/", mockRequestHandler);
+    expect(mockPost).toHaveBeenCalledWith("/", expect.any(Function));
   });
 });

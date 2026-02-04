@@ -18,10 +18,8 @@ describe("#Component readHealth", () => {
     const response = {} as Response;
     const mockResponseStatus = mock().mockReturnValue(response);
     const mockResponseJson = mock();
-    // @ts-expect-error - mocking
-    response.status = mockResponseStatus;
-    // @ts-expect-error - mocking
-    response.json = mockResponseJson;
+    response.status = mockResponseStatus as any;
+    response.json = mockResponseJson as any;
 
     const mockNext = mock();
 

@@ -37,7 +37,7 @@ mock.module("express", () => {
       }),
     } as unknown as Express;
     return mockApp;
-  });
+  }) as any;
   mockExpress.json = mock();
   mockExpress.urlencoded = mock();
 

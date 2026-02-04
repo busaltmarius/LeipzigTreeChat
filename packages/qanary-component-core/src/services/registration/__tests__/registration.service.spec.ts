@@ -20,7 +20,7 @@ mock.module("../../../helper/sleep.js", () => ({
 mock.module("../registration.service.js", () => ({
   callAdminServer: mockCallAdminServer,
   registrationService: async (serviceConfig: QanaryComponentCoreServiceConfig, interval = 10000) => {
-    await mockRegistrationInfoFrom(serviceConfig);
+    await mockRegistrationInfoFrom();
     const info = {};
     await mockCallAdminServer(serviceConfig, info);
     await mockSleep(interval);

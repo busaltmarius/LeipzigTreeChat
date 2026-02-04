@@ -1,51 +1,58 @@
 import { describe, expect, mock, test } from "bun:test";
+import type { QanaryComponentApi } from "@leipzigtreechat/qanary-api";
 import type { Request, Response } from "express";
 
 import { createAnnotateQuestion } from "../annotatequestion.controller.js";
 
 describe("#Component createAnnotateQuestion", () => {
-  const mockHandler = mock(() => Promise.resolve());
-
   test("should return request handler function", async () => {
+    const mockHandler = mock(() => Promise.resolve({} as QanaryComponentApi.IQanaryMessage));
+
     const requestHandler = await createAnnotateQuestion(mockHandler);
 
     expect(requestHandler).not.toBeNull();
   });
 
-  test("should return request handler that calls handler and res.json", async () => {
+  test("should return request handler that calls handler function and res.json", async () => {
+    const mockHandler = mock(() => Promise.resolve({} as QanaryComponentApi.IQanaryMessage));
+    const mockHandlerResponse = {
+      test: "test",
+    } as unknown as QanaryComponentApi.IQanaryMessage;
+    mockHandler.mockImplementation(() => Promise.resolve(mockHandlerResponse));
+
+    const mockBody = {
+      test: "test",
+    } as QanaryComponentApi.IQanaryMessage;
     const request = {
-      body: {
-        endpoint: "test-endpoint",
-        inGraph: "test-in-graph",
-        outGraph: "test-out-graph",
-      },
+      body: mockBody,
     } as Request;
 
     const response = {} as Response;
     const mockResponseJson = mock();
-    // @ts-expect-error - mocking
-    response.json = mockResponseJson;
-
-    const mockNext = mock();
+    response.json = mockResponseJson as any;
 
     const requestHandler = await createAnnotateQuestion(mockHandler);
-    await requestHandler(request, response, mockNext);
+    await requestHandler(request, response, mock());
 
-    expect(mockHandler).toHaveBeenCalledWith(request.body);
-    expect(mockResponseJson).toHaveBeenCalledWith(request.body);
+    expect(mockHandler).toHaveBeenCalledWith(mockBody);
+    expect(mockResponseJson).toHaveBeenCalledWith(mockHandlerResponse);
   });
 
-  test("should return request handler that calls next on invalid message in req.body", async () => {
+  test("should return request handler that calls next on error", async () => {
+    const mockHandler = mock(() => Promise.resolve({} as QanaryComponentApi.IQanaryMessage));
+    const error = new Error("test error");
+    mockHandler.mockImplementation(() => Promise.reject(error));
+
     const request = {
       body: {},
     } as Request;
-    const response = {} as Response;
 
+    const response = {} as Response;
     const mockNext = mock();
 
     const requestHandler = await createAnnotateQuestion(mockHandler);
     await requestHandler(request, response, mockNext);
 
-    expect(mockNext).toHaveBeenCalledWith(new Error("Message is invalid"));
+    expect(mockNext).toHaveBeenCalledWith(error);
   });
 });

@@ -14,10 +14,8 @@ describe("#Component errorRequestHandler", () => {
     path: "test path",
   } as Request;
   const response = {} as Response;
-  // @ts-expect-error - mocking
-  response.status = mockResponseStatus.mockReturnValue(response);
-  // @ts-expect-error - mocking
-  response.json = mockResponseJson;
+  response.status = mockResponseStatus.mockReturnValue(response) as any;
+  response.json = mockResponseJson as any;
 
   beforeEach(() => {
     mockCallback.mockClear();

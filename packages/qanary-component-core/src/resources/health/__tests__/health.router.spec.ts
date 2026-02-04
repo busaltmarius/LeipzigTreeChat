@@ -3,8 +3,7 @@ import type { Router } from "express";
 
 const routerObject = {} as Router;
 const mockGet = mock();
-// @ts-expect-error - mocking
-routerObject.get = mockGet;
+routerObject.get = mockGet as any;
 
 const mockRouter = mock(() => routerObject);
 
