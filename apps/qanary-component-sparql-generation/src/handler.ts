@@ -2,7 +2,8 @@ import type { IQanaryComponentMessageHandler } from "@leipzigtreechat/qanary-com
 import {
   createAnnotationInKnowledgeGraph,
   getEndpoint,
-  getOutGraph,
+  getInGraph,
+  type IAnnotationInformation,
   selectSparql,
 } from "@leipzigtreechat/qanary-component-helpers";
 import { type IQanaryMessage, QANARY_PREFIX } from "@leipzigtreechat/shared";
@@ -15,7 +16,7 @@ import { type IQanaryMessage, QANARY_PREFIX } from "@leipzigtreechat/shared";
 export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMessage) => {
   console.log(message);
 
-  const graphId = getOutGraph(message);
+  const graphId = getInGraph(message);
 
   const getDataQuery = `
   PREFIX qa: <http://www.wdaqua.eu/qa#>
@@ -30,47 +31,44 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
   }
   `;
 
-  // Step 1: get relation annotation from qanary triplestore
-  const relationResponse = await selectSparql({
-    endpointUrl: getEndpoint(message),
-    query: getDataQuery,
-  });
+  const relationResponse = await selectSparql(getEndpoint(message) || "localhost:8000", getDataQuery);
 
   const relation = relationResponse[0]?.relationType.value ?? null;
   const entityId = relationResponse[0]?.entityId.value ?? null;
 
   const get_answer_query = await mapDataToTemplate(relation, entityId);
 
-  const componentName = "qanary-component-sparql-generation";
-  await createAnnotationInKnowledgeGraph({
-    message: message,
-    componentName: componentName,
-    annotation: {
+  if (get_answer_query) {
+    const sparqlAnnotation: IAnnotationInformation = {
       value: get_answer_query,
-    },
-    annotationType: QANARY_PREFIX + "AnnotationOfSparqlQuery",
-  });
+      range: { start: 0, end: 0 },
+      confidence: 1,
+    };
 
-  const answerResponse = await selectSparql({
-    endpointUrl: "localhost:8000",
-    query: get_answer_query,
-  });
+    const componentName = "qanary-component-sparql-generation";
+    await createAnnotationInKnowledgeGraph({
+      message: message,
+      componentName: componentName,
+      annotation: sparqlAnnotation,
+      annotationType: QANARY_PREFIX + "AnnotationOfSparqlQuery",
+    });
 
-  const answer = getAnswerAnnotations(relation, answerResponse);
+    const answerResponse = await selectSparql("localhost:8000", get_answer_query);
 
-  await createAnnotationInKnowledgeGraph({
-    message: message,
-    componentName: componentName,
-    annotation: {
-      value: answer,
-    },
-    annotationType: QANARY_PREFIX + "AnnotationOfAnswer",
-  });
+    const answerAnnotation = await getAnswerAnnotation(relation, answerResponse);
+
+    await createAnnotationInKnowledgeGraph({
+      message: message,
+      componentName: componentName,
+      annotation: answerAnnotation,
+      annotationType: QANARY_PREFIX + "AnnotationOfAnswer",
+    });
+  }
 
   return message;
 };
 
-export const mapDataToTemplate = async (relation: string, entityId: string): Promise<string> => {
+export const mapDataToTemplate = async (relation: string, _entityId: string): Promise<string> => {
   if (relation == "Wie viel wurde im Stadteil Kleinzschocher gegossen?") {
     return `
     SELECT ?amount
@@ -107,7 +105,7 @@ export const mapDataToTemplate = async (relation: string, entityId: string): Pro
   return "";
 };
 
-export const getAnswerAnnotations = async (relation: string, response: any[]): Promise<string> => {
+export const getAnswerAnnotation = async (relation: string, response: any[]): Promise<IAnnotationInformation> => {
   let answer = "";
 
   if (relation == "Wie viel wurde im Stadteil Kleinzschocher gegossen?") {
@@ -129,8 +127,9 @@ export const getAnswerAnnotations = async (relation: string, response: any[]): P
     answer = response.map((item) => item.species?.value).join(", ");
   }
 
-  return JSON.stringify({
+  return {
     value: answer,
+    range: { start: 0, end: 0 },
     confidence: 1,
-  });
+  };
 };
