@@ -9,6 +9,7 @@ export function setConfig(config: ChatbotConfig) {
 }
 
 export function getConfig(): ChatbotConfig {
+  console.log("Getting config:", Object.fromEntries(_config));
   return {
     OPENROUTER_API_KEY: _config.get("OPENROUTER_API_KEY") || "",
   };

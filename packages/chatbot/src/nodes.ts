@@ -18,10 +18,14 @@ const NodeLogger = (nodeName: string) =>
 /**
  * Constructor for Nodes with type-safe routing between them.
  *
+ * @param printMessage - Function to print messages, used for updating the user interface
  * @param nodes - The list of node IDs used in the routing, serves to guarantee type safety for node transitions
  * @returns The Node constructors with the injected type information
  */
-export const Nodes = <const N extends string[]>(..._nodes: N) => {
+export const Nodes = <const N extends string[]>(
+  printMessage: (message: BaseMessage) => Promise<void>,
+  ..._nodes: N
+) => {
   type NodeID = N[number];
 
   /**
@@ -31,8 +35,28 @@ export const Nodes = <const N extends string[]>(..._nodes: N) => {
    */
   const command = (commandArgs: { update?: Partial<AgentState>; goto: NodeID }) => new Command(commandArgs);
 
+  const printMessageEffect = (message: BaseMessage) => Effect.promise(() => printMessage(message));
+
   return {
-    UserInputNode: (_routingConfig: { nextNode: NodeID }) => async (_state: AgentState) => {},
+    UserInputNode:
+      (routingConfig: { nextNode: NodeID }, getUserInput: () => Promise<string>) => async (state: AgentState) => {
+        const { nextNode } = routingConfig;
+        const program = Effect.gen(function* () {
+          yield* Effect.logDebug("State: ", state);
+          const userInput = yield* Effect.promise(() => getUserInput());
+
+          return command({
+            update: {
+              input: userInput,
+            },
+            goto: nextNode,
+          });
+        });
+
+        return await runLangGraphRuntime(
+          program.pipe(Effect.provide(Logger.replace(Logger.defaultLogger, NodeLogger("UserInputNode"))))
+        );
+      },
     RouterNode:
       (routingConfig: {
         questionAnsweringNode: NodeID;
@@ -99,6 +123,7 @@ export const Nodes = <const N extends string[]>(..._nodes: N) => {
             );
 
             yield* Effect.logDebug(error.logMessage);
+            yield* printMessageEffect(new AIMessage({ content: error.message }));
             state.messages.push(new AIMessage({ content: error.message }));
 
             return command({
@@ -111,11 +136,11 @@ export const Nodes = <const N extends string[]>(..._nodes: N) => {
           }
 
           // Happy path
-          state.messages.push(
-            new AIMessage({
-              content: "Danke für deine Eingabe! Ich habe deine Anfrage verstanden und werde sie nun bearbeiten.",
-            })
-          );
+          const msg = new AIMessage({
+            content: "Danke für deine Eingabe! Ich habe deine Anfrage verstanden und werde sie nun bearbeiten.",
+          });
+          yield* printMessageEffect(msg);
+          state.messages.push(msg);
 
           return command({
             update: {
@@ -225,7 +250,9 @@ export const Nodes = <const N extends string[]>(..._nodes: N) => {
 
         const chatbotResponseContent = yield* llmService.generateChatbotResponse(state.input, { nice_data: true });
 
-        state.messages.push(new AIMessage({ content: chatbotResponseContent }));
+        const msg = new AIMessage({ content: chatbotResponseContent });
+        yield* printMessageEffect(msg);
+        state.messages.push(msg);
 
         return command({
           update: {

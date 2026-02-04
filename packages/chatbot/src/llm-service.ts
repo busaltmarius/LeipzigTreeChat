@@ -2,7 +2,6 @@ import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { generateText } from "ai";
 
 import { Config, ConfigProvider, Context, Effect, Layer, Redacted } from "effect";
-import { getConfig } from "./config.js";
 import { CHATBOT_PERSONA } from "./constants.js";
 
 export type OpenRouterClient = ReturnType<typeof createOpenRouter>;
@@ -25,7 +24,7 @@ export class OpenRouter extends Context.Tag("OpenRouter")<
           client: () => Effect.succeed(openrouterClient),
         };
       }),
-      ConfigProvider.fromJson(getConfig())
+      ConfigProvider.fromEnv()
     )
   );
 }
@@ -56,7 +55,7 @@ export class LLMService extends Context.Tag("LLMService")<LLMService, LLMService
       return {
         ask: (userInput: string) =>
           Effect.gen(function* () {
-            const deepseek_v3_2 = openrouterClient.chat("deepseek/deepseek-v3.2-speciale");
+            const deepseek_v3_2 = openrouterClient.chat("deepseek/deepseek-v3.2");
             const { text } = yield* Effect.promise(() =>
               generateText({
                 model: deepseek_v3_2,
@@ -68,7 +67,7 @@ export class LLMService extends Context.Tag("LLMService")<LLMService, LLMService
           }),
         generateChatbotResponse: (userInput: string, data: any) =>
           Effect.gen(function* () {
-            const deepseek_v3_2 = openrouterClient.chat("deepseek/deepseek-v3.2-speciale");
+            const deepseek_v3_2 = openrouterClient.chat("deepseek/deepseek-v3.2");
             const { text } = yield* Effect.promise(() =>
               generateText({
                 model: deepseek_v3_2,
