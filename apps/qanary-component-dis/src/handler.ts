@@ -82,17 +82,6 @@ const resolveAnnotation = async (entity: string, entityType: string): Promise<Ar
           candidates: [],
         },
       ];
-    case "heute|Datum":
-      return [
-        {
-          candidates: [
-            {
-              date: Date.now,
-              confidence: 1.0,
-            },
-          ],
-        },
-      ];
     default:
       console.warn("Unrecognized entity:", entity);
       return [];
