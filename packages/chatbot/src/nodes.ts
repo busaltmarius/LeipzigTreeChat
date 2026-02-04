@@ -15,7 +15,7 @@ const NodeLogger = (nodeName: string) =>
   Logger.stringLogger.pipe(Logger.mapInput((message) => [`${nodeName}`, message]));
 
 /**
- * Collects the slots for the pizza order
+ * Constructor for Nodes with type-safe routing between them.
  *
  * @param nodes - The list of node IDs used in the routing, serves to guarantee type safety for node transitions
  * @returns The Node constructors with the injected type information
