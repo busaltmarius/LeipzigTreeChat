@@ -1,0 +1,50 @@
+:toc:
+:toclevels: 5
+:toc-placement!:
+:source-highlighter: highlight.js
+
+// tag::excerpt[]
+= Qanary Component DIS (DISAMBIGUATION)
+
+toc::[]
+
+---
+
+== Implementation
+
+Here is the implementation of the component.
+It consists of the following files:
+
+* `src/handler.ts` - the main handler for the component to be called by the Qanary pipeline. It extracts the expected answer type from the question and stores it in the Qanary triplestore as an annotation.
+* `src/index.ts` - the entry point for the component to be registered with the Qanary pipeline
+* `package.json` - the configuration for the npm package. It includes the dependencies for the component and the scripts for building and running the component.
+
+== Testing
+
+The component can be tested locally by running the following command:
+[source, bash]
+----
+bun test
+----
+
+== Development
+
+This component uses the Bun runtime for improved performance.
+
+To install dependencies:
+[source, bash]
+----
+bun install
+----
+
+To run in development mode with hot reload:
+[source, bash]
+----
+bun run dev
+----
+
+To build the component:
+[source, bash]
+----
+bun run build
+----
