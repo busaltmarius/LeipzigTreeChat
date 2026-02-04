@@ -3,6 +3,7 @@ import { generateText } from "ai";
 
 import { Config, ConfigProvider, Context, Effect, Layer, Redacted } from "effect";
 import { getConfig } from "./config.js";
+import { CHATBOT_PERSONA } from "./constants.js";
 
 export type OpenRouterClient = ReturnType<typeof createOpenRouter>;
 
@@ -29,12 +30,23 @@ export class OpenRouter extends Context.Tag("OpenRouter")<
   );
 }
 
-export class LLMService extends Context.Tag("LLMService")<
-  LLMService,
-  {
-    readonly ask: (userInput: string) => Effect.Effect<string, never, never>;
-  }
->() {
+type LLMServiceInterface = {
+  /**
+   * Asks the LLM a question and returns the response.
+   * @param userInput The question to ask the LLM.
+   * @returns The LLM's response as string.
+   */
+  readonly ask: (userInput: string) => Effect.Effect<string, never, never>;
+  /**
+   * Generates a chatbot response based on user input and provided data.
+   * @param userInput The original input/question from the user.
+   * @param data The data to assist in generating the response.
+   * @returns The generated chatbot response as string.
+   */
+  readonly generateChatbotResponse: (userInput: string, data: any) => Effect.Effect<string, never, never>;
+};
+
+export class LLMService extends Context.Tag("LLMService")<LLMService, LLMServiceInterface>() {
   static Live = Layer.effect(
     LLMService,
     Effect.gen(function* () {
@@ -42,29 +54,52 @@ export class LLMService extends Context.Tag("LLMService")<
       const openrouterClient = yield* openrouter.client();
 
       return {
-        ask: (userInput: string) => Effect.promise(() => ask(openrouterClient, userInput)),
+        ask: (userInput: string) =>
+          Effect.gen(function* () {
+            const deepseek_v3_2 = openrouterClient.chat("deepseek/deepseek-v3.2-speciale");
+            const { text } = yield* Effect.promise(() =>
+              generateText({
+                model: deepseek_v3_2,
+                messages: [{ role: "user", content: userInput }],
+              })
+            );
+
+            return text;
+          }),
+        generateChatbotResponse: (userInput: string, data: any) =>
+          Effect.gen(function* () {
+            const deepseek_v3_2 = openrouterClient.chat("deepseek/deepseek-v3.2-speciale");
+            const { text } = yield* Effect.promise(() =>
+              generateText({
+                model: deepseek_v3_2,
+                messages: [
+                  {
+                    role: "system",
+                    content: [
+                      CHATBOT_PERSONA,
+                      "\n",
+                      "Beantworte die Frage des Benutzers mithilfe der bereitgestellten Daten! ",
+                      "Die Daten findest du als JSON-Format in der Nachricht mitangehängt.",
+                    ].join(""),
+                  },
+                  {
+                    role: "user",
+                    content: [
+                      "## Frage des Benutzers:",
+                      "\n",
+                      userInput,
+                      "## Bereitgestellte Daten:",
+                      "\n",
+                      JSON.stringify(data),
+                    ].join(""),
+                  },
+                ],
+              })
+            );
+
+            return text;
+          }),
       };
     })
   );
-}
-
-async function ask(openrouterClient: OpenRouterClient, user_input: string) {
-  const deepseek_v3_2 = openrouterClient.chat("deepseek/deepseek-v3.2-speciale");
-  const { text } = await generateText({
-    model: deepseek_v3_2,
-    messages: [
-      {
-        role: "system",
-        content: [
-          "You are a Named Entity Recognition Tool. ",
-          "Recognize named entities and output the structured data as a JSON.\n",
-          "**Output ONLY the structured data.**",
-          "Below is a text for you to analyze.",
-        ].join(""),
-      },
-      { role: "user", content: user_input },
-    ],
-  });
-
-  return text;
 }
