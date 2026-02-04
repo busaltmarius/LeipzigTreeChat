@@ -34,7 +34,7 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
   return message;
 };
 
-enum RELATION_TYPE {
+export enum RELATION_TYPE {
   AMOUNT_WATERED_DISTRICT = "AMOUNT_WATERED_DISTRICT",
   WATER_INTAKE_ADDRESS = "WATER_INTAKE_ADDRESS",
   WATER_TREE_AT_ADDRESS_AT_DATE = "WATER_TREE_AT_ADDRESS_AT_DATE",

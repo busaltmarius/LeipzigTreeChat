@@ -7,6 +7,7 @@ import {
   selectSparql,
 } from "@leipzigtreechat/qanary-component-helpers";
 import { type IQanaryMessage, QANARY_PREFIX } from "@leipzigtreechat/shared";
+import { RELATION_TYPE } from "../../qanary-component-relation-detection/src/handler";
 /**
  * An event handler for incoming messages of the Qanary pipeline
  * Exported only for testing purposes
@@ -31,16 +32,22 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
   }
   `;
 
+  console.log(`getDataQuery: \n${getDataQuery}\n`)
+
   const relationResponse = await selectSparql(getEndpoint(message) || "localhost:8000", getDataQuery);
+
+  console.log(`getDataResponse: \n${getDataResponse}\n`)
 
   const relation = relationResponse[0]?.relationType.value ?? null;
   const entityId = relationResponse[0]?.entityId.value ?? null;
 
-  const get_answer_query = await mapDataToTemplate(relation, entityId);
+  const getAnswerQuery = await mapDataToTemplate(relation, entityId);
 
-  if (get_answer_query) {
+  console.log(`getAnswerQuery: \n${getAnswerQuery}\n`)
+
+  if (getAnswerQuery) {
     const sparqlAnnotation: IAnnotationInformation = {
-      value: get_answer_query,
+      value: getAnswerQuery,
       range: { start: 0, end: 0 },
       confidence: 1,
     };
@@ -53,7 +60,9 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
       annotationType: QANARY_PREFIX + "AnnotationOfSparqlQuery",
     });
 
-    const answerResponse = await selectSparql("localhost:8000", get_answer_query);
+    const answerResponse = await selectSparql("localhost:8000", getAnswerQuery);
+
+    console.log(`answerResponse: \n${answerResponse}\n`)
 
     const answerAnnotation = await getAnswerAnnotation(relation, answerResponse);
 
@@ -69,7 +78,7 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
 };
 
 export const mapDataToTemplate = async (relation: string, _entityId: string): Promise<string> => {
-  if (relation == "Wie viel wurde im Stadteil Kleinzschocher gegossen?") {
+  if (relation == RELATION_TYPE.AMOUNT_WATERED_DISTRICT) {
     return `
     SELECT ?amount
       WHERE {
@@ -77,13 +86,9 @@ export const mapDataToTemplate = async (relation: string, _entityId: string): Pr
           <urn:de:leipzig:trees:vocab:leipziggiesst:wassersumme> ?amount .
       }
     `;
-  } else if (
-    relation == "Welche Wasserentnahme Stellen gibt es in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig?"
-  ) {
+  } else if (relation == RELATION_TYPE.WATER_INTAKE_ADDRESS) {
     return "";
-  } else if (
-    relation == "Welchen Baum kann ich in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig heute gießen?"
-  ) {
+  } else if (relation == RELATION_TYPE.WATER_TREE_AT_ADDRESS_AT_DATE) {
     return `
     SELECT ?number ?long ?lat
       WHERE {
@@ -93,7 +98,7 @@ export const mapDataToTemplate = async (relation: string, _entityId: string): Pr
           <http://www.w3.org/2003/01/geo/wgs84_pos#lat> ?lat .
       } 
     `;
-  } else if (relation == "Was kannst du mir über die Bäume in Leipzig erklären?") {
+  } else if (relation == RELATION_TYPE.DESCRIBE_TREES_REGION) {
     return `
     SELECT DISTINCT ?species
       WHERE {
