@@ -11,6 +11,7 @@
   "formatter": {
     "enabled": true,
     "indentStyle": "space",
+    "indentWidth": 2,
     "lineWidth": 120,
     "lineEnding": "lf"
   },
@@ -46,16 +47,20 @@
         "rules": {
           "style": {
             "useConst": "off",
-
             "useImportType": "off"
           },
 
           "correctness": {
             "noUnusedVariables": "off",
-
             "noUnusedImports": "off"
           }
         }
+      }
+    },
+    {
+      "includes": ["**", "!packages/qanary-api/src/"],
+      "linter": {
+        "enabled": false
       }
     }
   ]
