@@ -72,28 +72,13 @@ const resolveAnnotation = async (entity: string, entityType: string): Promise<Ar
       return [
         {
           entity: JSON.stringify({
-            name: "Leipzig",
-            type: "Stadt",
-            state: "Sachsen",
-            country: "Deutschland",
-            canonicalId: "stadt:leipzig",
-            geo: {
-              lat: 51.3236,
-              lon: 12.3222,
-            },
+            urn: "null"
           }),
           disambiguation: {
-            status: "resolved",
+            status: "unresolved",
             candidates: [
-              {
-                canonicalId: "stadt:leipzig",
-                confidence: 0.99,
-              },
+              {},
             ],
-          },
-          range: {
-            start: 93,
-            end: 100,
           },
         },
       ];
@@ -101,78 +86,13 @@ const resolveAnnotation = async (entity: string, entityType: string): Promise<Ar
       return [
         {
           entity: JSON.stringify({
-            name: "Karl-Liebknecht-Str.",
-            type: "Straße",
-            city: "Leipzig",
-            state: "Sachsen",
-            country: "Deutschland",
-            canonicalId: "street:leipzig:karl-liebknecht-strasse",
-            geo: {
-              lat: 51.3071,
-              lon: 12.3739,
-            },
+            urn: "null"
           }),
           disambiguation: {
-            status: "resolved_weak_alternatives",
+            status: "unresolved",
             candidates: [
-              {
-                canonicalId: "street:leipzig:karl-liebknecht-strasse",
-                confidence: 0.95,
-              },
-              {
-                canonicalId: "street:leipzig:karl-heine-strasse",
-                confidence: 0.15,
-              },
+              {},
             ],
-          },
-          range: {
-            start: 61,
-            end: 81,
-          },
-        },
-      ];
-    case "132|Hausnummer":
-      return [
-        {
-          entity: JSON.stringify({
-            name: "132",
-            type: "Hausnummer",
-            canonicalId: "housenumber:132",
-            addressContext: {
-              streetCanonicalId: "street:leipzig:karl-liebknecht-strasse",
-              city: "Leipzig",
-              postalCode: "04277",
-              country: "Deutschland",
-            },
-          }),
-          disambiguation: {
-            status: "resolved",
-            confidence: 0.95,
-          },
-          range: {
-            start: 87,
-            end: 90,
-          },
-        },
-      ];
-    case "04277|Postleitzahl":
-      return [
-        {
-          entity: JSON.stringify({
-            name: "04277",
-            type: "Postleitzahl",
-            canonicalId: "postalcode:04277",
-            city: "Leipzig",
-            state: "Sachsen",
-            country: "Deutschland",
-          }),
-          disambiguation: {
-            status: "resolved",
-            confidence: 0.99,
-          },
-          range: {
-            start: 72,
-            end: 77,
           },
         },
       ];
@@ -180,21 +100,12 @@ const resolveAnnotation = async (entity: string, entityType: string): Promise<Ar
       return [
         {
           entity: JSON.stringify({
-            name: "heute",
-            type: "Datum",
-            resolvedDate: "2026-02-04",
-            granularity: "day",
-            timezone: "Europe/Berlin",
-            canonicalId: "date:2026-02-04",
+            date: "date.now" 
           }),
           disambiguation: {
             status: "resolved",
             method: "relative-date-resolution",
             confidence: 1.0,
-          },
-          range: {
-            start: 86,
-            end: 91,
           },
         },
       ];
