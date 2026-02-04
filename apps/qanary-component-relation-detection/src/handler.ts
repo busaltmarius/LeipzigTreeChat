@@ -37,29 +37,39 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
 enum RELATION_TYPE {
   AMOUNT_WATERED_DISTRICT = "AMOUNT_WATERED_DISTRICT",
   WATER_INTAKE_ADDRESS = "WATER_INTAKE_ADDRESS",
-  WATER_TREE_AT_STREET = "WATER_TREE_AT_STREET",
+  WATER_TREE_AT_ADDRESS_AT_DATE = "WATER_TREE_AT_ADDRESS_AT_DATE",
   DESCRIBE_TREES_REGION = "DESCRIBE_TREES_REGION",
 }
 
 const getRelAnnotation = async (question: string): Promise<IAnnotationInformation> => {
   let relation = "";
+  let start = 0;
+  let end = 0;
   if (question == "Wie viel wurde im Stadtteil Connewitz gegossen?") {
     relation = RELATION_TYPE.AMOUNT_WATERED_DISTRICT;
+    start = 4;
+    end = 46;
   } else if (
     question == "Welche Wasserentnahmestellen gibt es in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig?"
   ) {
     relation = RELATION_TYPE.WATER_INTAKE_ADDRESS;
+    start = 7;
+    end = 100;
   } else if (
     question == "Welchen Baum kann ich in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig heute gießen?"
   ) {
-    relation = RELATION_TYPE.WATER_TREE_AT_STREET;
+    relation = RELATION_TYPE.WATER_TREE_AT_ADDRESS_AT_DATE;
+    start = 8;
+    end = 98;
   } else if (question == "Was kannst du mir über die Bäume in Leipzig erklären?") {
     relation = RELATION_TYPE.DESCRIBE_TREES_REGION;
+    start = 27;
+    end = 52;
   }
 
   return {
     value: relation,
-    range: { start: 0, end: 0 },
+    range: { start: start, end: end },
     confidence: 1,
   };
 };
