@@ -32,7 +32,18 @@ export const Nodes = <const N extends string[]>(..._nodes: N) => {
   const command = (commandArgs: { update?: Partial<AgentState>; goto: NodeID }) => new Command(commandArgs);
 
   return {
-    UserInputNode: (_routingConfig: { nextNode: NodeID }) => async (_state: AgentState) => {},
+    UserInputNode:
+      (routingConfig: { nextNode: NodeID }, getUserInput: () => Promise<string>) => async (state: AgentState) => {
+        const { nextNode } = routingConfig;
+        const program = Effect.gen(function* () {
+          yield* Effect.logDebug("State: ", state);
+          const userInput = yield* Effect.promise(() => getUserInput());
+        });
+
+        return await runLangGraphRuntime(
+          program.pipe(Effect.provide(Logger.replace(Logger.defaultLogger, NodeLogger("UserInputNode"))))
+        );
+      },
     RouterNode:
       (routingConfig: {
         questionAnsweringNode: NodeID;
