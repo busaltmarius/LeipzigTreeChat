@@ -16,7 +16,7 @@ export class OpenRouter extends Context.Tag("OpenRouter")<
     this,
     Effect.withConfigProvider(
       Effect.gen(function* () {
-          const apiKey = yield* Config.redacted("OPENROUTER_API_KEY");
+        const apiKey = yield* Config.redacted("OPENROUTER_API_KEY");
         const openrouterClient = createOpenRouter({
           apiKey: Redacted.value(apiKey),
         });
@@ -24,7 +24,7 @@ export class OpenRouter extends Context.Tag("OpenRouter")<
           client: () => Effect.succeed(openrouterClient),
         };
       }),
-      ConfigProvider.fromEnv(),
+      ConfigProvider.fromEnv()
     )
   );
 }

@@ -22,7 +22,10 @@ const NodeLogger = (nodeName: string) =>
  * @param nodes - The list of node IDs used in the routing, serves to guarantee type safety for node transitions
  * @returns The Node constructors with the injected type information
  */
-export const Nodes = <const N extends string[]>(printMessage: (message: BaseMessage) => Promise<void>, ..._nodes: N) => {
+export const Nodes = <const N extends string[]>(
+  printMessage: (message: BaseMessage) => Promise<void>,
+  ..._nodes: N
+) => {
   type NodeID = N[number];
 
   /**
@@ -32,8 +35,7 @@ export const Nodes = <const N extends string[]>(printMessage: (message: BaseMess
    */
   const command = (commandArgs: { update?: Partial<AgentState>; goto: NodeID }) => new Command(commandArgs);
 
-  const printMessageEffect = (message: BaseMessage) =>
-    Effect.promise(() => printMessage(message));
+  const printMessageEffect = (message: BaseMessage) => Effect.promise(() => printMessage(message));
 
   return {
     UserInputNode:
@@ -43,12 +45,12 @@ export const Nodes = <const N extends string[]>(printMessage: (message: BaseMess
           yield* Effect.logDebug("State: ", state);
           const userInput = yield* Effect.promise(() => getUserInput());
 
-            return command({
-                update: {
-                    input: userInput,
-                },
-                goto: nextNode,
-            })
+          return command({
+            update: {
+              input: userInput,
+            },
+            goto: nextNode,
+          });
         });
 
         return await runLangGraphRuntime(
@@ -134,10 +136,9 @@ export const Nodes = <const N extends string[]>(printMessage: (message: BaseMess
           }
 
           // Happy path
-            const msg =
-                new AIMessage({
-                    content: "Danke für deine Eingabe! Ich habe deine Anfrage verstanden und werde sie nun bearbeiten.",
-                });
+          const msg = new AIMessage({
+            content: "Danke für deine Eingabe! Ich habe deine Anfrage verstanden und werde sie nun bearbeiten.",
+          });
           yield* printMessageEffect(msg);
           state.messages.push(msg);
 
@@ -249,8 +250,8 @@ export const Nodes = <const N extends string[]>(printMessage: (message: BaseMess
 
         const chatbotResponseContent = yield* llmService.generateChatbotResponse(state.input, { nice_data: true });
 
-          const msg = new AIMessage({ content: chatbotResponseContent });
-          yield* printMessageEffect(msg);
+        const msg = new AIMessage({ content: chatbotResponseContent });
+        yield* printMessageEffect(msg);
         state.messages.push(msg);
 
         return command({
