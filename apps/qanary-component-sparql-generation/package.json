@@ -1,7 +1,7 @@
 {
   "name": "qanary-component-sparql-generation",
   "version": "1.0.0",
-  "description": "A simple Qanary component template for SPARQL generation.",
+  "description": "A simple Qanary component to generate and execute SPARQL queries.",
   "license": "SEE LICENSE IN LICENSE",
   "scripts": {
     "build": "bun build --target bun src/index.ts",
