@@ -28,4 +28,3 @@ services:
       - virtuoso
     volumes:
       - qanary-questions:/qanary-questions
-      - 
