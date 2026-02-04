@@ -5,4 +5,4 @@ const layer = Layer.merge(LLMService.Live.pipe(Layer.provide(OpenRouter.Live)), 
 
 const LangGraphRuntime = ManagedRuntime.make(layer);
 
-export const runLangGraphRuntime = async <A, E>(effect: Effect.Effect<A, E>) => LangGraphRuntime.runPromise(effect);
+export const runLangGraphRuntime = LangGraphRuntime.runPromise;
