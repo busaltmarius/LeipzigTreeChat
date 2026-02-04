@@ -11,6 +11,7 @@ export const AgentStateAnnotation = Annotation.Root({
     default: () => [],
   }),
   input: Annotation<string>(),
+  has_ended: Annotation<boolean>(),
 });
 
 export type AgentState = typeof AgentStateAnnotation.State;

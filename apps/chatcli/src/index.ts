@@ -2,7 +2,6 @@ import { Terminal } from "@effect/platform";
 import type { PlatformError } from "@effect/platform/Error";
 import { BunRuntime, BunTerminal } from "@effect/platform-bun";
 import { AIMessage } from "@langchain/core/messages";
-
 import { ChatBotGraph } from "@leipzigtreechat/chatbot";
 import { setConfig } from "@leipzigtreechat/chatbot/config";
 import { type AgentState, getLastAIMessage, getMessageContent } from "@leipzigtreechat/chatbot/state";
@@ -16,6 +15,7 @@ setConfig({
 
 const program = Effect.gen(function* () {
   const state: AgentState = {
+    has_ended: false,
     input: "",
     messages: [
       new AIMessage({
@@ -50,7 +50,7 @@ const run: RunType = (state) =>
   Effect.gen(function* () {
     yield* printChatbotMessage(state);
 
-    if (state.gathered_order_info) {
+    if (state.has_ended) {
       return state;
     }
 
