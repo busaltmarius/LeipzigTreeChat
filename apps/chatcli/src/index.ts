@@ -26,7 +26,6 @@ const getUserInput = async () => {
     Effect.scoped(
       readLine("-> Deine Nachricht: ").pipe(
         Effect.map((input) => input.trim()),
-        Effect.catchTag("SystemSignalError", handleSystemSignalError),
         Effect.provide(BunTerminal.layer)
       )
     )
@@ -35,17 +34,17 @@ const getUserInput = async () => {
 
 // Run the main function
 async function main() {
+  const initialMessage = new AIMessage({
+    content: "Hallo, ich bin der Baumwächter von Leipzig. Wie kann ich dir helfen?",
+  });
   const state: AgentState = {
     has_ended: false,
     input: "",
-    messages: [
-      new AIMessage({
-        content: "Hallo, ich bin der Baumwächter von Leipzig. Wie kann ich dir helfen?",
-      }),
-    ],
+    graph_uri: "",
+    messages: [initialMessage],
   };
 
-  await printMessage(getLastAIMessage(state));
+  await printMessage(initialMessage);
 
   const chatBotGraph = ChatBotGraph(printMessage, getUserInput);
 

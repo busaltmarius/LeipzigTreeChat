@@ -32,18 +32,18 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
   }
   `;
 
-  console.log(`getDataQuery: \n${getDataQuery}\n`)
+  console.log(`getDataQuery: \n${getDataQuery}\n`);
 
   const relationResponse = await selectSparql(getEndpoint(message) || "localhost:8000", getDataQuery);
 
-  console.log(`getDataResponse: \n${getDataResponse}\n`)
+  console.log(`getDataResponse: \n${getDataResponse}\n`);
 
   const relation = relationResponse[0]?.relationType.value ?? null;
   const entityId = relationResponse[0]?.entityId.value ?? null;
 
   const getAnswerQuery = await mapDataToTemplate(relation, entityId);
 
-  console.log(`getAnswerQuery: \n${getAnswerQuery}\n`)
+  console.log(`getAnswerQuery: \n${getAnswerQuery}\n`);
 
   if (getAnswerQuery) {
     const sparqlAnnotation: IAnnotationInformation = {
@@ -62,7 +62,7 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
 
     const answerResponse = await selectSparql("localhost:8000", getAnswerQuery);
 
-    console.log(`answerResponse: \n${answerResponse}\n`)
+    console.log(`answerResponse: \n${answerResponse}\n`);
 
     const answerAnnotation = await getAnswerAnnotation(relation, answerResponse);
 

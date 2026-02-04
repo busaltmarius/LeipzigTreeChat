@@ -14,8 +14,19 @@ import type { Unit } from "./unit.js";
  * @param nodeName Name of the node that should be logged.
  * @returns The Logger for the node.
  */
-const NodeLogger = (nodeName: string) =>
-  Logger.stringLogger.pipe(Logger.mapInput((message) => [`${nodeName}`, message]));
+const NodeLoggerLayer = (nodeName: string) =>
+  Logger.replace(
+    Logger.defaultLogger,
+    Logger.prettyLoggerDefault.pipe(
+      Logger.mapInput((message) => {
+        if (Array.isArray(message)) {
+          [`${nodeName}`, ...message.flat(2)];
+        }
+
+        return [`${nodeName}`, message];
+      })
+    )
+  );
 
 /**
  * Constructor for Nodes with type-safe routing between them.
@@ -55,12 +66,10 @@ export const Nodes = <const N extends string[]>(
           });
         });
 
-        return await runLangGraphRuntime(
-          program.pipe(Effect.provide(Logger.replace(Logger.defaultLogger, NodeLogger("UserInputNode"))))
-        );
+        return await runLangGraphRuntime(program.pipe(Effect.provide(NodeLoggerLayer("UserInputNode"))));
       },
-    QanaryNode: (routingConfig: { nextNode: NodeID }) => async (state: AgentState) => {
-      const { nextNode } = routingConfig;
+    QanaryNode: (routingConfig: { nextNode: NodeID; errorNode: NodeID }) => async (state: AgentState) => {
+      const { nextNode, errorNode } = routingConfig;
       const program = Effect.gen(function* () {
         yield* Effect.logDebug("State: ", state);
 
@@ -89,24 +98,40 @@ export const Nodes = <const N extends string[]>(
           Effect.flatMap(HttpClientResponse.filterStatusOk),
           Effect.flatMap(HttpClientResponse.schemaBodyJson(QanaryResponse)),
           Effect.timeout("60 seconds"),
-          Effect.scoped
+          Effect.scoped,
+          Effect.either
         );
 
         yield* Effect.logDebug("Qanary Result: ", result);
 
+        if (Either.isLeft(result)) {
+          const error = result.left;
+          yield* Effect.logError("Error in Qanary component:", error);
+          const errorMessage = new AIMessage({
+            content: "Entschuldigung, es gab ein Problem bei der Verarbeitung deiner Anfrage.",
+          });
+          yield* printMessageEffect(errorMessage);
+          state.messages.push(errorMessage);
+
+          return command({
+            update: {
+              input: "",
+              messages: state.messages,
+            },
+            goto: errorNode,
+          });
+        }
+
         return command({
           update: {
-            graph_uri: result.inGraph,
+            graph_uri: result.right.inGraph,
           },
           goto: nextNode, // always route to question answering for now
         });
       });
 
       return await runLangGraphRuntime(
-        program.pipe(
-          Effect.provide(FetchHttpClient.layer),
-          Effect.provide(Logger.replace(Logger.defaultLogger, NodeLogger("QanaryNode")))
-        )
+        program.pipe(Effect.provide(FetchHttpClient.layer), Effect.provide(NodeLoggerLayer("QanaryNode")))
       );
     },
     RouterNode:
@@ -126,9 +151,7 @@ export const Nodes = <const N extends string[]>(
           });
         });
 
-        return await runLangGraphRuntime(
-          program.pipe(Effect.provide(Logger.replace(Logger.defaultLogger, NodeLogger("RouterNode"))))
-        );
+        return await runLangGraphRuntime(program.pipe(Effect.provide(NodeLoggerLayer("RouterNode"))));
       },
     /**
      * This node validates the last user message with a provided function
@@ -203,9 +226,7 @@ export const Nodes = <const N extends string[]>(
           });
         });
 
-        return await runLangGraphRuntime(
-          program.pipe(Effect.provide(Logger.replace(Logger.defaultLogger, NodeLogger("ValidationNode"))))
-        );
+        return await runLangGraphRuntime(program.pipe(Effect.provide(NodeLoggerLayer("ValidationNode"))));
       },
     /**
      * This Node generates a human-readable chatbot response using the current gathered data stored in the state.
@@ -254,9 +275,7 @@ export const Nodes = <const N extends string[]>(
         });
       });
 
-      return await runLangGraphRuntime(
-        program.pipe(Effect.provide(Logger.replace(Logger.defaultLogger, NodeLogger("ResponseNode"))))
-      );
+      return await runLangGraphRuntime(program.pipe(Effect.provide(NodeLoggerLayer("ResponseNode"))));
     },
   };
 };
