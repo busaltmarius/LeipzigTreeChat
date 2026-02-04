@@ -202,9 +202,9 @@ export const Nodes = <const N extends string[]>(..._nodes: N) => {
         yield* Effect.logDebug("State: ", state);
         const llmService = yield* LLMService;
 
-        const chatbotReponseContent = yield* llmService.generateChatbotResponse(state.input, { nice_data: true });
+        const chatbotResponseContent = yield* llmService.generateChatbotResponse(state.input, { nice_data: true });
 
-        state.messages.push(new AIMessage({ content: chatbotReponseContent }));
+        state.messages.push(new AIMessage({ content: chatbotResponseContent }));
 
         return command({
           update: {
