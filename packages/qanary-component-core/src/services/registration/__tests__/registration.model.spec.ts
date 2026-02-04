@@ -1,5 +1,26 @@
+import { afterAll, afterEach, beforeEach, describe, expect, mock, test } from "bun:test";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { SpringBootAdminServerApi } from "@leipzigtreechat/qanary-api";
+
+const mockConfiguration = mock(() => {
+  return {};
+});
+
+let mockGetPort = mock(() => Promise.resolve(40500));
+
+mock.module("@leipzigtreechat/qanary-api", () => {
+  return {
+    SpringBootAdminServerApi: {
+      Configuration: mockConfiguration,
+    },
+  };
+});
+
+mock.module("../../../helper/get-port.js", () => ({
+  getPort: mockGetPort,
+}));
 
 import { getPort } from "../../../helper/get-port.js";
 import {
@@ -9,30 +30,20 @@ import {
   SpringBootAdminUrl,
 } from "../registration.model.js";
 
-jest.mock("@leipzigtreechat/qanary-api", () => {
-  return {
-    SpringBootAdminServerApi: {
-      Configuration: jest.fn().mockImplementation(() => {
-        return {};
-      }),
-    },
-  };
-});
-
 describe("#Component SpringBootAdminUrl", () => {
   const ORIGINAL_ENV = process.env;
   const DEFAULT_URL = new URL("http://localhost:40111");
 
   beforeEach(() => {
-    jest.resetModules();
     process.env = ORIGINAL_ENV;
+    mockConfiguration.mockClear();
   });
 
   afterAll(() => {
     process.env = ORIGINAL_ENV;
   });
 
-  it("should return default url if 'SPRING_BOOT_ADMIN_URL' not set", async () => {
+  test("should return default url if 'SPRING_BOOT_ADMIN_URL' not set", async () => {
     process.env = {};
 
     const url = await SpringBootAdminUrl.from();
@@ -40,21 +51,21 @@ describe("#Component SpringBootAdminUrl", () => {
     expect(url.toString()).toStrictEqual(DEFAULT_URL.toString());
   });
 
-  it("should call SpringBootAdminServerApi.Configuration with toConfiguration", async () => {
+  test("should call SpringBootAdminServerApi.Configuration with toConfiguration", async () => {
     const url = await SpringBootAdminUrl.from();
 
     url.toConfiguration();
 
     expect(url).not.toBeNull();
-    expect(SpringBootAdminServerApi.Configuration).toHaveBeenCalledTimes(1);
-    expect(SpringBootAdminServerApi.Configuration).toHaveBeenCalledWith({
+    expect(mockConfiguration).toHaveBeenCalledTimes(1);
+    expect(mockConfiguration).toHaveBeenCalledWith({
       basePath: DEFAULT_URL.origin,
       username: DEFAULT_URL.username,
       password: DEFAULT_URL.password,
     });
   });
 
-  it("should return 'SPRING_BOOT_ADMIN_URL' as url if set", async () => {
+  test("should return 'SPRING_BOOT_ADMIN_URL' as url if set", async () => {
     process.env.SPRING_BOOT_ADMIN_URL = "http://url.test:1234";
     const TEST_URL = new URL("http://url.test:1234");
 
@@ -68,7 +79,6 @@ describe("#Component SpringBootAdminClientInstanceServiceBaseUrl", () => {
   const ORIGINAL_ENV = process.env;
 
   beforeEach(() => {
-    jest.resetModules();
     process.env = ORIGINAL_ENV;
   });
 
@@ -76,21 +86,20 @@ describe("#Component SpringBootAdminClientInstanceServiceBaseUrl", () => {
     process.env = ORIGINAL_ENV;
   });
 
-  it("should return default url if 'SPRING_BOOT_ADMIN_CLIENT_INSTANCE_SERVICE-BASE-URL' not set", async () => {
+  test("should return default url if 'SPRING_BOOT_ADMIN_CLIENT_INSTANCE_SERVICE-BASE-URL' not set", async () => {
     const TEST_PORT = 40500;
     const TEST_URL = new URL(`http://localhost:${TEST_PORT}`);
     process.env = {};
 
-    const mockGetPort: jest.Mock = jest.fn(() => Promise.resolve(TEST_PORT));
-    (getPort as jest.Mock) = mockGetPort;
+    mockGetPort = mock(() => Promise.resolve(TEST_PORT));
 
     const url = await SpringBootAdminClientInstanceServiceBaseUrl.from();
 
     expect(url.toString()).toStrictEqual(TEST_URL.toString());
-    expect(getPort).toHaveBeenCalledTimes(1);
+    expect(mockGetPort).toHaveBeenCalledTimes(1);
   });
 
-  it("should return 'SPRING_BOOT_ADMIN_CLIENT_INSTANCE_SERVICE-BASE-URL' as url if set", async () => {
+  test("should return 'SPRING_BOOT_ADMIN_CLIENT_INSTANCE_SERVICE-BASE-URL' as url if set", async () => {
     process.env["SPRING_BOOT_ADMIN_CLIENT_INSTANCE_SERVICE-BASE-URL"] = "http://url.test:1234";
     const TEST_URL = new URL("http://url.test:1234");
 
@@ -104,7 +113,6 @@ describe("#Component QanaryComponentCoreServiceConfig", () => {
   const ORIGINAL_ENV = process.env;
 
   beforeEach(() => {
-    jest.resetModules();
     process.env = ORIGINAL_ENV;
   });
 
@@ -112,7 +120,7 @@ describe("#Component QanaryComponentCoreServiceConfig", () => {
     process.env = ORIGINAL_ENV;
   });
 
-  it("should create a new 'QanaryComponentCoreServiceConfig' fron env variables", async () => {
+  test("should create a new 'QanaryComponentCoreServiceConfig' fron env variables", async () => {
     process.env.SPRING_BOOT_ADMIN_URL = "http://spring-boot-url.test:1234";
     const SPRING_BOOT_ADMIN_URL = new URL("http://spring-boot-url.test:1234");
     process.env["SPRING_BOOT_ADMIN_CLIENT_INSTANCE_SERVICE-BASE-URL"] = "http://service-base-url.test:1234";
@@ -129,16 +137,38 @@ describe("#Component QanaryComponentCoreServiceConfig", () => {
 });
 
 describe("#Component RegistrationInfo", () => {
+  const testPackagePath = join(process.cwd(), "package.json");
+  let originalPackage: string | null = null;
+  const ORIGINAL_ENV = process.env;
+
   beforeEach(() => {
-    jest.resetModules();
+    process.env = { ...ORIGINAL_ENV };
+    // Backup original package.json if it exists
+    if (existsSync(testPackagePath)) {
+      originalPackage = readFileSync(testPackagePath, "utf-8");
+    }
   });
 
-  it("should create a new 'RegistrationInfo' instance from provided config with package.json description", async () => {
-    const pkg = {
+  afterEach(() => {
+    process.env = ORIGINAL_ENV;
+    // Restore original package.json
+    if (originalPackage !== null) {
+      writeFileSync(testPackagePath, originalPackage);
+    }
+  });
+
+  test("should create a new 'RegistrationInfo' instance from provided config with package.json description", async () => {
+    const mockPkg = {
       name: "test-component-name",
       description: "test-description",
     };
-    jest.mock(`${process.cwd()}/package.json`, () => pkg);
+
+    // Write test package.json
+    writeFileSync(testPackagePath, JSON.stringify(mockPkg));
+
+    // Clear module cache to force re-import
+    delete require.cache[testPackagePath];
+
     process.env.npm_package_name = "test-component-name";
 
     const SPRING_BOOT_ADMIN_URL = new URL("http://spring-boot-url.test:1234");
@@ -152,12 +182,12 @@ describe("#Component RegistrationInfo", () => {
     const info = await RegistrationInfo.from(config);
 
     const expectedInfo = {
-      name: pkg.name,
+      name: mockPkg.name,
       serviceUrl: SPRING_BOOT_CLIENT_URL.origin,
       healthUrl: `${SPRING_BOOT_CLIENT_URL.origin}/health`,
       metadata: {
         start: expect.any(String),
-        description: pkg.description,
+        description: mockPkg.description,
         about: `${SPRING_BOOT_CLIENT_URL.origin}/about`,
         written_in: "TypeScript",
       },
@@ -170,9 +200,14 @@ describe("#Component RegistrationInfo", () => {
     expect(info.metadata).toStrictEqual(expectedInfo.metadata);
   });
 
-  it("should create a new 'RegistrationInfo' instance from provided config with default description", async () => {
-    const pkg = {};
-    jest.mock(`${process.cwd()}/package.json`, () => pkg);
+  test("should create a new 'RegistrationInfo' instance from provided config with default description", async () => {
+    const mockPkg = {};
+
+    // Write test package.json
+    writeFileSync(testPackagePath, JSON.stringify(mockPkg));
+
+    // Clear module cache to force re-import
+    delete require.cache[testPackagePath];
 
     const SPRING_BOOT_ADMIN_URL = new URL("http://spring-boot-url.test:1234");
     const SPRING_BOOT_CLIENT_URL = new URL("http://service-base-url.test:1234");

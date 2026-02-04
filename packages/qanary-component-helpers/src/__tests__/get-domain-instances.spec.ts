@@ -1,6 +1,8 @@
+import { describe, expect, test } from "bun:test";
+
 // Placeholder to avoid empty test suite errors while test cases are being prepared.
 describe("getDomainInstances", () => {
-  it("placeholder", () => {
+  test("placeholder", () => {
     expect(true).toBe(true);
   });
 });

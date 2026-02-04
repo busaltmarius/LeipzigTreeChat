@@ -1,3 +1,4 @@
+import { afterAll, afterEach, beforeEach, describe, expect, mock, spyOn, test } from "bun:test";
 import { SpringBootAdminServerApi } from "@leipzigtreechat/qanary-api";
 
 import type { QanaryComponentCoreServiceConfig, RegistrationInfo } from "../registration.model.js";
@@ -10,16 +11,17 @@ const pkg = {
   description: "Base typescript qanary component",
 };
 
-let mockCreateInstances = jest.fn(() => Promise.resolve({}));
+const mockCreateInstances = mock(() => Promise.resolve({}));
+const mockSpringBootAdminServerApiFactory = mock(() => {
+  return {
+    createInstances: mockCreateInstances,
+  };
+});
 
-jest.mock("@leipzigtreechat/qanary-api", () => {
+mock.module("@leipzigtreechat/qanary-api", () => {
   return {
     SpringBootAdminServerApi: {
-      SpringBootAdminServerApiFactory: jest.fn().mockImplementation(() => {
-        return {
-          createInstances: mockCreateInstances,
-        };
-      }),
+      SpringBootAdminServerApiFactory: mockSpringBootAdminServerApiFactory,
     },
   };
 });
@@ -33,10 +35,11 @@ describe("#Component callAdminServer", () => {
     springBootAdminClientInstanceServiceBaseUrl: SPRING_BOOT_CLIENT_URL,
   } as QanaryComponentCoreServiceConfig;
 
-  const mockToConfiguration: jest.Mock = jest.fn().mockImplementation(() => {
+  const mockToConfiguration = mock(() => {
     return {};
   });
-  (serviceConfig.springBootAdminUrl.toConfiguration as jest.Mock) = mockToConfiguration;
+  // @ts-expect-error - mocking
+  serviceConfig.springBootAdminUrl.toConfiguration = mockToConfiguration;
 
   console.debug(`name: ${pkg.name}`);
   console.debug(`serviceUrl: ${SPRING_BOOT_CLIENT_URL.origin}`);
@@ -54,7 +57,7 @@ describe("#Component callAdminServer", () => {
     },
   } as RegistrationInfo;
 
-  let mockConsoleGroup: jest.SpyInstance;
+  let mockConsoleGroup: ReturnType<typeof spyOn>;
 
   afterAll(() => {
     mockConsoleGroup.mockRestore();
@@ -62,15 +65,16 @@ describe("#Component callAdminServer", () => {
 
   afterEach(() => {
     mockConsoleGroup.mockClear();
+    mockCreateInstances.mockClear();
+    mockSpringBootAdminServerApiFactory.mockClear();
   });
 
   beforeEach(() => {
-    jest.resetModules();
-    mockConsoleGroup = jest.spyOn(console, "group");
+    mockConsoleGroup = spyOn(console, "group");
   });
 
-  it("should call server and not fail on valid response", async () => {
-    mockCreateInstances = jest.fn(() =>
+  test("should call server and not fail on valid response", async () => {
+    mockCreateInstances.mockImplementation(() =>
       Promise.resolve({
         headers: {
           location: "test-headers-location",
@@ -88,8 +92,8 @@ describe("#Component callAdminServer", () => {
     expect(mockConsoleGroup).toHaveBeenCalledWith(`Component ${registration.name} was registered`);
   });
 
-  it("should call server and not fail on error response", async () => {
-    mockCreateInstances = jest.fn(() =>
+  test("should call server and not fail on error response", async () => {
+    mockCreateInstances.mockImplementation(() =>
       Promise.reject({
         message: "test-error",
         config: {

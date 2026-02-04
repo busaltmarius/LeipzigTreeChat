@@ -1,28 +1,39 @@
-import { Router } from "express";
+import { beforeEach, describe, expect, mock, test } from "bun:test";
+import type { Router } from "express";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { readHealth } from "../health.controller.js";
+const routerObject = {} as Router;
+const mockGet = mock();
+routerObject.get = mockGet as any;
+
+const mockRouter = mock(() => routerObject);
+
+const mockRequestHandler = mock();
+const mockReadHealth = mock(() => Promise.resolve(mockRequestHandler));
+
+mock.module("express", () => ({
+  Router: mockRouter,
+}));
+
+mock.module("../health.controller.js", () => ({
+  readHealth: mockReadHealth,
+}));
+
 import { healthRouter } from "../health.router.js";
 
 describe("#Component healthRouter", () => {
-  it("should return a router with get on '/' route and a request handler", async () => {
-    const routerObject = {} as Router;
-    const mockGet: jest.Mock = jest.fn();
-    (routerObject.get as jest.Mock) = mockGet;
+  beforeEach(() => {
+    mockRouter.mockClear();
+    mockReadHealth.mockClear();
+    mockGet.mockClear();
+  });
 
-    const mockRouter: jest.Mock = jest.fn().mockReturnValue(routerObject);
-    (Router as jest.Mock) = mockRouter;
-
-    const mockRequestHandler: jest.Mock = jest.fn();
-    const mockReadHealth: jest.Mock = jest.fn(() => Promise.resolve(mockRequestHandler));
-    (readHealth as jest.Mock) = mockReadHealth;
-
+  test("should return a router with get on '/' route and a request handler", async () => {
     const router = await healthRouter();
 
     expect(router).not.toBeNull();
     expect(mockRouter).toHaveBeenCalledTimes(1);
     expect(mockReadHealth).toHaveBeenCalledTimes(1);
     expect(mockGet).toHaveBeenCalledTimes(1);
-    expect(mockGet).toHaveBeenCalledWith(["/"], mockRequestHandler);
+    expect(mockGet).toHaveBeenCalledWith("/", mockRequestHandler);
   });
 });

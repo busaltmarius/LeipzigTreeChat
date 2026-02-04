@@ -1,3 +1,4 @@
+import { describe, expect, mock, test } from "bun:test";
 import EventEmitter from "node:events";
 
 import { getPort } from "../get-port.js";
@@ -16,11 +17,11 @@ const ERROR_PORT = 3000;
 
 const OTHER_ERROR = { code: "OTHERERROR" };
 
-jest.mock("net", () => {
+mock.module("net", () => {
   return {
-    createServer: jest.fn().mockImplementation(() => {
+    createServer: mock(() => {
       const mockServer: IMockServerType = new EventEmitter();
-      mockServer.listen = jest.fn((port) => {
+      mockServer.listen = mock((port) => {
         switch (port) {
           case IN_USE_PORT_1:
           case IN_USE_PORT_2:
@@ -34,32 +35,32 @@ jest.mock("net", () => {
             break;
         }
       });
-      mockServer.close = jest.fn((callback) => callback());
+      mockServer.close = mock((callback) => callback());
       return mockServer;
     }),
   };
 });
 
 describe("#Component getPort", () => {
-  it("should return default port if it is not in use", async () => {
+  test("should return default port if it is not in use", async () => {
     const resultPort = await getPort();
 
     expect(resultPort).toStrictEqual(DEFAULT_PORT);
   });
 
-  it("should return provided port if it is not in use", async () => {
+  test("should return provided port if it is not in use", async () => {
     const resultPort = await getPort(BASE_PORT);
 
     expect(resultPort).toStrictEqual(BASE_PORT);
   });
 
-  it("should increase port and return first unused port if provided is in use", async () => {
+  test("should increase port and return first unused port if provided is in use", async () => {
     const resultPort = await getPort(IN_USE_PORT_1);
 
     expect(resultPort).toStrictEqual(FIRST_UNSUSED_PORT);
   });
 
-  it("should reject on other error", async () => {
+  test("should reject on other error", async () => {
     await expect(getPort(ERROR_PORT)).rejects.toStrictEqual(OTHER_ERROR);
   });
 });

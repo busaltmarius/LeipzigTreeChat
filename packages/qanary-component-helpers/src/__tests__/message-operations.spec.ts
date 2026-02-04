@@ -1,3 +1,4 @@
+import { describe, expect, test } from "bun:test";
 import type { QanaryComponentApi } from "@leipzigtreechat/qanary-api";
 
 import { getEndpoint, getInGraph, getOutGraph } from "../message-operations.js";
@@ -13,21 +14,21 @@ describe("message operations", () => {
   };
 
   describe("getEndpoint", () => {
-    it("should get the correct endpoint", () => {
+    test("should get the correct endpoint", () => {
       const endpoint = getEndpoint(message);
       expect(endpoint).toBe(endpoint);
     });
   });
 
   describe("getInGraph", () => {
-    it("should get the correct inGraph", () => {
+    test("should get the correct inGraph", () => {
       const inGraph = getInGraph(message);
       expect(inGraph).toBe(inGraph);
     });
   });
 
   describe("getOutGraph", () => {
-    it("should get the correct outGraph", () => {
+    test("should get the correct outGraph", () => {
       const outGraph = getOutGraph(message);
       expect(outGraph).toBe(outGraph);
     });

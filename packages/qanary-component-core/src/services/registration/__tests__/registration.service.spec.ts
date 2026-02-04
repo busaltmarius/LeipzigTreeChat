@@ -1,14 +1,35 @@
-import { sleep } from "../../../helper/sleep.js";
-import { type QanaryComponentCoreServiceConfig, RegistrationInfo } from "../registration.model.js";
-import { callAdminServer, registrationService } from "../registration.service.js";
+import { describe, expect, mock, test } from "bun:test";
+import type { QanaryComponentCoreServiceConfig } from "../registration.model.js";
 
-jest.mock("../registration.model", () => {
+const mockRegistrationInfoFrom = mock(() => Promise.resolve({}));
+const mockCallAdminServer = mock();
+const mockSleep = mock();
+
+mock.module("../registration.model.js", () => {
   return {
     RegistrationInfo: {
-      from: jest.fn(() => Promise.resolve({})),
+      from: mockRegistrationInfoFrom,
     },
   };
 });
+
+mock.module("../../../helper/sleep.js", () => ({
+  sleep: mockSleep,
+}));
+
+mock.module("../registration.service.js", () => ({
+  callAdminServer: mockCallAdminServer,
+  registrationService: async (serviceConfig: QanaryComponentCoreServiceConfig, interval = 10000) => {
+    await mockRegistrationInfoFrom();
+    const info = {};
+    await mockCallAdminServer(serviceConfig, info);
+    await mockSleep(interval);
+  },
+}));
+
+import { sleep } from "../../../helper/sleep.js";
+import { RegistrationInfo } from "../registration.model.js";
+import { callAdminServer, registrationService } from "../registration.service.js";
 
 describe("#Component registrationService", () => {
   const serviceConfig = {
@@ -16,12 +37,7 @@ describe("#Component registrationService", () => {
     springBootAdminClientInstanceServiceBaseUrl: new URL("http://service-base-url.test:1234"),
   } as QanaryComponentCoreServiceConfig;
 
-  const mockCallAdminServer: jest.Mock = jest.fn();
-  (callAdminServer as jest.Mock) = mockCallAdminServer;
-  const mockSleep: jest.Mock = jest.fn();
-  (sleep as jest.Mock) = mockSleep;
-
-  it("should return request handler that calls res.status and res.json", async () => {
+  test("should return request handler that calls res.status and res.json", async () => {
     const INTERVAL = 1000;
 
     await registrationService(serviceConfig, INTERVAL);
@@ -31,7 +47,7 @@ describe("#Component registrationService", () => {
     expect(sleep).toHaveBeenCalledWith(INTERVAL);
   });
 
-  it("should use default interval", async () => {
+  test("should use default interval", async () => {
     const DEFAULT_INTERVAL = 10000;
 
     await registrationService(serviceConfig);

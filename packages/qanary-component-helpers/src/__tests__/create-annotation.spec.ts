@@ -1,17 +1,25 @@
+import { afterEach, beforeEach, describe, expect, mock, spyOn, test } from "bun:test";
 import type { IQanaryMessage } from "../api.js";
 
 import { createAnnotationInKnowledgeGraph, type IAnnotationInformation } from "../create-annotation.js";
 
 import { updateSparql } from "../query-sparql.js";
 
-jest.mock("../query-sparql", () => ({
-  updateSparql: jest.fn(() => Promise.resolve()),
-  selectSparql: jest.fn(() => Promise.resolve([{ questionUrl: { value: "qanary-question-uri" } }])),
-}));
+beforeEach(() => {
+  mock.module("../query-sparql.js", () => ({
+    updateSparql: mock(() => Promise.resolve()),
+    selectSparql: mock(() => Promise.resolve([{ questionUrl: { value: "qanary-question-uri" } }])),
+  }));
 
-jest.mock("../get-question-uri", () => ({
-  getQuestionUri: jest.fn(() => Promise.resolve("qanary-question-uri")),
-}));
+  mock.module("../get-question-uri.js", () => ({
+    getQuestionUri: mock(() => Promise.resolve("qanary-question-uri")),
+  }));
+});
+
+afterEach(() => {
+  mock.restore();
+  mock.clearAllMocks();
+});
 
 describe("createAnnotationInKnowledgeGraph", () => {
   const qanaryMessage: IQanaryMessage = {
@@ -29,11 +37,16 @@ describe("createAnnotationInKnowledgeGraph", () => {
     },
   };
 
-  it("should create an annotation", async () => {
-    const mockUpdateSparql = jest.fn();
-    (updateSparql as jest.Mock) = mockUpdateSparql;
+  test("should create an annotation", async () => {
+    const mockUpdateSparql = mock();
+    // @ts-expect-error - mocking module
+    updateSparql.mockImplementation(mockUpdateSparql);
 
-    await createAnnotationInKnowledgeGraph({ message: qanaryMessage, componentName: "test", annotation });
+    await createAnnotationInKnowledgeGraph({
+      message: qanaryMessage,
+      componentName: "test",
+      annotation,
+    });
 
     const expectedQuery = `
 PREFIX qa: <http://www.wdaqua.eu/qa#>
@@ -65,10 +78,11 @@ WHERE {
     expect(mockUpdateSparql).toHaveBeenCalledWith(qanaryMessage.endpoint, expectedQuery);
   });
 
-  it("should create an annotation with a custom annotation type", async () => {
+  test("should create an annotation with a custom annotation type", async () => {
     const annotationType = "qa:AnnotationOfStation";
-    const mockUpdateSparql = jest.fn();
-    (updateSparql as jest.Mock) = mockUpdateSparql;
+    const mockUpdateSparql = mock();
+    // @ts-expect-error - mocking module
+    updateSparql.mockImplementation(mockUpdateSparql);
 
     await createAnnotationInKnowledgeGraph({
       message: qanaryMessage,
@@ -107,12 +121,17 @@ WHERE {
     expect(mockUpdateSparql).toHaveBeenCalledWith(qanaryMessage.endpoint, expectedQuery);
   });
 
-  it("should only log an error if one occurs", async () => {
-    console.error = jest.fn();
-    (updateSparql as jest.Mock) = jest.fn(() => Promise.reject("error"));
+  test("should only log an error if one occurs", async () => {
+    const consoleErrorSpy = spyOn(console, "error").mockImplementation(() => {});
+    // @ts-expect-error - mocking module
+    updateSparql.mockImplementation(() => Promise.reject("error"));
 
-    await createAnnotationInKnowledgeGraph({ message: qanaryMessage, componentName: "test", annotation });
+    await createAnnotationInKnowledgeGraph({
+      message: qanaryMessage,
+      componentName: "test",
+      annotation,
+    });
 
-    expect(console.error).toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
   });
 });

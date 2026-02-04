@@ -1,27 +1,39 @@
+import { afterEach, beforeEach, describe, expect, mock, test } from "bun:test";
 import { PassThrough } from "node:stream";
 
-import { askSparql, selectSparql, updateSparql } from "../query-sparql.js";
-
 const mockReadStream = new PassThrough();
-const mockSelect = jest.fn(() => mockReadStream);
-const mockAsk = jest.fn(() => true);
-const mockUpdate = jest.fn();
+const mockSelect = mock(async () => {
+  console.error("#### mockSelect");
+});
+const mockAsk = mock(async () => {
+  console.log("#### mockAsk");
+  return true;
+});
+const mockUpdate = mock(async () => {
+  console.log("#### mockUpdate");
+});
 
-jest.mock("sparql-http-client", () => {
-  return jest.fn().mockImplementation(() => {
-    return {
+beforeEach(() => {
+  mock.module("sparql-http-client", () => ({
+    default: mock(() => ({
       query: {
         select: mockSelect,
         ask: mockAsk,
         update: mockUpdate,
       },
-    };
-  });
+    })),
+  }));
 });
 
-describe("query sparql", () => {
+afterEach(() => {
+  mock.restore();
+  mock.clearAllMocks();
+});
+
+describe("query sparql", async () => {
+  const { askSparql, selectSparql, updateSparql } = await import("../query-sparql.js");
   describe("selectSparl", () => {
-    it("should return the result of the query as array", async () => {
+    test("should return the result of the query as array", async () => {
       const endpoint = "http://qanary-pipeline:40111/sparql";
       const query = "SELECT * WHERE { ?s ?p ?o }";
 
@@ -29,22 +41,22 @@ describe("query sparql", () => {
 
       const result = await selectSparql(endpoint, query);
 
-      expect(mockSelect).toBeCalledWith(query);
+      expect(mockSelect).toHaveBeenCalledWith(query);
       expect(result).toEqual([]);
     });
   });
 
   describe("askSparql", () => {
-    it("should query the endpoint with the given query", async () => {
+    test("should query the endpoint with the given query", async () => {
       const endpoint = "http://qanary-pipeline:40111/sparql";
       const query = "ASK WHERE { ?s ?p ?o }";
 
       await askSparql(endpoint, query);
 
-      expect(mockAsk).toBeCalledWith(query);
+      expect(mockAsk).toHaveBeenCalledWith(query);
     });
 
-    it("should return true if the query returns true", async () => {
+    test("should return true if the query returns true", async () => {
       const endpoint = "http://qanary-pipeline:40111/sparql";
       const query = "ASK WHERE { ?s ?p ?o }";
 
@@ -55,7 +67,7 @@ describe("query sparql", () => {
   });
 
   describe("updateSparql", () => {
-    it("should update the endpoint", async () => {
+    test("should update the endpoint", async () => {
       const endpoint = "http://qanary-pipeline:40111/sparql";
       const query = "INSERT DATA { ?s ?p ?o }";
 
