@@ -62,52 +62,34 @@ const resolveAnnotation = async (entity: string, entityType: string): Promise<Ar
     case "Connewitz|Stadtteil":
       return [
         {
-          urn: "urn:de:leipzig:trees:resource:ortsteile:30",
-          confidence: 0.99,
           candidates: [
-              {
-              urn: "urn:de:leipzig:trees:resource:ortsteile:30", 
+            {
+              urn: "urn:de:leipzig:trees:resource:ortsteile:30",
               confidence: 0.99,
-              },
+            },
           ],
         },
       ];
     case "Leipzig|Stadt":
       return [
         {
-          urn: "null",
-          confidence: 0.00,
-          candidates: [
-              {
-              urn: "null", 
-              confidence: 0.00,
-              },
-          ],
+          candidates: [{}],
         },
       ];
     case "Karl-Liebknecht-Str.|Straße":
       return [
         {
-          urn: "null",
-          confidence: 0.00,
-          candidates: [
-              {
-              urn: "null", 
-              confidence: 0.00,
-              },
-          ],
+          candidates: [{}],
         },
       ];
     case "heute|Datum":
       return [
         {
-          urn: "heute",
-          confidence: 1.00,
           candidates: [
-              {
-              urn: "heute", 
-              confidence: 1.00,
-              },
+            {
+              urn: Date.now,
+              confidence: 1.0,
+            },
           ],
         },
       ];
