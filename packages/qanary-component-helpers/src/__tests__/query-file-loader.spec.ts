@@ -1,21 +1,22 @@
+import { describe, expect, spyOn, test } from "bun:test";
 import fs from "node:fs";
 
 import { queryFileLoader, RESERVED_KEYWORD_IN_SPARQL_QUERY } from "../query-file-loader.js";
 
 describe("queryFileLoader", () => {
-  it("should return an untransformed query", () => {
+  test("should return an untransformed query", () => {
     const originalText = `SELECT *
                           FROM <YOUR_CURRENT_GRAPH_ID>
                           WHERE { ?annotation a qa:AnnotationOfQuestionLanguage.?annotation oa:hasBody ?languageCode.}`;
 
     const transformedText = originalText;
 
-    jest.spyOn(fs, "readFileSync").mockReturnValueOnce(originalText);
+    spyOn(fs, "readFileSync").mockReturnValueOnce(originalText);
     const actualQuery = queryFileLoader("", []);
     expect(actualQuery).toEqual(transformedText);
   });
 
-  it("should return a transformed query", () => {
+  test("should return a transformed query", () => {
     const originalText = `SELECT *
                           FROM <YOUR_CURRENT_GRAPH_ID>
                           WHERE { ?annotation a qa:AnnotationOfQuestionLanguage.?annotation oa:hasBody ?languageCode.}`;
@@ -24,7 +25,7 @@ describe("queryFileLoader", () => {
                           FROM <Test>
                           WHERE { ?annotation a qa:AnnotationOfQuestionLanguage.?annotation oa:hasBody ?languageCode.}`;
 
-    jest.spyOn(fs, "readFileSync").mockReturnValueOnce(originalText);
+    spyOn(fs, "readFileSync").mockReturnValueOnce(originalText);
     const actualQuery = queryFileLoader("", [
       {
         keyword: RESERVED_KEYWORD_IN_SPARQL_QUERY.YOUR_CURRENT_GRAPH_ID,

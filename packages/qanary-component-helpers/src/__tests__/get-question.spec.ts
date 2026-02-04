@@ -1,12 +1,19 @@
+import { beforeEach, describe, expect, mock, spyOn, test } from "bun:test";
 import type { QanaryComponentApi } from "@leipzigtreechat/qanary-api";
 
 import { getQuestion } from "../get-question.js";
 
 import { selectSparql } from "../query-sparql.js";
 
-jest.mock("../query-sparql", () => ({
-  selectSparql: jest.fn(() =>
-    Promise.resolve([{ questionUri: { value: "http://qanary-pipeline:40111/question/urn:inGraph" } }])
+mock.module("../query-sparql.js", () => ({
+  selectSparql: mock(() =>
+    Promise.resolve([
+      {
+        questionUri: {
+          value: "http://qanary-pipeline:40111/question/urn:inGraph",
+        },
+      },
+    ])
   ),
 }));
 
@@ -20,30 +27,31 @@ describe("getQuestion", () => {
   };
 
   beforeEach(() => {
-    (global.fetch as jest.Mock) = jest.fn(() =>
+    spyOn(global, "fetch").mockImplementation(() =>
       Promise.resolve({
         text: () => Promise.resolve(expectedQuestion),
-      })
+      } as Response)
     );
   });
 
-  it("should return the question", async () => {
+  test("should return the question", async () => {
     const question = await getQuestion(message);
     expect(question).toBe(expectedQuestion);
   });
 
-  it("should return null if something went wrong", async () => {
-    (global.fetch as jest.Mock) = jest.fn(() => Promise.reject("error"));
+  test("should return null if something went wrong", async () => {
+    spyOn(global, "fetch").mockImplementation(() => Promise.reject("error"));
     const question = await getQuestion(message);
     expect(question).toBeNull();
   });
 
-  it("should query the raw question id", async () => {
+  test("should query the raw question id", async () => {
     const endpointUrl = "http://qanary-pipeline:40111/sparql";
-    const mockSelectSparql = jest.fn(() =>
+    const mockSelectSparql = mock(() =>
       Promise.resolve([{ questionUri: { value: "http://qanary-pipeline:40111/question/urn:inGraph" } }])
     );
-    (selectSparql as jest.Mock) = mockSelectSparql;
+    // @ts-expect-error - mocking module
+    selectSparql.mockImplementation(mockSelectSparql);
 
     await getQuestion(message);
 
@@ -55,8 +63,9 @@ describe("getQuestion", () => {
     expect(mockSelectSparql).toHaveBeenCalledWith(endpointUrl, expect.stringContaining("?questionUri a qa:Question"));
   });
 
-  it("should fetch the raw question", async () => {
-    (selectSparql as jest.Mock) = jest.fn(() =>
+  test("should fetch the raw question", async () => {
+    // @ts-expect-error - mocking module
+    selectSparql.mockImplementation(() =>
       Promise.resolve([{ questionUri: { value: "http://qanary-pipeline:40111/question/urn:inGraph" } }])
     );
     await getQuestion(message);

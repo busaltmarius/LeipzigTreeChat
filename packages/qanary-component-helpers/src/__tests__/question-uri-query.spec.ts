@@ -1,7 +1,8 @@
+import { describe, expect, test } from "bun:test";
 import { getQuestionUriQuery } from "../utils/question-uri-query.js";
 
 describe("getQuestionUriQuery", () => {
-  it("should return the correct query", () => {
+  test("should return the correct query", () => {
     const inGraph = "http://example.org/graph";
     const expectedQuery = `
 PREFIX qa: <http://www.wdaqua.eu/qa#>
