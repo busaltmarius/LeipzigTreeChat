@@ -1,7 +1,7 @@
 {
   "name": "qanary-component-sparql-generation",
   "version": "1.0.0",
-  "description": "A simple Qanary component template for EAT extraction.",
+  "description": "A simple Qanary component template for SPARQL generation.",
   "license": "SEE LICENSE IN LICENSE",
   "scripts": {
     "build": "bun build --target bun src/index.ts",
