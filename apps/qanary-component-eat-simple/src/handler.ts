@@ -38,6 +38,8 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
     annotationType: `${QANARY_PREFIX}AnnotationOfExpectedAnswerType`,
   });
 
+  console.log("Done");
+
   return message;
 };
 

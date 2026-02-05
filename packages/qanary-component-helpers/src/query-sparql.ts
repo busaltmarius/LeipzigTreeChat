@@ -27,9 +27,7 @@ const streamToPromise = <T>(stream: internal.Readable): Promise<Array<T>> => {
  */
 export const selectSparql = async <T>(endpointUrl: string, query: string): Promise<Array<T>> => {
   const client: SparqlClient = new SparqlClient({ endpointUrl });
-  console.log("#### selectSparql QUERY", query);
   const stream: internal.Readable = await client.query.select(query);
-  console.log("#### selectSparql after");
 
   return await streamToPromise<T>(stream);
 };

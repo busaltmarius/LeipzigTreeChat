@@ -25,6 +25,7 @@
     "typescript": "latest"
   },
   "dependencies": {
+    "@leipzigtreechat/qanary-component-helpers": "workspace: *",
     "@effect/platform": "^0.94.1",
     "@langchain/core": "^1.1.12",
     "@langchain/langgraph": "^1.0.14",

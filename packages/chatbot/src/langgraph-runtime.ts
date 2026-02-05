@@ -1,7 +1,12 @@
-import { type Effect, Layer, Logger, LogLevel, ManagedRuntime } from "effect";
+import { FetchHttpClient } from "@effect/platform";
+import { Layer, Logger, LogLevel, ManagedRuntime } from "effect";
 import { LLMService, OpenRouter } from "./llm-service.js";
 
-const layer = Layer.merge(LLMService.Live.pipe(Layer.provide(OpenRouter.Live)), Logger.minimumLogLevel(LogLevel.Debug));
+const layer = Layer.mergeAll(
+  LLMService.Live.pipe(Layer.provide(OpenRouter.Live)),
+  Logger.minimumLogLevel(LogLevel.Info),
+  FetchHttpClient.layer
+);
 
 const LangGraphRuntime = ManagedRuntime.make(layer);
 

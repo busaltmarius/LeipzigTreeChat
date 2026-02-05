@@ -1,7 +1,7 @@
 {
-  "name": "qanary-component-sparql-generation",
+  "name": "qanary-component-relation-detection",
   "version": "1.0.0",
-  "description": "A simple Qanary component to generate and execute SPARQL queries.",
+  "description": "A simple Qanary component for relation detection",
   "license": "SEE LICENSE IN LICENSE",
   "scripts": {
     "build": "bun build --target bun src/index.ts",

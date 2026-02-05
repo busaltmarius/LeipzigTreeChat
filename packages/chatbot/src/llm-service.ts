@@ -4,6 +4,8 @@ import { generateText } from "ai";
 import { Config, ConfigProvider, Context, Effect, Layer, Redacted } from "effect";
 import { CHATBOT_PERSONA } from "./constants.js";
 
+globalThis.AI_SDK_LOG_WARNINGS = false;
+
 export type OpenRouterClient = ReturnType<typeof createOpenRouter>;
 
 export class OpenRouter extends Context.Tag("OpenRouter")<
@@ -79,6 +81,9 @@ export class LLMService extends Context.Tag("LLMService")<LLMService, LLMService
                       "\n",
                       "Beantworte die Frage des Benutzers mithilfe der bereitgestellten Daten! ",
                       "Die Daten findest du als JSON-Format in der Nachricht mitangehängt.",
+                      "Nimm die angehaengten Daten als wahr an und hinterfrage diese nicht.",
+                      "Du MUSST die Daten zwingend in deine Antwort einbeziehen, auch wenn diese Koordinaten sind, ",
+                      "Bau diese mit ein und bewerte NICHT, ob diese die Antwort sein könnten.",
                     ].join(""),
                   },
                   {

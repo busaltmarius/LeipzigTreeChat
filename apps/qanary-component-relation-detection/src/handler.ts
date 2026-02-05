@@ -31,10 +31,12 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
     annotationType: `${QANARY_PREFIX}AnnotationOfRelation`,
   });
 
+  console.log("Done");
+
   return message;
 };
 
-enum RELATION_TYPE {
+export enum RELATION_TYPE {
   AMOUNT_WATERED_DISTRICT = "AMOUNT_WATERED_DISTRICT",
   WATER_INTAKE_ADDRESS = "WATER_INTAKE_ADDRESS",
   WATER_TREE_AT_ADDRESS_AT_DATE = "WATER_TREE_AT_ADDRESS_AT_DATE",
@@ -50,7 +52,7 @@ const getRelAnnotation = async (question: string): Promise<IAnnotationInformatio
     start = 4;
     end = 46;
   } else if (
-    question == "Welche Wasserentnahmestellen gibt es in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig?"
+    question == "Welche Wasserentnahme Stellen gibt es in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig?"
   ) {
     relation = RELATION_TYPE.WATER_INTAKE_ADDRESS;
     start = 7;

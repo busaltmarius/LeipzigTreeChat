@@ -6,7 +6,7 @@
   "scripts": {
     "build": "bun build --target bun src/index.ts",
     "clean": "rimraf dist",
-    "dev": "bun --watch src/index.ts",
+    "dev": "bun --env-file=.env --watch src/index.ts",
     "format": "prettier --check src",
     "format:fix": "prettier --write src",
     "lint": "eslint src",
