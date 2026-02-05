@@ -33,6 +33,8 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
     });
   }
 
+  console.log("Done");
+
   return message;
 };
 

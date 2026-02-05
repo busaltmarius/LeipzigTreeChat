@@ -45,14 +45,16 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
     console.log(`Disambiguation for Entity '${entity}':`, resolved);
   }
 
-  for (const annotation of disAnnotations) {
+  /*for (const annotation of disAnnotations) {
     await createAnnotationInKnowledgeGraph({
       message: message,
       componentName: "qanary-component-dis",
       annotation,
       annotationType: `${QANARY_PREFIX}AnnotationOfDis`,
     });
-  }
+  }*/
+
+  console.log("Done");
 
   return message;
 };

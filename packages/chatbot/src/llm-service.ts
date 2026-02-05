@@ -79,6 +79,9 @@ export class LLMService extends Context.Tag("LLMService")<LLMService, LLMService
                       "\n",
                       "Beantworte die Frage des Benutzers mithilfe der bereitgestellten Daten! ",
                       "Die Daten findest du als JSON-Format in der Nachricht mitangehängt.",
+                      "Nimm die angehaengten Daten als wahr an und hinterfrage diese nicht.",
+                      "Du MUSST die Daten zwingend in deine Antwort einbeziehen, auch wenn diese Koordinaten sind, ",
+                      "Bau diese mit ein und bewerte NICHT, ob diese die Antwort sein könnten."
                     ].join(""),
                   },
                   {

@@ -77,9 +77,9 @@ export const Nodes = <const N extends string[]>(
         const client = yield* HttpClient.HttpClient;
 
         const components = [
+          "qanary-component-eat-simple",
           "qanary-component-nerd-simple",
           "qanary-component-dis",
-          "qanary-component-eat-simple",
           "qanary-component-relation-detection",
           "qanary-component-sparql-generation",
         ];
@@ -89,7 +89,7 @@ export const Nodes = <const N extends string[]>(
           inGraph: Schema.String,
         });
 
-        const result = yield* HttpClientRequest.post(`${apiBaseUrl}/questionanswering`).pipe(
+        const result = yield* HttpClientRequest.post(`${apiBaseUrl}questionanswering`).pipe(
           HttpClientRequest.setUrlParams({
             textquestion: state.input,
             "componentlist[]": components,
@@ -242,11 +242,10 @@ export const Nodes = <const N extends string[]>(
         let responseData: any[] = [];
         if (state.graph_uri !== "") {
           const getDataQuery = `
-              PREFIX qa: <http://www.wdaqua.eu/qa#>
               PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
               SELECT ?answer WHERE {
                 GRAPH <${state.graph_uri}> {
-                  ?relationAnnotationId a qa:AnnotationOfAnswer ;
+                  ?relationAnnotationId a <urn:qanary#AnnotationOfAnswer> ;
                     oa:hasBody ?answer .
                 }
               }

@@ -2,7 +2,7 @@
 
 ## Dialog D1
 
-[User] Wie viel wurde im Stadteil Connewitz gegossen?
+[User] Wie viel wurde im Stadtteil Connewitz gegossen?
 
 [Chatbot] Im Zeitraum 2021-2024 wurden XY Liter gegossen. Willst du die Liter für ein bestimmtes Jahr wissen?
 
