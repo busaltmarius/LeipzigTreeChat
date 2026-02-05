@@ -4,7 +4,7 @@ import { LLMService, OpenRouter } from "./llm-service.js";
 
 const layer = Layer.mergeAll(
   LLMService.Live.pipe(Layer.provide(OpenRouter.Live)),
-  Logger.minimumLogLevel(LogLevel.Error),
+  Logger.minimumLogLevel(LogLevel.Info),
   FetchHttpClient.layer
 );
 
