@@ -1,6 +1,11 @@
-# Beispieldialoge
+---
+title: Example Dialogues
+description: Dialogues with the Baumbart Chatbot.
+---
 
-## Dialog D1
+Dialogues are in German because the chatbot will later also only support German.
+
+# Dialog D1
 
 [User] Wie viel wurde im Stadtteil Connewitz gegossen?
 
@@ -14,7 +19,7 @@
 
 [Chatbot] Für Connewitz waren es XY Liter in 2024.
 
-## Dialog D2
+# Dialog D2
 
 [User] Welche Wasserentnahme Stellen gibt es in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig?
 
@@ -22,7 +27,7 @@
 
 [User] Nein.
 
-## Dialog D3
+# Dialog D3
 
 [User] Welchen Baum kann ich in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig heute gießen?
 
@@ -37,7 +42,7 @@ Bitte melde den Baum als versorgt sobald er gegossen wurde.
 
 [Chatbot] Danke für deinen Beitrag.
 
-## Dialog D4
+# Dialog D4
 
 [User] Was kannst du mir über die Bäume in Leipzig erklären?
 
