@@ -40,18 +40,18 @@ const DEFAULT_MODEL = "deepseek/deepseek-v3.2";
  * ```
  */
 export const getLlmModel = (): LanguageModel => {
-	const apiKey = process.env.OPENROUTER_API_KEY;
-	if (!apiKey) {
-		throw new Error(
-			"[qanary-component-helpers] Missing required environment variable: OPENROUTER_API_KEY. " +
-				"Set it in your component's .env file or execution environment.",
-		);
-	}
+  const apiKey = process.env.OPENROUTER_API_KEY;
+  if (!apiKey) {
+    throw new Error(
+      "[qanary-component-helpers] Missing required environment variable: OPENROUTER_API_KEY. " +
+        "Set it in your component's .env file or execution environment."
+    );
+  }
 
-	const modelSlug = process.env.LLM_MODEL ?? DEFAULT_MODEL;
+  const modelSlug = process.env.LLM_MODEL ?? DEFAULT_MODEL;
 
-	// The key is consumed here and not retained — the returned LanguageModel
-	// object holds no direct reference to the raw key string.
-	const openrouter = createOpenRouter({ apiKey });
-	return openrouter.chat(modelSlug);
+  // The key is consumed here and not retained — the returned LanguageModel
+  // object holds no direct reference to the raw key string.
+  const openrouter = createOpenRouter({ apiKey });
+  return openrouter.chat(modelSlug);
 };

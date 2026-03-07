@@ -1,5 +1,4 @@
 export type { IQanaryMessage } from "./api.js";
-export { getLlmModel } from "./llm-provider.js";
 export { Configuration } from "./configuration.js";
 export {
   createAnnotationInKnowledgeGraph,
@@ -8,6 +7,7 @@ export {
 } from "./create-annotation.js";
 export { getQuestion } from "./get-question.js";
 export { getQuestionUri } from "./get-question-uri.js";
+export { getLlmModel } from "./llm-provider.js";
 export { getEndpoint, getInGraph, getOutGraph } from "./message-operations.js";
 export { queryFileLoader, RESERVED_KEYWORD_IN_SPARQL_QUERY } from "./query-file-loader.js";
 export { askSparql, selectSparql, updateSparql } from "./query-sparql.js";
