@@ -12,7 +12,6 @@ import { classifyExpectedAnswerType, type EatType, eatTypeToUrl } from "./eat-cl
 export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMessage) => {
   console.log(message);
 
-  // Step 1: get question from message
   const question = await getQuestion(message);
   if (!question) {
     console.warn("No question found in message.");
@@ -20,7 +19,6 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
   }
   console.log("Question:", question);
 
-  // Step 2: compute EAT for question via LLM
   const eatResult = await classifyExpectedAnswerType(question);
   if (!eatResult) {
     console.warn(`[eat-simple] Could not determine expected answer type for: "${question}"`);
@@ -34,7 +32,6 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
     `(confidence: ${eatResult.confidence})`
   );
 
-  // Step 3: store expected entity type in Qanary triplestore
   const componentName = "qanary-component-eat-simple";
   await createAnnotationInKnowledgeGraph({
     message: message,
