@@ -67,6 +67,7 @@
         "@leipzigtreechat/qanary-component-core": "workspace: *",
         "@leipzigtreechat/qanary-component-helpers": "workspace: *",
         "@leipzigtreechat/shared": "workspace: *",
+        "zod": "^4.3.6",
       },
       "devDependencies": {
         "@leipzigtreechat/typescript-config": "workspace: *",
@@ -181,6 +182,8 @@
       "dependencies": {
         "@leipzigtreechat/qanary-component-core": "workspace: *",
         "@leipzigtreechat/shared": "workspace: *",
+        "@openrouter/ai-sdk-provider": "^1.5.4",
+        "ai": "^6.0.27",
         "axios": "^1.13.2",
         "rdf-js": "^4.0.2",
         "sparql-http-client": "^2.4.2",
@@ -2118,8 +2121,6 @@
     "prompts/kleur": ["kleur@3.0.3", "", {}, "sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w=="],
 
     "qanary-component-dis/typescript": ["typescript@4.9.5", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g=="],
-
-    "qanary-component-eat-simple/bun-types": ["bun-types@1.3.7", "", { "dependencies": { "@types/node": "*" } }, "sha512-qyschsA03Qz+gou+apt6HNl6HnI+sJJLL4wLDke4iugsE6584CMupOtTY1n+2YC9nGVrEKUlTs99jjRLKgWnjQ=="],
 
     "qanary-component-eat-simple/typescript": ["typescript@4.9.5", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g=="],
 

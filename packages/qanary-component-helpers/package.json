@@ -21,6 +21,8 @@
   "dependencies": {
     "@leipzigtreechat/qanary-component-core": "workspace: *",
     "@leipzigtreechat/shared": "workspace: *",
+    "@openrouter/ai-sdk-provider": "^1.5.4",
+    "ai": "^6.0.27",
     "axios": "^1.13.2",
     "rdf-js": "^4.0.2",
     "sparql-http-client": "^2.4.2"

@@ -1,4 +1,5 @@
 export type { IQanaryMessage } from "./api.js";
+export { getLlmModel } from "./llm-provider.js";
 export { Configuration } from "./configuration.js";
 export {
   createAnnotationInKnowledgeGraph,

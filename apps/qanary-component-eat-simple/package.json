@@ -17,7 +17,8 @@
     "@leipzigtreechat/qanary-api": "workspace: *",
     "@leipzigtreechat/qanary-component-core": "workspace: *",
     "@leipzigtreechat/qanary-component-helpers": "workspace: *",
-    "@leipzigtreechat/shared": "workspace: *"
+    "@leipzigtreechat/shared": "workspace: *",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@leipzigtreechat/typescript-config": "workspace: *",
