@@ -45,6 +45,14 @@ type LLMServiceInterface = {
    * @returns The generated chatbot response as string.
    */
   readonly generateChatbotResponse: (userInput: string, data: any) => Effect.Effect<string, never, never>;
+  /**
+   * Rewrites a question by consolidating conversation history with new input.
+   * Combines known information from previous messages with new input into a single comprehensive question.
+   * @param conversationHistory The previous messages in the conversation.
+   * @param newInput The new user input to be combined.
+   * @returns The rewritten question as a string.
+   */
+  readonly rewriteQuestion: (conversationHistory: string, newInput: string) => Effect.Effect<string, never, never>;
 };
 
 export class LLMService extends Context.Tag("LLMService")<LLMService, LLMServiceInterface>() {
@@ -95,6 +103,43 @@ export class LLMService extends Context.Tag("LLMService")<LLMService, LLMService
                       "## Bereitgestellte Daten:",
                       "\n",
                       JSON.stringify(data),
+                    ].join(""),
+                  },
+                ],
+              })
+            );
+
+            return text;
+          }),
+        rewriteQuestion: (conversationHistory: string, newInput: string) =>
+          Effect.gen(function* () {
+            const deepseek_v3_2 = openrouterClient.chat("deepseek/deepseek-v3.2");
+            const { text } = yield* Effect.promise(() =>
+              generateText({
+                model: deepseek_v3_2,
+                messages: [
+                  {
+                    role: "system",
+                    content: [
+                      "Du bist ein Assistent, der Fragen kombiniert und konsolidiert. ",
+                      "Kombiniere die Gesprächshistorie mit der neuen Eingabe zu EINER umfassenden Frage. ",
+                      "Diese Frage sollte alle bekannten Informationen aus dem Gesprächsverlauf und alle neuen Informationen enthalten. ",
+                      "Die resultierende Frage sollte präzise, vollständig und selbsterklärend sein. ",
+                      "Antworte NUR mit der rewritten Frage, ohne weitere Erklärungen.",
+                    ].join(""),
+                  },
+                  {
+                    role: "user",
+                    content: [
+                      "## Gesprächshistorie:",
+                      "\n",
+                      conversationHistory || "(Keine vorherige Gesprächshistorie)",
+                      "\n\n",
+                      "## Neue Eingabe:",
+                      "\n",
+                      newInput,
+                      "\n\n",
+                      "Kombiniere diese zu EINER umfassenden Frage:",
                     ].join(""),
                   },
                 ],

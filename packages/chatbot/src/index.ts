@@ -7,20 +7,22 @@ const CHATBOT_RESPONSE_NODE_ID = "chatbot_response";
 const QANARY_NODE_ID = "qanary";
 const USER_INPUT_NODE_ID = "user_input";
 const ROUTER_NODE_ID = "router";
+const QUESTION_REWRITE_NODE_ID = "question_rewrite";
 
 // Build the graph
 export const ChatBotGraph = (
   printMessage: (message: BaseMessage) => Promise<void>,
   getUserInput: () => Promise<string>
 ) => {
-  const { UserInputNode, ResponseNode, RouterNode, QanaryNode } = Nodes(
+  const { UserInputNode, ResponseNode, RouterNode, QanaryNode, QuestionRewriteNode } = Nodes(
     printMessage,
     START,
     END,
     CHATBOT_RESPONSE_NODE_ID,
     QANARY_NODE_ID,
     ROUTER_NODE_ID,
-    USER_INPUT_NODE_ID
+    USER_INPUT_NODE_ID,
+    QUESTION_REWRITE_NODE_ID
   );
 
   return new StateGraph(AgentStateAnnotation)
@@ -29,13 +31,16 @@ export const ChatBotGraph = (
     .addNode(
       ROUTER_NODE_ID,
       RouterNode({
-        questionAnsweringNode: QANARY_NODE_ID,
+        questionAnsweringNode: QUESTION_REWRITE_NODE_ID,
         responseNode: CHATBOT_RESPONSE_NODE_ID,
         endNode: END,
         userInputNode: USER_INPUT_NODE_ID,
       }),
-      { ends: [QANARY_NODE_ID, CHATBOT_RESPONSE_NODE_ID, END, USER_INPUT_NODE_ID] }
+      { ends: [QUESTION_REWRITE_NODE_ID, CHATBOT_RESPONSE_NODE_ID, END, USER_INPUT_NODE_ID] }
     )
+    .addNode(QUESTION_REWRITE_NODE_ID, QuestionRewriteNode({ nextNode: QANARY_NODE_ID }), {
+      ends: [QANARY_NODE_ID],
+    })
     .addNode(QANARY_NODE_ID, QanaryNode({ nextNode: CHATBOT_RESPONSE_NODE_ID, errorNode: USER_INPUT_NODE_ID }), {
       ends: [CHATBOT_RESPONSE_NODE_ID, USER_INPUT_NODE_ID],
     })

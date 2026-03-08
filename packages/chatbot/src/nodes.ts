@@ -276,5 +276,42 @@ export const Nodes = <const N extends string[]>(
 
       return await runLangGraphRuntime(program.pipe(Effect.provide(NodeLoggerLayer("ResponseNode"))));
     },
+    /**
+     * This node rewrites a question by consolidating conversation history with new input.
+     * Combines known information from previous messages with new input into a single comprehensive question.
+     * @param routingConfig The routing configuration for the next node
+     * @returns The configured Node usable by LangGraph
+     */
+    QuestionRewriteNode: (routingConfig: { nextNode: NodeID }) => async (state: AgentState) => {
+      const { nextNode } = routingConfig;
+      const program = Effect.gen(function* () {
+        yield* Effect.logDebug("State: ", state);
+        const llmService = yield* LLMService;
+
+        // Build conversation history from messages
+        const conversationHistory = state.messages
+          .map((msg) => {
+            const role = msg instanceof AIMessage ? "Assistant" : "User";
+            const content = typeof msg.content === "string" ? msg.content : JSON.stringify(msg.content);
+            return `${role}: ${content}`;
+          })
+          .join("\n");
+
+        // Rewrite the question by combining history with new input
+        const rewrittenQuestion = yield* llmService.rewriteQuestion(conversationHistory, state.input);
+
+        yield* Effect.logDebug("Original input: ", state.input);
+        yield* Effect.logDebug("Rewritten question: ", rewrittenQuestion);
+
+        return command({
+          update: {
+            input: rewrittenQuestion,
+          },
+          goto: nextNode,
+        });
+      });
+
+      return await runLangGraphRuntime(program.pipe(Effect.provide(NodeLoggerLayer("QuestionRewriteNode"))));
+    },
   };
 };
