@@ -113,7 +113,7 @@ export const Nodes = <const N extends string[]>(
      * @param routingConfig The routing configuration for the next node and error node
      * @returns The configured Node usable by LangGraph
      */
-    QanaryNode: (routingConfig: { nextNode: NodeID; errorNode: NodeID }) => async (state: AgentState) => {
+    QanaryOrchestratorNode: (routingConfig: { nextNode: NodeID; errorNode: NodeID }) => async (state: AgentState) => {
       const { nextNode, errorNode } = routingConfig;
       const program = Effect.gen(function* () {
         yield* Effect.logDebug("State: ", state);
@@ -166,17 +166,46 @@ export const Nodes = <const N extends string[]>(
           });
         }
 
+        const graphUri = result.right.inGraph;
+
+        // Query for the extracted answer
+        let qanaryAnswer = "";
+        const getDataQuery = `
+          PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
+          SELECT ?answer WHERE {
+            GRAPH <${graphUri}> {
+              ?relationAnnotationId a <urn:qanary#AnnotationOfAnswer> ;
+                oa:hasBody ?answer .
+            }
+          }
+        `;
+
+        const triplestoreUrl = yield* Config.string("TRIPLESTORE_URL");
+
+        const responseData = yield* Effect.tryPromise({
+          try: () => selectSparql(triplestoreUrl, getDataQuery) as Promise<Array<{ answer: { value: string } }>>,
+          catch: (unknown: any) => new Error(`Error querying SPARQL endpoint: ${unknown}`),
+        }).pipe(Effect.catchAll((error: any) => Effect.logError(error).pipe(Effect.as([] as Array<{ answer: { value: string } }>))));
+
+        if (responseData.length > 0) {
+          const first = responseData[0];
+          if (first && first.answer) {
+            qanaryAnswer = first.answer.value;
+          }
+        }
+
         return command({
           update: {
             graph_uri: result.right.inGraph,
             clarification: new ClarificationConversation(new ConversationURI(result.right.inGraph)),
+            qanary_answer: qanaryAnswer,
           },
           goto: nextNode,
         });
       });
 
       return await runLangGraphRuntime(
-        program.pipe(Effect.provide(FetchHttpClient.layer), Effect.provide(NodeLoggerLayer("QanaryNode")))
+        program.pipe(Effect.provide(FetchHttpClient.layer), Effect.provide(NodeLoggerLayer("QanaryOrchestratorNode")))
       );
     },
 
@@ -333,7 +362,9 @@ export const Nodes = <const N extends string[]>(
         const llmService = yield* LLMService;
 
         let responseData: any[] = [];
-        if (state.graph_uri !== "") {
+        if (state.qanary_answer) {
+          responseData = [{ answer: { value: state.qanary_answer } }];
+        } else if (state.graph_uri !== "") {
           const getDataQuery = `
               PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
               SELECT ?answer WHERE {
