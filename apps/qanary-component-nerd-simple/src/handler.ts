@@ -1,16 +1,13 @@
 import type { IQanaryComponentMessageHandler } from "@leipzigtreechat/qanary-component-core";
-import {
-  createAnnotationInKnowledgeGraph,
-  type IAnnotationInformation,
-} from "@leipzigtreechat/qanary-component-helpers";
+import { createAnnotationInKnowledgeGraph } from "@leipzigtreechat/qanary-component-helpers";
 import { getQuestion, type IQanaryMessage, QANARY_PREFIX } from "@leipzigtreechat/shared";
+import { detectAndRecogniseEntities } from "./nerd-classifier.ts";
 
 /**
- * An event handler for incoming messages of the Qanary pipeline
- * Exported only for testing purposes
+ * An event handler for incoming messages of the Qanary pipeline.
+ * Exported only for testing purposes.
  * @param message incoming qanary pipeline message
  */
-// eslint-disable-next-line sonarjs/no-invariant-returns
 export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMessage) => {
   console.log(message);
 
@@ -21,14 +18,34 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
   }
   console.log("Question:", question);
 
-  const nerdAnnotations: Array<IAnnotationInformation> = await getNerdAnnotations(question);
-  console.log(`NED/NER for question '${question}':`, nerdAnnotations);
+  const nerdResult = await detectAndRecogniseEntities(question);
+  if (!nerdResult) {
+    console.warn(`[nerd-simple] Could not detect entities for: "${question}"`);
+    return message;
+  }
 
-  for (const annotation of nerdAnnotations) {
+  const { entities } = nerdResult;
+  console.log(`[nerd-simple] Found ${entities.length} entity/entities for "${question}":`, entities);
+
+  if (entities.length === 0) {
+    console.log("[nerd-simple] No entities to annotate.");
+    return message;
+  }
+
+  const componentName = "qanary-component-nerd-simple";
+
+  for (const entity of entities) {
     await createAnnotationInKnowledgeGraph({
-      message: message,
-      componentName: "qanary-component-nerd-simple",
-      annotation,
+      message,
+      componentName,
+      annotation: {
+        value: JSON.stringify({
+          entity: entity.entity,
+          type: entity.type,
+        }),
+        range: { start: entity.start, end: entity.end },
+        confidence: entity.confidence,
+      },
       annotationType: `${QANARY_PREFIX}AnnotationOfNerd`,
     });
   }
@@ -36,112 +53,4 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
   console.log("Done");
 
   return message;
-};
-
-const getNerdAnnotations = async (question: string): Promise<Array<IAnnotationInformation>> => {
-  switch (question) {
-    case "Wie viel wurde im Stadtteil Connewitz gegossen?":
-      return [
-        {
-          value: JSON.stringify({
-            entity: "Connewitz",
-            type: "Stadtteil",
-          }),
-          range: { start: 28, end: 37 },
-          confidence: 1,
-        },
-      ];
-    case "Welche Wasserentnahmestellen gibt es in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig?":
-      return [
-        {
-          value: JSON.stringify({
-            entity: "Karl-Liebknecht-Str.",
-            type: "Straße",
-          }),
-          range: { start: 61, end: 81 },
-          confidence: 1,
-        },
-        {
-          value: JSON.stringify({
-            entity: "132",
-            type: "Hausnummer",
-          }),
-          range: { start: 82, end: 85 },
-          confidence: 1,
-        },
-        {
-          value: JSON.stringify({
-            entity: "04277",
-            type: "Postleitzahl",
-          }),
-          range: { start: 87, end: 92 },
-          confidence: 1,
-        },
-        {
-          value: JSON.stringify({
-            entity: "Leipzig",
-            type: "Stadt",
-          }),
-          range: { start: 93, end: 100 },
-          confidence: 1,
-        },
-      ];
-    case "Welchen Baum kann ich in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig heute gießen?":
-      return [
-        {
-          value: JSON.stringify({
-            entity: "Karl-Liebknecht-Str.",
-            type: "Straße",
-          }),
-          range: { start: 46, end: 66 },
-          confidence: 1,
-        },
-        {
-          value: JSON.stringify({
-            entity: "132",
-            type: "Hausnummer",
-          }),
-          range: { start: 87, end: 90 },
-          confidence: 1,
-        },
-        {
-          value: JSON.stringify({
-            entity: "04277",
-            type: "Postleitzahl",
-          }),
-          range: { start: 72, end: 77 },
-          confidence: 1,
-        },
-        {
-          value: JSON.stringify({
-            entity: "Leipzig",
-            type: "Stadt",
-          }),
-          range: { start: 78, end: 85 },
-          confidence: 1,
-        },
-        {
-          value: JSON.stringify({
-            entity: "heute",
-            type: "Datum",
-          }),
-          range: { start: 86, end: 91 },
-          confidence: 1,
-        },
-      ];
-    case "Was kannst du mir über die Bäume in Leipzig erklären?":
-      return [
-        {
-          value: JSON.stringify({
-            entity: "Leipzig",
-            type: "Stadt",
-          }),
-          range: { start: 36, end: 43 },
-          confidence: 1,
-        },
-      ];
-    default:
-      console.warn("Unrecognized question:", question);
-      return [];
-  }
 };

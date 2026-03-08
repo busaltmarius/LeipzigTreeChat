@@ -2,17 +2,16 @@ import { URL } from "node:url";
 import type { IQanaryComponentMessageHandler } from "@leipzigtreechat/qanary-component-core";
 import { createAnnotationInKnowledgeGraph } from "@leipzigtreechat/qanary-component-helpers";
 import { getQuestion, type IQanaryMessage, QANARY_EAT_PREFIX, QANARY_PREFIX } from "@leipzigtreechat/shared";
+import { classifyExpectedAnswerType, type EatType, eatTypeToUrl } from "./eat-classifier.ts";
 
 /**
  * An event handler for incoming messages of the Qanary pipeline
  * Exported only for testing purposes
  * @param message incoming qanary pipeline message
  */
-// eslint-disable-next-line sonarjs/no-invariant-returns
 export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMessage) => {
   console.log(message);
 
-  // Step 1: get question from message
   const question = await getQuestion(message);
   if (!question) {
     console.warn("No question found in message.");
@@ -20,20 +19,27 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
   }
   console.log("Question:", question);
 
-  // Step 2: compute EAT for question
-  const expectedEntityTypeMatch = await getExpectedEntityTypeMatch(question);
-  const expectedEntityType = expectedEntityTypeMatch?.expectedEntityType ?? null;
-  console.log(`Expected entity type for question '${question}':`, expectedEntityType);
+  const eatResult = await classifyExpectedAnswerType(question);
+  if (!eatResult) {
+    console.warn(`[eat-simple] Could not determine expected answer type for: "${question}"`);
+    return message;
+  }
 
-  // Step 3: store expected entity type in Qanary triplestore
+  const expectedEntityTypeUrl = eatTypeToUrl(eatResult.expectedAnswerType as EatType);
+  console.log(
+    `Expected entity type for question '${question}':`,
+    expectedEntityTypeUrl.toString(),
+    `(confidence: ${eatResult.confidence})`
+  );
+
   const componentName = "qanary-component-eat-simple";
   await createAnnotationInKnowledgeGraph({
     message: message,
     componentName: componentName,
     annotation: {
-      value: expectedEntityType?.toString() ?? "",
-      range: { start: 0, end: expectedEntityTypeMatch?.prefix.length ?? 0 },
-      confidence: 1,
+      value: expectedEntityTypeUrl.toString(),
+      range: { start: 0, end: question.length },
+      confidence: eatResult.confidence,
     },
     annotationType: `${QANARY_PREFIX}AnnotationOfExpectedAnswerType`,
   });
@@ -43,29 +49,12 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
   return message;
 };
 
-export const getExpectedEntityType = async (question: string) => {
-  const result = await getExpectedEntityTypeMatch(question);
-  return result?.expectedEntityType ?? null;
-};
-
-const getExpectedEntityTypeMatch = async (question: string) => {
-  const lowerQuestion = question.toLowerCase();
-  const rules: Array<[string, URL]> = [
-    ["wo", new URL(`${QANARY_EAT_PREFIX}object`)],
-    ["wer", new URL(`${QANARY_EAT_PREFIX}object`)],
-    ["wann", new URL(`${QANARY_EAT_PREFIX}datetime`)],
-    ["wie viel", new URL(`${QANARY_EAT_PREFIX}number`)],
-    ["wie viele", new URL(`${QANARY_EAT_PREFIX}number`)],
-    ["welche", new URL(`${QANARY_EAT_PREFIX}list`)],
-    ["welchen", new URL(`${QANARY_EAT_PREFIX}object`)],
-  ];
-
-  for (const [prefix, expectedEntityType] of rules) {
-    if (lowerQuestion.startsWith(prefix)) {
-      return { prefix, expectedEntityType };
-    }
-  }
-
-  console.warn(`No expected entity type found for question '${question}'`);
-  return null;
+/**
+ * Returns the EAT URL for a given question using the LLM classifier.
+ * Exported for testing purposes.
+ */
+export const getExpectedEntityType = async (question: string): Promise<URL | null> => {
+  const result = await classifyExpectedAnswerType(question);
+  if (!result) return null;
+  return eatTypeToUrl(result.expectedAnswerType as EatType);
 };
