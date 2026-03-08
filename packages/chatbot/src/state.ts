@@ -13,6 +13,7 @@ export const AgentStateAnnotation = Annotation.Root({
   input: Annotation<string>(),
   has_ended: Annotation<boolean>(),
   graph_uri: Annotation<string>(),
+  qanary_answer: Annotation<string>(),
 });
 
 export type AgentState = typeof AgentStateAnnotation.State;
