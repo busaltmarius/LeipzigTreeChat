@@ -46,12 +46,13 @@ type LLMServiceInterface = {
    */
   readonly generateChatbotResponse: (userInput: string, data: any) => Effect.Effect<string, never, never>;
   /**
-   * Generates a chatbot clarification question based on user input and provided data.
-   * @param userInput The original input/question from the user.
-   * @param data The data to assist in generating the clarification question.
-   * @returns The generated chatbot clarification question as string.
+   * Rewrites a question by consolidating conversation history with new input.
+   * Combines known information from previous messages with new input into a single comprehensive question.
+   * @param conversationHistory The previous messages in the conversation.
+   * @param newInput The new user input to be combined.
+   * @returns The rewritten question as a string.
    */
-  readonly generateClarificationQuestion: (userInput: string, data: any) => Effect.Effect<string, never, never>;
+  readonly rewriteQuestion: (conversationHistory: string, newInput: string) => Effect.Effect<string, never, never>;
 };
 
 export class LLMService extends Context.Tag("LLMService")<LLMService, LLMServiceInterface>() {
@@ -110,7 +111,6 @@ export class LLMService extends Context.Tag("LLMService")<LLMService, LLMService
 
             return text;
           }),
-
         generateClarificationQuestion: (userInput: string, data: any) =>
           Effect.gen(function* () {
             const deepseek_v3_2 = openrouterClient.chat("deepseek/deepseek-v3.2");
@@ -140,6 +140,43 @@ export class LLMService extends Context.Tag("LLMService")<LLMService, LLMService
                       "## Bereitgestellte Daten:",
                       "\n",
                       JSON.stringify(data),
+                    ].join(""),
+                  },
+                ],
+              })
+            );
+
+            return text;
+          }),
+        rewriteQuestion: (conversationHistory: string, newInput: string) =>
+          Effect.gen(function* () {
+            const deepseek_v3_2 = openrouterClient.chat("deepseek/deepseek-v3.2");
+            const { text } = yield* Effect.promise(() =>
+              generateText({
+                model: deepseek_v3_2,
+                messages: [
+                  {
+                    role: "system",
+                    content: [
+                      "Du bist ein Assistent, der Fragen kombiniert und konsolidiert. ",
+                      "Kombiniere die Gesprächshistorie mit der neuen Eingabe zu EINER umfassenden Frage. ",
+                      "Diese Frage sollte alle bekannten Informationen aus dem Gesprächsverlauf und alle neuen Informationen enthalten. ",
+                      "Die resultierende Frage sollte präzise, vollständig und selbsterklärend sein. ",
+                      "Antworte NUR mit der rewritten Frage, ohne weitere Erklärungen.",
+                    ].join(""),
+                  },
+                  {
+                    role: "user",
+                    content: [
+                      "## Gesprächshistorie:",
+                      "\n",
+                      conversationHistory || "(Keine vorherige Gesprächshistorie)",
+                      "\n\n",
+                      "## Neue Eingabe:",
+                      "\n",
+                      newInput,
+                      "\n\n",
+                      "Kombiniere diese zu EINER umfassenden Frage:",
                     ].join(""),
                   },
                 ],

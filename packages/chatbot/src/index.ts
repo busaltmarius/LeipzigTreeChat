@@ -8,13 +8,14 @@ const QANARY_ORCHESTRATOR_NODE_ID = "qanary_orchestrator";
 const USER_INPUT_NODE_ID = "user_input";
 const ROUTER_NODE_ID = "router";
 const REQUEST_CLARIFICATION_NODE_ID = "request_clarification";
+const QUESTION_REWRITE_NODE_ID = "question_rewrite";
 
 // Build the graph
 export const ChatBotGraph = (
   printMessage: (message: BaseMessage) => Promise<void>,
   getUserInput: () => Promise<string>
 ) => {
-  const { UserInputNode, ResponseNode, RouterNode, QanaryNode, RequestClarificationNode, QanaryOrchestratorNode } = Nodes(
+  const { UserInputNode, ResponseNode, RouterNode, QanaryNode, RequestClarificationNode, QanaryOrchestratorNode, QuestionRewriteNode } = Nodes(
     printMessage,
     START,
     END,
@@ -23,6 +24,7 @@ export const ChatBotGraph = (
     ROUTER_NODE_ID,
     USER_INPUT_NODE_ID,
     REQUEST_CLARIFICATION_NODE_ID
+    QUESTION_REWRITE_NODE_ID
   );
 
   return new StateGraph(AgentStateAnnotation)
@@ -34,7 +36,7 @@ export const ChatBotGraph = (
     .addNode(
       ROUTER_NODE_ID,
       RouterNode({
-        questionAnsweringNode: QANARY_ORCHESTRATOR_NODE_ID,
+        questionAnsweringNode: QUESTION_REWRITE_NODE_ID,
         requestClarificationNode: REQUEST_CLARIFICATION_NODE_ID,
         responseNode: CHATBOT_RESPONSE_NODE_ID,
         endNode: END,
@@ -42,6 +44,9 @@ export const ChatBotGraph = (
       }),
       { ends: [QANARY_ORCHESTRATOR_NODE_ID, CHATBOT_RESPONSE_NODE_ID, REQUEST_CLARIFICATION_NODE_ID, END, USER_INPUT_NODE_ID] }
     )
+    .addNode(QUESTION_REWRITE_NODE_ID, QuestionRewriteNode({ nextNode: QANARY_NODE_ID }), {
+      ends: [QANARY_NODE_ID],
+    })
     .addNode(
       QANARY_ORCHESTRATOR_NODE_ID,
       QanaryOrchestratorNode({ nextNode: CHATBOT_RESPONSE_NODE_ID, errorNode: USER_INPUT_NODE_ID }),
