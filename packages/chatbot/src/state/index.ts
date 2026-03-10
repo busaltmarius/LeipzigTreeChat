@@ -3,8 +3,14 @@ import { Annotation, type Messages, messagesStateReducer } from "@langchain/lang
 
 import { Effect } from "effect";
 
-import { MissingMessageError } from "./errors.js";
+import { MissingMessageError } from "../errors.js";
+import { Conversation } from "./conversation.js";
 
+export { Conversation } from "./conversation.js";
+
+/**
+ * Global state of the chatbot agent
+ */
 export const AgentStateAnnotation = Annotation.Root({
   messages: Annotation<BaseMessage[], Messages>({
     reducer: messagesStateReducer,
@@ -13,6 +19,7 @@ export const AgentStateAnnotation = Annotation.Root({
   input: Annotation<string>(),
   has_ended: Annotation<boolean>(),
   graph_uri: Annotation<string>(),
+  conversation: Annotation<Conversation>(),
 });
 
 export type AgentState = typeof AgentStateAnnotation.State;

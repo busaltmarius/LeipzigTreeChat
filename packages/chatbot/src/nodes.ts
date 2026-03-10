@@ -6,7 +6,7 @@ import { Config, Effect, Either, Logger, Match, Schema } from "effect";
 import { type InvalidInputError, MissingMessageError } from "./errors.js";
 import { runLangGraphRuntime } from "./langgraph-runtime.js";
 import { LLMService } from "./llm-service.js";
-import type { AgentState } from "./state.js";
+import type { AgentState } from "./state/index.js";
 import type { Unit } from "./unit.js";
 
 /**
@@ -51,6 +51,12 @@ export const Nodes = <const N extends string[]>(
   const printMessageEffect = (message: BaseMessage) => Effect.promise(() => printMessage(message));
 
   return {
+    /**
+     * This node prompts the user for input and stores it in the agent state.
+     * @param routingConfig The routing configuration for the next node
+     * @param getUserInput A function that retrieves the user's input asynchronously
+     * @returns The configured Node usable by LangGraph
+     */
     UserInputNode:
       (routingConfig: { nextNode: NodeID }, getUserInput: () => Promise<string>) => async (state: AgentState) => {
         const { nextNode } = routingConfig;
@@ -68,6 +74,11 @@ export const Nodes = <const N extends string[]>(
 
         return await runLangGraphRuntime(program.pipe(Effect.provide(NodeLoggerLayer("UserInputNode"))));
       },
+    /**
+     * This node sends the user's input to the Qanary question answering pipeline.
+     * @param routingConfig The routing configuration for the next node and error node
+     * @returns The configured Node usable by LangGraph
+     */
     QanaryNode: (routingConfig: { nextNode: NodeID; errorNode: NodeID }) => async (state: AgentState) => {
       const { nextNode, errorNode } = routingConfig;
       const program = Effect.gen(function* () {
@@ -134,17 +145,29 @@ export const Nodes = <const N extends string[]>(
         program.pipe(Effect.provide(FetchHttpClient.layer), Effect.provide(NodeLoggerLayer("QanaryNode")))
       );
     },
+    /**
+     * This node decides which node to route to based on the conversation state.
+     * @param routingConfig The routing configuration for the different successor nodes
+     * @returns The configured Node usable by LangGraph
+     */
     RouterNode:
       (routingConfig: {
         questionAnsweringNode: NodeID;
+        requestClarificationNode: NodeID;
         responseNode: NodeID;
         endNode: NodeID;
         userInputNode: NodeID;
       }) =>
       async (state: AgentState) => {
-        const { questionAnsweringNode } = routingConfig;
+        const { questionAnsweringNode, requestClarificationNode } = routingConfig;
         const program = Effect.gen(function* () {
           yield* Effect.logDebug("State: ", state);
+
+          if (state.conversation.hasOpenQuestions()) {
+            return command({
+              goto: requestClarificationNode,
+            });
+          }
 
           return command({
             goto: questionAnsweringNode, // always route to question answering for now
