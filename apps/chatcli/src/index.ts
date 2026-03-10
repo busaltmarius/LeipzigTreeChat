@@ -2,7 +2,13 @@ import { Terminal } from "@effect/platform";
 import { BunTerminal } from "@effect/platform-bun";
 import { AIMessage, BaseMessage, HumanMessage } from "@langchain/core/messages";
 import { ChatBotGraph } from "@leipzigtreechat/chatbot";
-import { type AgentState, getLastAIMessage, getMessageContent } from "@leipzigtreechat/chatbot/state";
+import {
+  type AgentState,
+  Conversation,
+  ConversationURI,
+  getLastAIMessage,
+  getMessageContent,
+} from "@leipzigtreechat/chatbot/state";
 import { Effect } from "effect";
 import { readLine } from "./readline";
 import { handleSystemSignalError, type SystemSignalError } from "./system-signal";
@@ -41,6 +47,7 @@ async function main() {
     has_ended: false,
     input: "",
     graph_uri: "",
+    conversation: new Conversation(new ConversationURI("")),
     messages: [initialMessage],
   };
 

@@ -3,17 +3,44 @@ import { Data, Effect, MutableHashMap, MutableHashSet, Option } from "effect";
 /**
  * Identifies a question within a conversation.
  */
-export class QuestionURI extends Data.TaggedClass("QuestionURI")<{ value: string }> {}
+export class QuestionURI extends Data.TaggedClass("QuestionURI")<{ value: string }> {
+  /**
+   * Creates a new `QuestionURI` with the given value.
+   *
+   * @param value String value of the URI.
+   */
+  constructor(value: string) {
+    super({ value });
+  }
+}
 
 /**
  * Identifies a conversation instance.
  */
-export class ConversationURI extends Data.TaggedClass("ConversationURI")<{ value: string }> {}
+export class ConversationURI extends Data.TaggedClass("ConversationURI")<{ value: string }> {
+  /**
+   * Creates a new `ConversationURI` with the given value.
+   *
+   * @param value String value of the URI.
+   */
+  constructor(value: string) {
+    super({ value });
+  }
+}
 
 /**
  * Identifies an answer within a conversation.
  */
-export class AnswerURI extends Data.TaggedClass("AnswerURI")<{ value: string }> {}
+export class AnswerURI extends Data.TaggedClass("AnswerURI")<{ value: string }> {
+  /**
+   * Creates a new `AnswerURI` with the given value.
+   *
+   * @param value String value of the URI.
+   */
+  constructor(value: string) {
+    super({ value });
+  }
+}
 
 /**
  * A clarification question asked by the chatbot.
