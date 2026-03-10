@@ -1,4 +1,4 @@
-import { Data, MutableHashMap, MutableHashSet, Option } from "effect";
+import { Data, Effect, MutableHashMap, MutableHashSet, Option } from "effect";
 
 /**
  * Identifies a question within a conversation.
@@ -45,6 +45,10 @@ export type Answer = {
   content: string;
 };
 
+class URINotFound extends Data.TaggedError("URINotFound")<{
+  uri: QuestionURI | AnswerURI | ConversationURI;
+}> {}
+
 /**
  * Stores clarification questions from the chatbot to the user and the answers provided by the user.
  */
@@ -79,14 +83,30 @@ export class Conversation extends Data.TaggedClass("Conversation")<{
   }
 
   /**
+   * Checks whether the conversation has a question with the given URI.
+   *
+   * @param questionUri The identifier of the question to check.
+   * @returns `true` if the question exists in the conversation.
+   */
+  hasQuestion(questionUri: QuestionURI): boolean {
+    return MutableHashMap.has(this._questions, questionUri);
+  }
+
+  /**
    * Stores an answer for a question and removes the question from the open set.
    *
    * @param questionUri The identifier of the question being answered.
    * @param answer The answer to associate with the question.
    */
-  addAnswer(questionUri: QuestionURI, answer: Answer): void {
+  addAnswer(questionUri: QuestionURI, answer: Answer): Effect.Effect<void, URINotFound> {
+    if (!this.hasQuestion(questionUri)) {
+      return Effect.fail(new URINotFound({ uri: questionUri }));
+    }
+
     MutableHashMap.set(this._resolvedQuestions, questionUri, answer);
     MutableHashSet.remove(this._openQuestions, questionUri);
+
+    return Effect.succeed({});
   }
 
   /**
