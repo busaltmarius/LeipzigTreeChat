@@ -6,7 +6,7 @@ import { Config, Effect, Either, Logger, Match, Schema } from "effect";
 import { type InvalidInputError, MissingMessageError } from "./errors.js";
 import { runLangGraphRuntime } from "./langgraph-runtime.js";
 import { LLMService } from "./llm-service.js";
-import type { AgentState } from "./state.js";
+import type { AgentState } from "./state/index.js";
 import type { Unit } from "./unit.js";
 
 /**
@@ -137,14 +137,21 @@ export const Nodes = <const N extends string[]>(
     RouterNode:
       (routingConfig: {
         questionAnsweringNode: NodeID;
+        requestClarificationNode: NodeID;
         responseNode: NodeID;
         endNode: NodeID;
         userInputNode: NodeID;
       }) =>
       async (state: AgentState) => {
-        const { questionAnsweringNode } = routingConfig;
+        const { questionAnsweringNode, requestClarificationNode } = routingConfig;
         const program = Effect.gen(function* () {
           yield* Effect.logDebug("State: ", state);
+
+          if (state.conversation.hasOpenQuestions()) {
+            return command({
+              goto: requestClarificationNode,
+            });
+          }
 
           return command({
             goto: questionAnsweringNode, // always route to question answering for now

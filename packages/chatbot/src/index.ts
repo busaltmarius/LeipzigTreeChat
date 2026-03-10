@@ -1,7 +1,7 @@
 import { type BaseMessage } from "@langchain/core/messages";
 import { END, START, StateGraph } from "@langchain/langgraph";
 import { Nodes } from "./nodes.js";
-import { AgentStateAnnotation } from "./state.js";
+import { AgentStateAnnotation } from "./state/index.js";
 
 const CHATBOT_RESPONSE_NODE_ID = "chatbot_response";
 const QANARY_NODE_ID = "qanary";
@@ -30,6 +30,7 @@ export const ChatBotGraph = (
       ROUTER_NODE_ID,
       RouterNode({
         questionAnsweringNode: QANARY_NODE_ID,
+        requestClarificationNode: USER_INPUT_NODE_ID,
         responseNode: CHATBOT_RESPONSE_NODE_ID,
         endNode: END,
         userInputNode: USER_INPUT_NODE_ID,
