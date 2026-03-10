@@ -8,6 +8,9 @@ import { Conversation } from "./conversation.js";
 
 export { Conversation } from "./conversation.js";
 
+/**
+ * Global state of the chatbot agent
+ */
 export const AgentStateAnnotation = Annotation.Root({
   messages: Annotation<BaseMessage[], Messages>({
     reducer: messagesStateReducer,
