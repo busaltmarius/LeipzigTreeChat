@@ -114,7 +114,7 @@ export class Conversation extends Data.TaggedClass("Conversation")<{
    * @returns Every answered question together with its stored answer.
    */
   resolvedQuestions(): { question: Question; answer: Answer }[] {
-    let result = [];
+    let result: { question: Question; answer: Answer }[] = [];
 
     for (const [questionUri, answer] of this._resolvedQuestions) {
       // We guarantee that the question exists because it was added before the answer. So it is a real error if it doesn't exist!
