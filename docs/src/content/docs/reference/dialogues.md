@@ -9,11 +9,11 @@ Dialogues are in German because the chatbot will later also only support German.
 
 [User] Wie viel wurde im Stadtteil Connewitz gegossen?
 
-[Chatbot] Im Zeitraum 2021-2024 wurden XY Liter gegossen. Willst du die Liter für ein bestimmtes Jahr wissen?
+[Chatbot] Im Zeitraum 2021-2025 wurden XY Liter gegossen. Willst du die Liter für ein bestimmtes Jahr wissen?
 
-[User] Wie viel in 2025?
+[User] Wie viel in 2026?
 
-[Chatbot] Für 2025 sind noch keine Daten verfügbar. Die aktuellsten Daten sind aus 2024. Möchtest du diese ausgeben lassen?
+[Chatbot] Für 2026 sind noch keine Daten verfügbar. Die aktuellsten Daten sind aus 2025. Möchtest du diese ausgeben lassen?
 
 [User] Ja.
 
