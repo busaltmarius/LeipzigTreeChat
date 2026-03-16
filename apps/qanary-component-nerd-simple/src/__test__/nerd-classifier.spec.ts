@@ -267,6 +267,231 @@ describe("detectAndRecogniseEntities", () => {
     expect(result!.entities[0]!.entity).toBe("Anger-Crottendorf");
   });
 
+  // --- offset auto-correction ----------------------------------------------
+
+  test("auto-corrects an entity whose offsets are wrong but entity text is found in the question", async () => {
+    const question = "Wie viele Bäume gibt es in Connewitz?";
+    const correctStart = question.indexOf("Connewitz");
+    mockGenerateObjectResult = {
+      entities: [
+        {
+          entity: "Connewitz",
+          type: "DISTRICT",
+          // Deliberately shifted by +4 so the slice does not match.
+          start: correctStart + 4,
+          end: correctStart + 4 + "Connewitz".length,
+          confidence: 0.95,
+        },
+      ],
+    };
+    mockGenerateObjectError = null;
+    const result = await detectAndRecogniseEntities(question, modelFactory);
+    expect(result!.entities).toHaveLength(1);
+    const e = result!.entities[0]!;
+    expect(e.entity).toBe("Connewitz");
+    // Offsets must be corrected so the slice now matches.
+    expect(question.slice(e.start, e.end)).toBe("Connewitz");
+    expect(e.start).toBe(correctStart);
+    expect(e.end).toBe(correctStart + "Connewitz".length);
+  });
+
+  test("auto-corrects the exact deepseek-v3.2 error-log case: Connewitz returned at [32, 41) instead of [28, 37)", async () => {
+    // Verified character offsets:
+    //   "Wie viel wurde im Stadtteil Connewitz gegossen?"
+    //    0         1         2         3
+    //    0123456789012345678901234567890123456789012345678
+    //    C starts at index 28, ends at 37 (exclusive).
+    // deepseek-v3.2 returned [32, 41) → slice "ewitz geg".
+    const question = "Wie viel wurde im Stadtteil Connewitz gegossen?";
+    expect(question.slice(28, 37)).toBe("Connewitz"); // sanity check
+    expect(question.slice(32, 41)).toBe("ewitz geg"); // bad offsets from log
+
+    mockGenerateObjectResult = {
+      entities: [
+        {
+          entity: "Connewitz",
+          type: "DISTRICT",
+          start: 32, // wrong — from the error log
+          end: 41, // wrong — from the error log
+          confidence: 0.95,
+        },
+      ],
+    };
+    mockGenerateObjectError = null;
+
+    const result = await detectAndRecogniseEntities(question, modelFactory);
+    expect(result!.entities).toHaveLength(1);
+    const e = result!.entities[0]!;
+    expect(e.entity).toBe("Connewitz");
+    expect(e.start).toBe(28);
+    expect(e.end).toBe(37);
+    expect(question.slice(e.start, e.end)).toBe("Connewitz");
+  });
+
+  test("picks the occurrence closest to the reported start when the entity text appears multiple times", async () => {
+    const question = "Vergleiche Leipzig und Leipzig.";
+    // "Leipzig" appears at index 11 and index 22.
+    const firstOccurrence = question.indexOf("Leipzig"); // 11
+    const secondOccurrence = question.lastIndexOf("Leipzig"); // 22
+
+    mockGenerateObjectResult = {
+      entities: [
+        {
+          entity: "Leipzig",
+          type: "CITY",
+          // Report an offset closest to the second occurrence.
+          start: secondOccurrence + 2,
+          end: secondOccurrence + 2 + "Leipzig".length,
+          confidence: 0.9,
+        },
+      ],
+    };
+    mockGenerateObjectError = null;
+
+    const result = await detectAndRecogniseEntities(question, modelFactory);
+    expect(result!.entities).toHaveLength(1);
+    const e = result!.entities[0]!;
+    expect(e.start).toBe(secondOccurrence);
+    expect(question.slice(e.start, e.end)).toBe("Leipzig");
+    // Must have chosen the second occurrence, not the first.
+    expect(e.start).not.toBe(firstOccurrence);
+  });
+
+  test("drops an entity whose text does not appear anywhere in the question", async () => {
+    const question = "Wie viele Bäume gibt es in Connewitz?";
+    mockGenerateObjectResult = {
+      entities: [
+        {
+          entity: "Gohlis", // not present in the question at all
+          type: "DISTRICT",
+          start: 27,
+          end: 33,
+          confidence: 0.9,
+        },
+      ],
+    };
+    mockGenerateObjectError = null;
+    const result = await detectAndRecogniseEntities(question, modelFactory);
+    expect(result!.entities).toHaveLength(0);
+  });
+
+  test("keeps correctly-offset entities alongside auto-corrected ones in the same response", async () => {
+    const question = "Wie viele Linden stehen in Gohlis und Connewitz?";
+    const gohlisStart = question.indexOf("Gohlis");
+    const connewitzStart = question.indexOf("Connewitz");
+
+    mockGenerateObjectResult = {
+      entities: [
+        // Correct offsets — pass through unchanged.
+        {
+          entity: "Gohlis",
+          type: "DISTRICT",
+          start: gohlisStart,
+          end: gohlisStart + "Gohlis".length,
+          confidence: 0.95,
+        },
+        // Wrong offsets — should be auto-corrected.
+        {
+          entity: "Connewitz",
+          type: "DISTRICT",
+          start: connewitzStart + 5,
+          end: connewitzStart + 5 + "Connewitz".length,
+          confidence: 0.93,
+        },
+      ],
+    };
+    mockGenerateObjectError = null;
+
+    const result = await detectAndRecogniseEntities(question, modelFactory);
+    expect(result!.entities).toHaveLength(2);
+    for (const e of result!.entities) {
+      expect(question.slice(e.start, e.end)).toBe(e.entity);
+    }
+  });
+
+  // --- JSON extraction from markdown-wrapped responses (claude case) --------
+
+  test("recovers entities when generateObject throws with markdown-wrapped JSON (claude-3.5-haiku case)", async () => {
+    const question = "Wie viel wurde im Stadtteil Connewitz gegossen?";
+    const correctStart = question.indexOf("Connewitz"); // 28
+    const nerdPayload = {
+      entities: [
+        {
+          entity: "Connewitz",
+          type: "DISTRICT",
+          start: correctStart,
+          end: correctStart + "Connewitz".length,
+          confidence: 0.95,
+        },
+      ],
+    };
+    // Simulate the exact pattern from the claude-3.5-haiku error log:
+    // model wraps its JSON in a markdown code fence.
+    const claudeRawText =
+      "I'll help you detect and recognize the named entities in this question. Here's the analysis:\n\n" +
+      "```json\n" +
+      JSON.stringify(nerdPayload, null, 2) +
+      "\n```\n\n" +
+      'Explanation: "Connewitz" is a DISTRICT type entity in the Leipzig tree QA pipeline.';
+
+    const parseError = Object.assign(new Error("No object generated: could not parse the response."), {
+      name: "AI_NoObjectGeneratedError",
+      text: claudeRawText,
+    });
+    setError(parseError);
+
+    const result = await detectAndRecogniseEntities(question, modelFactory);
+
+    expect(result).not.toBeNull();
+    expect(result!.entities).toHaveLength(1);
+    const e = result!.entities[0]!;
+    expect(e.entity).toBe("Connewitz");
+    expect(e.type).toBe("DISTRICT");
+    expect(question.slice(e.start, e.end)).toBe("Connewitz");
+  });
+
+  test("recovers entities when generateObject throws with AI_JSONParseError containing markdown JSON", async () => {
+    const question = "Welche Bäume stehen in Gohlis?";
+    const gohlisStart = question.indexOf("Gohlis");
+    const nerdPayload = {
+      entities: [
+        {
+          entity: "Gohlis",
+          type: "DISTRICT",
+          start: gohlisStart,
+          end: gohlisStart + "Gohlis".length,
+          confidence: 0.93,
+        },
+      ],
+    };
+    const rawText = "Analysis:\n```json\n" + JSON.stringify(nerdPayload) + "\n```\nDone.";
+    const jsonParseError = Object.assign(new Error("JSON parsing failed: Text: " + rawText), {
+      name: "AI_JSONParseError",
+      text: rawText,
+    });
+    setError(jsonParseError);
+
+    const result = await detectAndRecogniseEntities(question, modelFactory);
+
+    expect(result).not.toBeNull();
+    expect(result!.entities).toHaveLength(1);
+    expect(result!.entities[0]!.entity).toBe("Gohlis");
+    expect(question.slice(result!.entities[0]!.start, result!.entities[0]!.end)).toBe("Gohlis");
+  });
+
+  test("returns null when the markdown-wrapped response contains JSON that fails schema validation", async () => {
+    const badText = 'Here:\n```json\n{"wrong_shape":true}\n```\nEnd.';
+    const parseError = Object.assign(new Error("parse fail"), {
+      name: "AI_NoObjectGeneratedError",
+      text: badText,
+    });
+    setError(parseError);
+
+    // All 3 retries will also fail (mockGenerateObjectError stays set).
+    const result = await detectAndRecogniseEntities("Wie viele Bäume?", modelFactory);
+    expect(result).toBeNull();
+  });
+
   // --- open / custom entity types ------------------------------------------
 
   test("accepts custom entity types not in KNOWN_ENTITY_TYPES", async () => {

@@ -244,6 +244,69 @@ describe("classifyExpectedAnswerType", () => {
     const result = await classifyExpectedAnswerType("Wie viele Bäume gibt es?", throwingFactory);
     expect(result).toBeNull();
   });
+
+  // --- JSON extraction from markdown-wrapped responses (claude case) --------
+
+  test("recovers EAT classification when generateObject throws with markdown-wrapped JSON (claude-3.5-haiku case)", async () => {
+    const question = "Wie viel wurde im Stadtteil Connewitz gegossen?";
+    const eatPayload = {
+      expectedAnswerType: "number",
+      confidence: 0.95,
+      reasoning: "The question asks for a quantity with 'Wie viel', indicating a numeric answer.",
+    };
+    // Simulate the exact pattern from the claude-3.5-haiku error log:
+    // model wraps its JSON in a markdown code fence instead of returning clean JSON.
+    const claudeRawText =
+      "I'll classify the expected answer type for this question.\n\n" +
+      "```json\n" +
+      JSON.stringify(eatPayload, null, 2) +
+      "\n```\n\n" +
+      'The expected answer type is "number" since "Wie viel" (How much/many) asks for a numeric value.';
+
+    const parseError = Object.assign(new Error("No object generated: could not parse the response."), {
+      name: "AI_NoObjectGeneratedError",
+      text: claudeRawText,
+    });
+    mockGenerateObjectError = parseError;
+
+    const result = await classifyExpectedAnswerType(question, modelFactory);
+
+    expect(result).not.toBeNull();
+    expect(result!.expectedAnswerType).toBe("number");
+    expect(result!.confidence).toBe(0.95);
+    expect(result!.reasoning).toContain("Wie viel");
+  });
+
+  test("recovers EAT classification when generateObject throws AI_JSONParseError with markdown JSON", async () => {
+    const question = "Welche Bäume stehen in Gohlis?";
+    const eatPayload = { expectedAnswerType: "list", confidence: 0.92 };
+    const rawText = "Classification:\n```json\n" + JSON.stringify(eatPayload) + "\n```\nDone.";
+    const jsonParseError = Object.assign(new Error("JSON parsing failed: Text: " + rawText), {
+      name: "AI_JSONParseError",
+      text: rawText,
+    });
+    mockGenerateObjectError = jsonParseError;
+
+    const result = await classifyExpectedAnswerType(question, modelFactory);
+
+    expect(result).not.toBeNull();
+    expect(result!.expectedAnswerType).toBe("list");
+    expect(result!.confidence).toBe(0.92);
+  });
+
+  test("returns null when the markdown-wrapped response contains JSON that fails schema validation", async () => {
+    // Schema requires `expectedAnswerType` — this JSON is missing it.
+    const badText = 'Here:\n```json\n{"wrong_key":true}\n```\nEnd.';
+    const parseError = Object.assign(new Error("parse fail"), {
+      name: "AI_NoObjectGeneratedError",
+      text: badText,
+    });
+    mockGenerateObjectError = parseError;
+
+    // All 3 retries will also fail (mockGenerateObjectError stays set).
+    const result = await classifyExpectedAnswerType("Wie viele Bäume?", modelFactory);
+    expect(result).toBeNull();
+  });
 });
 
 // ---------------------------------------------------------------------------
