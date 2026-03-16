@@ -25,11 +25,11 @@ describe("#fetchNerAnnotations", () => {
     const mockSelectSparql = mock(async () => [
       {
         annotation: { value: "urn:qanary:annotation:test-001" },
-        target:     { value: "urn:qanary:target:test-001" },
+        target: { value: "urn:qanary:target:test-001" },
         entityType: { value: "urn:leipzigtreechat:entityType:TREE" },
-        score:      { value: "0.99" },
-        start:      { value: "44" },
-        end:        { value: "57" },
+        score: { value: "0.99" },
+        start: { value: "44" },
+        end: { value: "57" },
       },
     ]);
 
@@ -54,7 +54,7 @@ describe("#fetchNerAnnotations", () => {
     expect(annotations[0]?.score).toBe(0.99);
     expect(annotations[0]?.start).toBe(44);
     expect(annotations[0]?.end).toBe(57);
-    expect(annotations[0]?.exactQuote).toBe("Gemeine Esche"); 
+    expect(annotations[0]?.exactQuote).toBe("Gemeine Esche");
   });
 
   test("returns empty array when no annotations found", async () => {
@@ -81,11 +81,11 @@ describe("#disambiguate", () => {
   test("successfully disambiguates TREE entity", async () => {
     const mockSelectSparql = mock(async () => [
       {
-        urn:  { value: "urn:de:leipzig:trees:resource:baumkataster:ga_Gemeine_Esche:Fraxinus_excelsior" },
+        urn: { value: "urn:de:leipzig:trees:resource:baumkataster:ga_Gemeine_Esche:Fraxinus_excelsior" },
         name: { value: "Gemeine Esche" },
       },
       {
-        urn:  { value: "urn:de:leipzig:trees:resource:baumkataster:ga_Winter_Linde:Tilia_cordata" },
+        urn: { value: "urn:de:leipzig:trees:resource:baumkataster:ga_Winter_Linde:Tilia_cordata" },
         name: { value: "Winter-Linde" },
       },
     ]);
@@ -98,14 +98,14 @@ describe("#disambiguate", () => {
     const { disambiguate: fn } = await import("../implementation");
 
     const result = await fn({
-      annotationUri:   "urn:qanary:annotation:test-001",
+      annotationUri: "urn:qanary:annotation:test-001",
       spotResourceUri: "urn:qanary:target:test-001",
-      exactQuote:      "Gemeine Esche",
-      entityType:      "urn:leipzigtreechat:entityType:TREE",
-      score:           0.99,
-      start:           37,
-      end:             50,
-      questionUri:     "http://localhost:8080/question/stored-question__text_test",
+      exactQuote: "Gemeine Esche",
+      entityType: "urn:leipzigtreechat:entityType:TREE",
+      score: 0.99,
+      start: 37,
+      end: 50,
+      questionUri: "http://localhost:8080/question/stored-question__text_test",
     });
 
     expect(result).not.toBeNull();
@@ -117,7 +117,7 @@ describe("#disambiguate", () => {
   test("successfully disambiguates DISTRICT entity", async () => {
     const mockSelectSparql = mock(async () => [
       {
-        urn:  { value: "urn:de:leipzig:trees:resource:ortsteile:30" },
+        urn: { value: "urn:de:leipzig:trees:resource:ortsteile:30" },
         name: { value: "Connewitz" },
       },
     ]);
@@ -130,14 +130,14 @@ describe("#disambiguate", () => {
     const { disambiguate: fn } = await import("../implementation");
 
     const result = await fn({
-      annotationUri:   "urn:qanary:annotation:test-002",
+      annotationUri: "urn:qanary:annotation:test-002",
       spotResourceUri: "urn:qanary:target:test-002",
-      exactQuote:      "Connewitz",
-      entityType:      "urn:leipzigtreechat:entityType:DISTRICT",
-      score:           0.99,
-      start:           28,
-      end:             37,
-      questionUri:     "http://localhost:8080/question/stored-question__text_test",
+      exactQuote: "Connewitz",
+      entityType: "urn:leipzigtreechat:entityType:DISTRICT",
+      score: 0.99,
+      start: 28,
+      end: 37,
+      questionUri: "http://localhost:8080/question/stored-question__text_test",
     });
 
     expect(result).not.toBeNull();
@@ -149,14 +149,14 @@ describe("#disambiguate", () => {
     const { disambiguate: fn } = await import("../implementation");
 
     const result = await fn({
-      annotationUri:   "urn:qanary:annotation:test-003",
+      annotationUri: "urn:qanary:annotation:test-003",
       spotResourceUri: "urn:qanary:target:test-003",
-      exactQuote:      "Test",
-      entityType:      "urn:leipzigtreechat:entityType:UNSUPPORTED",
-      score:           0.95,
-      start:           0,
-      end:             4,
-      questionUri:     "http://localhost:8080/question/stored-question__text_test",
+      exactQuote: "Test",
+      entityType: "urn:leipzigtreechat:entityType:UNSUPPORTED",
+      score: 0.95,
+      start: 0,
+      end: 4,
+      questionUri: "http://localhost:8080/question/stored-question__text_test",
     });
 
     expect(result).toBeNull();
@@ -171,14 +171,14 @@ describe("#disambiguate", () => {
     const { disambiguate: fn } = await import("../implementation");
 
     const result = await fn({
-      annotationUri:   "urn:qanary:annotation:test-004",
+      annotationUri: "urn:qanary:annotation:test-004",
       spotResourceUri: "urn:qanary:target:test-004",
-      exactQuote:      "Unbekannter Baum",
-      entityType:      "urn:leipzigtreechat:entityType:TREE",
-      score:           0.95,
-      start:           0,
-      end:             16,
-      questionUri:     "http://localhost:8080/question/stored-question__text_test",
+      exactQuote: "Unbekannter Baum",
+      entityType: "urn:leipzigtreechat:entityType:TREE",
+      score: 0.95,
+      start: 0,
+      end: 16,
+      questionUri: "http://localhost:8080/question/stored-question__text_test",
     });
 
     expect(result).toBeNull();
@@ -188,7 +188,7 @@ describe("#disambiguate", () => {
     mock.module("@leipzigtreechat/shared", () => ({
       selectSparql: mock(async () => [
         {
-          urn:  { value: "urn:de:leipzig:trees:resource:baumkataster:ga_Winter_Linde:Tilia_cordata" },
+          urn: { value: "urn:de:leipzig:trees:resource:baumkataster:ga_Winter_Linde:Tilia_cordata" },
           name: { value: "Völlig anderer Name" },
         },
       ]),
@@ -198,14 +198,14 @@ describe("#disambiguate", () => {
     const { disambiguate: fn } = await import("../implementation");
 
     const result = await fn({
-      annotationUri:   "urn:qanary:annotation:test-005",
+      annotationUri: "urn:qanary:annotation:test-005",
       spotResourceUri: "urn:qanary:target:test-005",
-      exactQuote:      "Gemeine Esche",
-      entityType:      "urn:leipzigtreechat:entityType:TREE",
-      score:           0.95,
-      start:           0,
-      end:             13,
-      questionUri:     "http://localhost:8080/question/stored-question__text_test",
+      exactQuote: "Gemeine Esche",
+      entityType: "urn:leipzigtreechat:entityType:TREE",
+      score: 0.95,
+      start: 0,
+      end: 13,
+      questionUri: "http://localhost:8080/question/stored-question__text_test",
     });
 
     expect(result).toBeNull();
@@ -229,19 +229,19 @@ describe("#writeDisambiguationAnnotation", () => {
     await fn(
       { endpoint: "http://localhost:8890/sparql/", inGraph: "urn:test:graph", outGraph: "urn:test:graph" },
       {
-        annotationUri:   "urn:qanary:annotation:test-001",
+        annotationUri: "urn:qanary:annotation:test-001",
         spotResourceUri: "urn:qanary:target:test-001",
-        exactQuote:      "Connewitz",
-        entityType:      "urn:leipzigtreechat:entityType:DISTRICT",
-        score:           0.99,
-        start:           28,
-        end:             37,
-        questionUri:     "http://localhost:8080/question/stored-question__text_test",
+        exactQuote: "Connewitz",
+        entityType: "urn:leipzigtreechat:entityType:DISTRICT",
+        score: 0.99,
+        start: 28,
+        end: 37,
+        questionUri: "http://localhost:8080/question/stored-question__text_test",
       },
       {
         entityUrn: "urn:de:leipzig:trees:resource:ortsteile:30",
-        score:     0.99,
-        label:     "Connewitz",
+        score: 0.99,
+        label: "Connewitz",
       }
     );
 
