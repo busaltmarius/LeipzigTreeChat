@@ -1,5 +1,4 @@
-import { getLlmModel } from "@leipzigtreechat/qanary-component-helpers";
-import { generateObject } from "ai";
+import { generateObjectWithRetry, getLlmModel } from "@leipzigtreechat/qanary-component-helpers";
 import { z } from "zod";
 
 /**
@@ -132,11 +131,109 @@ Rules:
 7. Return an empty entities array if the question contains no named entities worth annotating.`;
 
 // ---------------------------------------------------------------------------
+// Offset helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Attempts to fix a single entity whose character offsets do not match the
+ * question text.
+ *
+ * Algorithm:
+ *  1. Find every occurrence of `entity.entity` (verbatim) in the question.
+ *  2. Pick the occurrence whose start index is closest to the originally
+ *     reported `entity.start` (handles rare cases where the same substring
+ *     appears more than once).
+ *  3. Return a new entity object with corrected start/end, or `null` when
+ *     the entity text cannot be found anywhere in the question.
+ *
+ * This repairs a known failure mode of some LLMs (e.g. deepseek-v3.2 via
+ * OpenRouter) that return the correct entity text but wrong character offsets.
+ */
+function correctEntityOffsets(entity: NerdEntity, question: string): NerdEntity | null {
+  const occurrences: number[] = [];
+  let searchFrom = 0;
+
+  while (true) {
+    const idx = question.indexOf(entity.entity, searchFrom);
+    if (idx === -1) break;
+    occurrences.push(idx);
+    searchFrom = idx + 1;
+  }
+
+  if (occurrences.length === 0) {
+    console.warn(`[nerd-simple] Cannot find entity "${entity.entity}" anywhere in "${question}", dropping.`);
+    return null;
+  }
+
+  // Pick the occurrence closest to the originally reported start offset.
+  const correctedStart = occurrences.reduce((best, idx) =>
+    Math.abs(idx - entity.start) < Math.abs(best - entity.start) ? idx : best
+  );
+  const correctedEnd = correctedStart + entity.entity.length;
+
+  console.warn(
+    `[nerd-simple] Auto-corrected offsets for "${entity.entity}": ` +
+      `[${entity.start}, ${entity.end}) → [${correctedStart}, ${correctedEnd}) ` +
+      `in "${question}"`
+  );
+
+  return { ...entity, start: correctedStart, end: correctedEnd };
+}
+
+/**
+ * Validates and (where possible) repairs the character offsets of every
+ * entity returned by the LLM.
+ *
+ * - Entities whose offsets already match are passed through unchanged.
+ * - Entities with wrong offsets are auto-corrected if the entity text can be
+ *   found in the question.
+ * - Entities whose text does not appear anywhere in the question are dropped.
+ */
+function sanitiseEntities(entities: NerdEntity[], question: string): NerdEntity[] {
+  const result: NerdEntity[] = [];
+  let correctedCount = 0;
+  let droppedCount = 0;
+
+  for (const entity of entities) {
+    if (question.slice(entity.start, entity.end) === entity.entity) {
+      // Offsets are already correct.
+      result.push(entity);
+      continue;
+    }
+
+    const fixed = correctEntityOffsets(entity, question);
+    if (fixed !== null) {
+      result.push(fixed);
+      correctedCount++;
+    } else {
+      droppedCount++;
+    }
+  }
+
+  if (correctedCount > 0) {
+    console.warn(`[nerd-simple] Auto-corrected ${correctedCount} entity/entities with bad offsets.`);
+  }
+  if (droppedCount > 0) {
+    console.warn(`[nerd-simple] Dropped ${droppedCount} entity/entities whose text was not found in the question.`);
+  }
+
+  return result;
+}
+
+// ---------------------------------------------------------------------------
 // Classifier function
 // ---------------------------------------------------------------------------
 
 /**
  * Calls the LLM to detect and recognise all named entities in a question.
+ *
+ * Uses {@link generateObjectWithRetry} which transparently handles two common
+ * LLM failure modes:
+ *  - JSON wrapped in markdown code fences (e.g. claude-3.5-haiku via OpenRouter)
+ *  - Up to 3 total LLM calls on parse failures
+ *
+ * Additionally, entity offsets that are wrong but recoverable (entity text
+ * found elsewhere in the question) are auto-corrected rather than dropped.
  *
  * @param question       The natural-language question to analyse.
  * @param modelFactory   Optional model factory override — used in tests to
@@ -151,35 +248,18 @@ export const detectAndRecogniseEntities = async (
   try {
     const model = modelFactory();
 
-    const { object } = await generateObject({
+    const { object } = await generateObjectWithRetry({
       model,
       schema: NerdResponseSchema,
       system: SYSTEM_PROMPT,
       prompt: `Detect and recognise all named entities in the following question:\n\n"${question}"`,
     });
 
-    // Sanitise: drop any entity whose span doesn't match the question text,
-    // as a safety net against hallucinated offsets.
-    const validated = object.entities.filter((e) => {
-      const slice = question.slice(e.start, e.end);
-      if (slice !== e.entity) {
-        console.warn(
-          `[nerd-simple] Dropping entity with mismatched offsets: ` +
-            `expected "${e.entity}", got slice "${slice}" ` +
-            `at [${e.start}, ${e.end}) in "${question}"`
-        );
-        return false;
-      }
-      return true;
-    });
+    const entities = sanitiseEntities(object.entities, question);
 
-    if (validated.length !== object.entities.length) {
-      console.warn(
-        `[nerd-simple] Dropped ${object.entities.length - validated.length} entity/entities with bad offsets.`
-      );
-    }
+    console.log(`[nerd-simple] Found ${entities.length} entity/entities for "${question}":`, entities);
 
-    return { entities: validated };
+    return { entities };
   } catch (error) {
     console.error(`[nerd-simple] Failed to detect entities for question "${question}":`, error);
     return null;

@@ -5,6 +5,7 @@ export {
   type IAnnotationInformation,
   type IAnnotationInformationRange,
 } from "./create-annotation.js";
+export { extractJsonFromText, generateObjectWithRetry } from "./generate-object-retry.js";
 export { getQuestion } from "./get-question.js";
 export { getQuestionUri } from "./get-question-uri.js";
 export { getLlmModel } from "./llm-provider.js";

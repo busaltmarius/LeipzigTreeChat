@@ -1,6 +1,5 @@
-import { getLlmModel } from "@leipzigtreechat/qanary-component-helpers";
+import { generateObjectWithRetry, getLlmModel } from "@leipzigtreechat/qanary-component-helpers";
 import { QANARY_EAT_PREFIX } from "@leipzigtreechat/shared";
-import { generateObject } from "ai";
 import { z } from "zod";
 
 /**
@@ -80,7 +79,7 @@ export const classifyExpectedAnswerType = async (
   try {
     const model = modelFactory();
 
-    const { object } = await generateObject({
+    const { object } = await generateObjectWithRetry({
       model,
       schema: EatResponseSchema,
       system: SYSTEM_PROMPT,
