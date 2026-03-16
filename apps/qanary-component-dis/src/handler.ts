@@ -1,91 +1,70 @@
 import type { IQanaryComponentMessageHandler } from "@leipzigtreechat/qanary-component-core";
-import {
-  createAnnotationInKnowledgeGraph,
-  type IAnnotationInformation,
-} from "@leipzigtreechat/qanary-component-helpers";
-//import {getAnnotations, type TODO} from "@leipzigtreechat/qanary-component-helpers";
-import { getQuestion, type IQanaryMessage, QANARY_NERD_PREFIX, QANARY_PREFIX } from "@leipzigtreechat/shared";
+import type { IQanaryMessage } from "@leipzigtreechat/qanary-component-helpers";
+import { getQuestionUri } from "@leipzigtreechat/qanary-component-helpers";
+import { disambiguate, fetchNerAnnotations, writeDisambiguationAnnotation } from "./implementation";
+import type { DisambiguationResult, NerAnnotation } from "./types";
+
+async function disambiguateNERResults(message: IQanaryMessage): Promise<void> {
+  const questionUri = await getQuestionUri(message);
+
+  if (!questionUri) {
+    console.warn("No question URI found in message.");
+    return;
+  }
+
+  console.log(`Starting disambiguation for question: ${questionUri}`);
+
+  // Fetch all NER annotations for this question
+  const annotations = await fetchNerAnnotations(message, questionUri);
+  console.log(`Found ${annotations.length} NER annotation(s)`);
+
+  if (annotations.length === 0) {
+    console.log("No NER annotations to disambiguate.");
+    return;
+  }
+
+  // Disambiguate each annotation
+  const results = await Promise.all(
+    annotations.map(async (annotation: NerAnnotation) => {
+      try {
+        const result = await disambiguate(annotation);
+        return { annotation, result };
+      } catch (error) {
+        console.error(`Failed to disambiguate "${annotation.exactQuote}":`, error);
+        return { annotation, result: null };
+      }
+    })
+  );
+
+  // Write successful disambiguations back to triplestore
+  const writePromises = results
+    .filter(({ result }) => result !== null)
+    .map(({ annotation, result }) =>
+      writeDisambiguationAnnotation(message, annotation, result as DisambiguationResult)
+    );
+
+  await Promise.all(writePromises);
+
+  const succeeded = results.filter(({ result }) => result !== null).length;
+  console.log(`Done: ${succeeded}/${annotations.length} entities disambiguated`);
+}
 
 /**
  * An event handler for incoming messages of the Qanary pipeline
  * Exported only for testing purposes
  * @param message incoming qanary pipeline message
  */
-// eslint-disable-next-line sonarjs/no-invariant-returns
 export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMessage) => {
-  console.log(message);
+  console.log("Disambiguation component received message:", message);
 
-  const question = await getQuestion(message);
-  if (!question) {
-    console.warn("No question found in message.");
-    return message;
+  try {
+    // Run the disambiguation pipeline
+    await disambiguateNERResults(message);
+    console.log("Disambiguation pipeline completed successfully");
+  } catch (error) {
+    console.error("Error in disambiguation pipeline:", error);
+    // Don't throw - return the original message to keep the pipeline running
   }
-  console.log("Question:", question);
-
-  //Richtiger Aufruf aus DB: const annotations = await getAnnotations(question, `${QANARY_PREFIX}AnnotationOfNerd`);
-  type NerdEntity = {
-    entity: string;
-    entityType: string;
-  };
-
-  const entities: Array<NerdEntity> = [
-    { entity: "Connewitz", entityType: "Stadtteil" },
-    { entity: "132", entityType: "Hausnummer" },
-    { entity: "04277", entityType: "Postleitzahl" },
-    { entity: "Karl-Liebknecht-Str.", entityType: "Straße" },
-    { entity: "heute", entityType: "Datum" },
-    { entity: "Leipzig", entityType: "Stadt" },
-  ];
-
-  const disAnnotations: IAnnotationInformation[] = [];
-
-  for (const { entity, entityType } of entities) {
-    const resolved = await resolveAnnotation(entity, entityType);
-    disAnnotations.push(...resolved);
-    console.log(`Disambiguation for Entity '${entity}':`, resolved);
-  }
-
-  /*for (const annotation of disAnnotations) {
-    await createAnnotationInKnowledgeGraph({
-      message: message,
-      componentName: "qanary-component-dis",
-      annotation,
-      annotationType: `${QANARY_PREFIX}AnnotationOfDis`,
-    });
-  }*/
-
-  console.log("Done");
 
   return message;
-};
-
-const resolveAnnotation = async (entity: string, entityType: string): Promise<Array<IAnnotationInformation>> => {
-  switch (`${entity}|${entityType}`) {
-    case "Connewitz|Stadtteil":
-      return [
-        {
-          candidates: [
-            {
-              urn: "urn:de:leipzig:trees:resource:ortsteile:30",
-              confidence: 0.99,
-            },
-          ],
-        },
-      ];
-    case "Leipzig|Stadt":
-      return [
-        {
-          candidates: [],
-        },
-      ];
-    case "Karl-Liebknecht-Str.|Straße":
-      return [
-        {
-          candidates: [],
-        },
-      ];
-    default:
-      console.warn("Unrecognized entity:", entity);
-      return [];
-  }
 };
