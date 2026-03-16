@@ -84,7 +84,7 @@ INSERT {
     }
 }
 WHERE {
-    BIND (IRI(str(RAND())) AS ?annotation)
+    BIND (IRI(CONCAT("urn:qanary:annotation:", str(RAND()))) AS ?annotation)
     BIND (now() as ?time)
 }`;
 

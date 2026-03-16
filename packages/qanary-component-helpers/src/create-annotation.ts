@@ -85,12 +85,12 @@ INSERT {
         ] ;
             oa:hasBody '${annotation.value}' ;
             oa:score '${annotation.confidence}'^^xsd:double ;
-            oa:annotatedBy <urn:qanary:${componentName}> ;
+            oa:annotatedBy <urn:${componentName}> ;
             oa:annotatedAt ?time .
     }
 }
 WHERE {
-    BIND (IRI(str(RAND())) AS ?annotation)
+    BIND (IRI(CONCAT("urn:qanary:annotation:", str(RAND()))) AS ?annotation)
     BIND (now() as ?time)
 }`;
 
