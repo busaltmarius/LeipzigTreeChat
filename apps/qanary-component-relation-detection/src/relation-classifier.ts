@@ -13,13 +13,13 @@ export const KNOWN_RELATION_TYPES = [
 export type KnownRelationType = (typeof KNOWN_RELATION_TYPES)[number];
 
 export interface RelationClassification {
-  relationType: string;
+  relationType: KnownRelationType;
   confidence: number;
 }
 
 const RelationClassificationSchema = z.object({
   relationType: z
-    .string()
+    .enum(KNOWN_RELATION_TYPES)
     .describe("Relation type in SCREAMING_SNAKE_CASE. " + "Prefer one of: " + KNOWN_RELATION_TYPES.join(", ") + "."),
   confidence: z.number().min(0).max(1).describe("Confidence score between 0.0 and 1.0."),
 });

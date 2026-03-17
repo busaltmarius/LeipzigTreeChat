@@ -1,7 +1,7 @@
 import type { IQanaryComponentMessageHandler } from "@leipzigtreechat/qanary-component-core";
 import { getEndpoint, getOutGraph, getQuestionUri, updateSparql } from "@leipzigtreechat/qanary-component-helpers";
 import { getQuestion, type IQanaryMessage, QANARY_PREFIX } from "@leipzigtreechat/shared";
-import { classifyRelationType } from "./relation-classifier.ts";
+import { classifyRelationType, KNOWN_RELATION_TYPES, type KnownRelationType } from "./relation-classifier.ts";
 
 /**
  * An event handler for incoming messages of the Qanary pipeline
@@ -25,8 +25,15 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
     return message;
   }
 
-  const relationType = relationResult.relationType;
-  const relationBodyUri = `urn:leipzigtreechat:intent:${relationType}`;
+  const rawRelationType = relationResult.relationType;
+  const normalisedRelationType = typeof rawRelationType === "string" ? rawRelationType.trim().toUpperCase() : "";
+  if (!isValidRelationType(normalisedRelationType)) {
+    console.warn(
+      `[relation-detection] Invalid relation type "${rawRelationType}" for question "${question}". Skipping annotation.`
+    );
+    return message;
+  }
+  const relationBodyUri = `urn:leipzigtreechat:intent:${normalisedRelationType}`;
 
   console.log(`[relation-detection] Relation for question "${question}":`, relationResult);
 
@@ -41,6 +48,11 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
   console.log("Done");
 
   return message;
+};
+
+const KNOWN_RELATION_TYPE_SET = new Set<string>(KNOWN_RELATION_TYPES);
+const isValidRelationType = (relationType: string): relationType is KnownRelationType => {
+  return KNOWN_RELATION_TYPE_SET.has(relationType);
 };
 
 interface ICreateRelationAnnotationOptions {
@@ -58,9 +70,17 @@ const createRelationAnnotation = async ({
   componentUri,
   annotationType,
 }: ICreateRelationAnnotationOptions): Promise<void> => {
-  const outGraph = getOutGraph(message) ?? "";
-  const endpointUrl = getEndpoint(message) ?? "";
-  const questionUri = (await getQuestionUri(message)) ?? "";
+  const outGraph = getOutGraph(message);
+  const endpointUrl = getEndpoint(message);
+  const questionUri = await getQuestionUri(message);
+  if (!outGraph || !endpointUrl || !questionUri) {
+    console.error("[relation-detection] Missing required data for relation annotation:", {
+      outGraph,
+      endpointUrl,
+      questionUri,
+    });
+    return;
+  }
 
   const normalisedAnnotationType =
     String(annotationType).startsWith("http") || String(annotationType).startsWith("urn:")
@@ -76,7 +96,7 @@ INSERT {
     ?annotation a ${normalisedAnnotationType} ;
       oa:hasTarget <${questionUri}> ;
       oa:hasBody <${relationBodyUri}> ;
-      qa:score '${confidence}'^^xsd:double ;
+      oa:score '${confidence}'^^xsd:double ;
       oa:annotatedBy <${componentUri}> ;
       oa:annotatedAt ?time .
   }

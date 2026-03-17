@@ -1,17 +1,25 @@
 import { beforeEach, describe, expect, mock, test } from "bun:test";
+import type { KnownRelationType } from "../relation-classifier.ts";
 
-let mockRelationResult: { relationType: string; confidence: number } | null = null;
+let mockRelationResult: { relationType: KnownRelationType; confidence: number } | null = null;
 let mockQuestion: string | null = null;
 
 // Mock the classifier
 mock.module("../relation-classifier.ts", () => ({
   classifyRelationType: mock(async () => mockRelationResult),
+  KNOWN_RELATION_TYPES: [
+    "UNKNOWN",
+    "AMOUNT_WATERED_DISTRICT",
+    "WATER_INTAKE_ADDRESS",
+    "WATER_TREE_AT_ADDRESS_AT_DATE",
+    "DESCRIBE_TREES_REGION",
+  ],
 }));
 
 // Mock shared helpers
 mock.module("@leipzigtreechat/shared", () => ({
   getQuestion: mock(async () => mockQuestion),
-  QANARY_PREFIX: "http://www.wdaqua.eu/qa#",
+  QANARY_PREFIX: "urn:qanary#",
 }));
 
 const mockUpdateSparql = mock(async () => {});
@@ -36,7 +44,7 @@ describe("#Component handler", () => {
 
   test("handler returns the original message unchanged when no question is present", async () => {
     mockQuestion = null;
-    const message = { graphId: "test-1" };
+    const message = { graphId: "test-1" } as any;
     const result = await handler(message);
     expect(result).toStrictEqual(message);
   });
@@ -50,7 +58,7 @@ describe("#Component handler", () => {
   test("returns the original message unchanged when the LLM returns null", async () => {
     mockQuestion = "Some question?";
     mockRelationResult = null;
-    const message = { graphId: "test-2" };
+    const message = { graphId: "test-2" } as any;
     const result = await handler(message);
     expect(result).toStrictEqual(message);
   });
@@ -65,12 +73,12 @@ describe("#Component handler", () => {
     await handler({});
 
     expect(mockUpdateSparql).toHaveBeenCalledTimes(1);
-    const query = mockUpdateSparql.mock.calls[0][1];
+    const query = String(mockUpdateSparql.mock.calls[0]?.at(1) ?? "");
 
-    expect(query).toContain("a <http://www.wdaqua.eu/qa#AnnotationOfRelation>");
+    expect(query).toContain("a <urn:qanary#AnnotationOfRelation>");
     expect(query).toContain("oa:hasTarget <urn:qanary:question:123>");
     expect(query).toContain("oa:hasBody <urn:leipzigtreechat:intent:AMOUNT_WATERED_DISTRICT>");
-    expect(query).toContain("qa:score '0.95'^^xsd:double");
+    expect(query).toContain("oa:score '0.95'^^xsd:double");
     expect(query).toContain("oa:annotatedBy <urn:leipzigtreechat:component:relation-detection>");
   });
 });

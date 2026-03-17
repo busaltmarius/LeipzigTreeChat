@@ -6,7 +6,7 @@ let mockDataResults: any[] = [];
 
 // Mock shared helpers
 mock.module("@leipzigtreechat/shared", () => ({
-  QANARY_PREFIX: "http://www.wdaqua.eu/qa#",
+  QANARY_PREFIX: "urn:qanary#",
 }));
 
 const mockUpdateSparql = mock(async () => {});
@@ -69,8 +69,8 @@ describe("#Sparql Generation Component", () => {
     expect(mockSelectSparql).toHaveBeenCalledTimes(2);
     expect(mockUpdateSparql).toHaveBeenCalledTimes(1);
 
-    const query = mockUpdateSparql.mock.calls[0][1];
-    expect(query).toContain("a <http://www.wdaqua.eu/qa#AnnotationOfAnswerJson>");
+    const query = String(mockUpdateSparql.mock.calls[0]?.at(1) ?? "");
+    expect(query).toContain("a <urn:qanary#AnnotationOfAnswerJson>");
     expect(query).toContain("oa:hasBody");
     // Check if JSON contains the results
     expect(query).toContain("http://leipzig.data.de/tree/1");

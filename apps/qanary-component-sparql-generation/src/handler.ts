@@ -23,6 +23,10 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
   }
 
   const inGraph = getInGraph(message);
+  if (!inGraph) {
+    console.warn("Missing inGraph");
+    return message;
+  }
 
   // 1. Load the relation (AnnotationOfRelation)
   const getRelationQuery = `
@@ -141,9 +145,17 @@ const createAnswerAnnotation = async ({
   componentUri,
   annotationType,
 }: ICreateAnswerAnnotationOptions): Promise<void> => {
-  const outGraph = getOutGraph(message) ?? "";
-  const endpointUrl = getEndpoint(message) ?? "";
-  const questionUri = (await getQuestionUri(message)) ?? "";
+  const outGraph = getOutGraph(message);
+  const endpointUrl = getEndpoint(message);
+  const questionUri = await getQuestionUri(message);
+  if (!outGraph || !endpointUrl || !questionUri) {
+    console.error("[sparql-generation] Missing required data for creating answer annotation:", {
+      outGraph,
+      endpointUrl,
+      questionUri,
+    });
+    return;
+  }
 
   const normalisedAnnotationType =
     String(annotationType).startsWith("http") || String(annotationType).startsWith("urn:")
@@ -159,7 +171,7 @@ INSERT {
     ?annotation a ${normalisedAnnotationType} ;
       oa:hasTarget <${questionUri}> ;
       oa:hasBody """${resultJson}"""^^xsd:string ;
-      qa:score '${confidence}'^^xsd:double ;
+      oa:score '${confidence}'^^xsd:double ;
       oa:annotatedBy <${componentUri}> ;
       oa:annotatedAt ?time .
   }
