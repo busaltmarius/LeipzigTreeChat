@@ -1,10 +1,5 @@
 import type { IQanaryComponentMessageHandler } from "@leipzigtreechat/qanary-component-core";
-import {
-  getEndpoint,
-  getOutGraph,
-  getQuestionUri,
-  updateSparql,
-} from "@leipzigtreechat/qanary-component-helpers";
+import { getEndpoint, getOutGraph, getQuestionUri, updateSparql } from "@leipzigtreechat/qanary-component-helpers";
 import { getQuestion, type IQanaryMessage, QANARY_PREFIX } from "@leipzigtreechat/shared";
 import { classifyRelationType } from "./relation-classifier.ts";
 

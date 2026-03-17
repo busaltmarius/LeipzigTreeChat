@@ -20,17 +20,8 @@ export interface RelationClassification {
 const RelationClassificationSchema = z.object({
   relationType: z
     .string()
-    .describe(
-      "Relation type in SCREAMING_SNAKE_CASE. " +
-        "Prefer one of: " +
-        KNOWN_RELATION_TYPES.join(", ") +
-        "."
-    ),
-  confidence: z
-    .number()
-    .min(0)
-    .max(1)
-    .describe("Confidence score between 0.0 and 1.0."),
+    .describe("Relation type in SCREAMING_SNAKE_CASE. " + "Prefer one of: " + KNOWN_RELATION_TYPES.join(", ") + "."),
+  confidence: z.number().min(0).max(1).describe("Confidence score between 0.0 and 1.0."),
 });
 
 const SYSTEM_PROMPT = `You are a relation detection component in a Qanary question-answering pipeline about urban trees in Leipzig, Germany.

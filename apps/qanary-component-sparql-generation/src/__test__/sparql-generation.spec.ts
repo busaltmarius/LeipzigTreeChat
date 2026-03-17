@@ -11,12 +11,12 @@ mock.module("@leipzigtreechat/shared", () => ({
 
 const mockUpdateSparql = mock(async () => {});
 const mockSelectSparql = mock(async (url: string, query: string) => {
-    // If it's the relation query
-    if (query.includes("AnnotationOfRelation")) {
-        return mockRelation ? [{ relationBody: { value: mockRelation } }] : [];
-    }
-    // If it's the predefined query (data)
-    return mockDataResults;
+  // If it's the relation query
+  if (query.includes("AnnotationOfRelation")) {
+    return mockRelation ? [{ relationBody: { value: mockRelation } }] : [];
+  }
+  // If it's the predefined query (data)
+  return mockDataResults;
 });
 
 mock.module("@leipzigtreechat/qanary-component-helpers", () => ({
@@ -59,8 +59,8 @@ describe("#Sparql Generation Component", () => {
   test("executes query and saves AnnotationOfAnswerJson for valid relation", async () => {
     mockRelation = "urn:leipzigtreechat:intent:DESCRIBE_TREES_REGION";
     mockDataResults = [
-        { species: { type: "uri", value: "http://leipzig.data.de/tree/1" } },
-        { species: { type: "uri", value: "http://leipzig.data.de/tree/2" } }
+      { species: { type: "uri", value: "http://leipzig.data.de/tree/1" } },
+      { species: { type: "uri", value: "http://leipzig.data.de/tree/2" } },
     ];
 
     await handler({});
@@ -68,13 +68,13 @@ describe("#Sparql Generation Component", () => {
     // 1 call for relation, 1 call for data
     expect(mockSelectSparql).toHaveBeenCalledTimes(2);
     expect(mockUpdateSparql).toHaveBeenCalledTimes(1);
-    
+
     const query = mockUpdateSparql.mock.calls[0][1];
     expect(query).toContain("a <http://www.wdaqua.eu/qa#AnnotationOfAnswerJson>");
     expect(query).toContain("oa:hasBody");
     // Check if JSON contains the results
     expect(query).toContain("http://leipzig.data.de/tree/1");
-    expect(query).toContain("vars\":[\"species\"]");
+    expect(query).toContain('vars":["species"]');
     expect(query).toContain("oa:annotatedBy <urn:leipzigtreechat:component:query_builder>");
   });
 });

@@ -66,7 +66,7 @@ describe("#Component handler", () => {
 
     expect(mockUpdateSparql).toHaveBeenCalledTimes(1);
     const query = mockUpdateSparql.mock.calls[0][1];
-    
+
     expect(query).toContain("a <http://www.wdaqua.eu/qa#AnnotationOfRelation>");
     expect(query).toContain("oa:hasTarget <urn:qanary:question:123>");
     expect(query).toContain("oa:hasBody <urn:leipzigtreechat:intent:AMOUNT_WATERED_DISTRICT>");
