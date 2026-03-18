@@ -42,9 +42,13 @@ export const ChatBotGraph = (
       }),
       { ends: [QANARY_ORCHESTRATOR_NODE_ID, CHATBOT_RESPONSE_NODE_ID, REQUEST_CLARIFICATION_NODE_ID, END, USER_INPUT_NODE_ID] }
     )
-    .addNode(QANARY_ORCHESTRATOR_NODE_ID, QanaryOrchestratorNode({ nextNode: ROUTER_NODE_ID, errorNode: USER_INPUT_NODE_ID }), {
-      ends: [ROUTER_NODE_ID, USER_INPUT_NODE_ID],
-    })
+    .addNode(
+      QANARY_ORCHESTRATOR_NODE_ID,
+      QanaryOrchestratorNode({ nextNode: CHATBOT_RESPONSE_NODE_ID, errorNode: USER_INPUT_NODE_ID }),
+      {
+        ends: [CHATBOT_RESPONSE_NODE_ID, USER_INPUT_NODE_ID],
+      }
+    )
     .addEdge(START, USER_INPUT_NODE_ID)
     .compile();
 };

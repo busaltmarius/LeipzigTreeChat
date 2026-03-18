@@ -185,7 +185,11 @@ export const Nodes = <const N extends string[]>(
         const responseData = yield* Effect.tryPromise({
           try: () => selectSparql(triplestoreUrl, getDataQuery) as Promise<Array<{ answer: { value: string } }>>,
           catch: (unknown: any) => new Error(`Error querying SPARQL endpoint: ${unknown}`),
-        }).pipe(Effect.catchAll((error: any) => Effect.logError(error).pipe(Effect.as([] as Array<{ answer: { value: string } }>))));
+        }).pipe(
+          Effect.catchAll((error: any) =>
+            Effect.logError(error).pipe(Effect.as([] as Array<{ answer: { value: string } }>))
+          )
+        );
 
         if (responseData.length > 0) {
           const first = responseData[0];
