@@ -194,11 +194,37 @@ export const Nodes = <const N extends string[]>(
           }
         }
 
+        // Query for all clarifications
+        const getClarificationsQuery = `
+          PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
+          SELECT ?clarification WHERE {
+            GRAPH <${graphUri}> {
+              ?annotationId a <urn:qanary#AnnotationOfClarification> ;
+                oa:hasBody ?clarification .
+            }
+          }
+        `;
+
+        const clarificationsData = yield* Effect.tryPromise({
+          try: () =>
+            selectSparql(triplestoreUrl, getClarificationsQuery) as Promise<
+              Array<{ clarification: { value: string } }>
+            >,
+          catch: (unknown: any) => new Error(`Error querying SPARQL endpoint: ${unknown}`),
+        }).pipe(
+          Effect.catchAll((error: any) =>
+            Effect.logError(error).pipe(Effect.as([] as Array<{ clarification: { value: string } }>))
+          )
+        );
+
+        const clarifications = clarificationsData.map((item) => item.clarification?.value || "").filter(Boolean);
+
         return command({
           update: {
             graph_uri: result.right.inGraph,
             clarification: new ClarificationConversation(new ConversationURI(result.right.inGraph)),
             qanary_answer: qanaryAnswer,
+            clarifications: clarifications,
           },
           goto: nextNode,
         });
