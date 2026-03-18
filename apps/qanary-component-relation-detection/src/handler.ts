@@ -1,9 +1,7 @@
 import type { IQanaryComponentMessageHandler } from "@leipzigtreechat/qanary-component-core";
-import {
-  createAnnotationInKnowledgeGraph,
-  type IAnnotationInformation,
-} from "@leipzigtreechat/qanary-component-helpers";
+import { getEndpoint, getOutGraph, getQuestionUri, updateSparql } from "@leipzigtreechat/qanary-component-helpers";
 import { getQuestion, type IQanaryMessage, QANARY_PREFIX } from "@leipzigtreechat/shared";
+import { classifyRelationType, KNOWN_RELATION_TYPES, type KnownRelationType } from "./relation-classifier.ts";
 
 /**
  * An event handler for incoming messages of the Qanary pipeline
@@ -21,13 +19,29 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
   }
   console.log("Question:", question);
 
-  const annotation: Array<IAnnotationInformation> = await getRelAnnotation(question);
-  console.log(`Relation for question '${question}':`, annotation);
+  const relationResult = await classifyRelationType(question);
+  if (!relationResult) {
+    console.warn(`[relation-detection] Could not classify relation for: "${question}"`);
+    return message;
+  }
 
-  await createAnnotationInKnowledgeGraph({
-    message: message,
-    componentName: "qanary-component-rel-simple",
-    annotation,
+  const rawRelationType = relationResult.relationType;
+  const normalisedRelationType = typeof rawRelationType === "string" ? rawRelationType.trim().toUpperCase() : "";
+  if (!isValidRelationType(normalisedRelationType)) {
+    console.warn(
+      `[relation-detection] Invalid relation type "${rawRelationType}" for question "${question}". Skipping annotation.`
+    );
+    return message;
+  }
+  const relationBodyUri = `urn:leipzigtreechat:intent:${normalisedRelationType}`;
+
+  console.log(`[relation-detection] Relation for question "${question}":`, relationResult);
+
+  await createRelationAnnotation({
+    message,
+    relationBodyUri,
+    confidence: relationResult.confidence,
+    componentUri: "urn:leipzigtreechat:component:relation-detection",
     annotationType: `${QANARY_PREFIX}AnnotationOfRelation`,
   });
 
@@ -36,42 +50,66 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
   return message;
 };
 
-export enum RELATION_TYPE {
-  AMOUNT_WATERED_DISTRICT = "AMOUNT_WATERED_DISTRICT",
-  WATER_INTAKE_ADDRESS = "WATER_INTAKE_ADDRESS",
-  WATER_TREE_AT_ADDRESS_AT_DATE = "WATER_TREE_AT_ADDRESS_AT_DATE",
-  DESCRIBE_TREES_REGION = "DESCRIBE_TREES_REGION",
+const KNOWN_RELATION_TYPE_SET = new Set<string>(KNOWN_RELATION_TYPES);
+const isValidRelationType = (relationType: string): relationType is KnownRelationType => {
+  return KNOWN_RELATION_TYPE_SET.has(relationType);
+};
+
+interface ICreateRelationAnnotationOptions {
+  message: IQanaryMessage;
+  relationBodyUri: string;
+  confidence: number;
+  componentUri: string;
+  annotationType: string;
 }
 
-const getRelAnnotation = async (question: string): Promise<IAnnotationInformation> => {
-  let relation = "";
-  let start = 0;
-  let end = 0;
-  if (question == "Wie viel wurde im Stadtteil Connewitz gegossen?") {
-    relation = RELATION_TYPE.AMOUNT_WATERED_DISTRICT;
-    start = 4;
-    end = 46;
-  } else if (
-    question == "Welche Wasserentnahme Stellen gibt es in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig?"
-  ) {
-    relation = RELATION_TYPE.WATER_INTAKE_ADDRESS;
-    start = 7;
-    end = 100;
-  } else if (
-    question == "Welchen Baum kann ich in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig heute gießen?"
-  ) {
-    relation = RELATION_TYPE.WATER_TREE_AT_ADDRESS_AT_DATE;
-    start = 8;
-    end = 98;
-  } else if (question == "Was kannst du mir über die Bäume in Leipzig erklären?") {
-    relation = RELATION_TYPE.DESCRIBE_TREES_REGION;
-    start = 27;
-    end = 52;
+const createRelationAnnotation = async ({
+  message,
+  relationBodyUri,
+  confidence,
+  componentUri,
+  annotationType,
+}: ICreateRelationAnnotationOptions): Promise<void> => {
+  const outGraph = getOutGraph(message);
+  const endpointUrl = getEndpoint(message);
+  const questionUri = await getQuestionUri(message);
+  if (!outGraph || !endpointUrl || !questionUri) {
+    console.error("[relation-detection] Missing required data for relation annotation:", {
+      outGraph,
+      endpointUrl,
+      questionUri,
+    });
+    return;
   }
 
-  return {
-    value: relation,
-    range: { start: start, end: end },
-    confidence: 1,
-  };
+  const normalisedAnnotationType =
+    String(annotationType).startsWith("http") || String(annotationType).startsWith("urn:")
+      ? `<${annotationType}>`
+      : annotationType;
+
+  const relationAnnotationQuery = `
+PREFIX qa: <http://www.wdaqua.eu/qa#>
+PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+INSERT {
+  GRAPH <${outGraph}> {
+    ?annotation a ${normalisedAnnotationType} ;
+      oa:hasTarget <${questionUri}> ;
+      oa:hasBody <${relationBodyUri}> ;
+      oa:score '${confidence}'^^xsd:double ;
+      oa:annotatedBy <${componentUri}> ;
+      oa:annotatedAt ?time .
+  }
+}
+WHERE {
+  BIND (IRI(CONCAT("urn:qanary:annotation:relation-", STRUUID())) AS ?annotation)
+  BIND (NOW() AS ?time)
+}`;
+
+  try {
+    await updateSparql(endpointUrl, relationAnnotationQuery);
+  } catch (error) {
+    console.error("Error creating relation annotation in Qanary triplestore");
+    console.error(error);
+  }
 };
