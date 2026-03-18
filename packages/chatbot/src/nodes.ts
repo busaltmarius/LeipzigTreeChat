@@ -174,7 +174,7 @@ export const Nodes = <const N extends string[]>(
           PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
           SELECT ?answer WHERE {
             GRAPH <${graphUri}> {
-              ?relationAnnotationId a <urn:qanary#AnnotationOfAnswer> ;
+              ?relationAnnotationId a <urn:qanary#AnnotationOfAnswerJson> ;
                 oa:hasBody ?answer .
             }
           }
