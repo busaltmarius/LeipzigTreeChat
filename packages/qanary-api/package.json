@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "tsc --watch",
     "build": "tsc",
-    "clean": "rimraf .turbo dist",
+    "clean": "rimraf .turbo dist node_modules",
     "generate-sources:action-server": "openapi-generator-cli generate -g typescript-axios -i specs/action-server.yml -o ./src/action-server --skip-validate-spec",
     "generate-sources:lupo-cloud": "openapi-generator-cli generate -g typescript-axios -i specs/lupo-cloud.yml -o ./src/lupo-cloud",
     "generate-sources:qanary-component": "openapi-generator-cli generate -g typescript-axios -i specs/qanary-component.yml -o ./src/qanary-component",
@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.5.2",
+    "rimraf": "^6.1.3",
     "openapi-types": "12.1.0"
   },
   "source": "./src/index.ts",

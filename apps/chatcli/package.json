@@ -2,11 +2,13 @@
   "name": "chatcli",
   "scripts": {
     "build": "bun --bun build --target bun src/index.ts",
+    "clean": "rimraf .turbo dist node_modules",
     "dev": "bun --bun run --target bun src/index.ts"
   },
   "devDependencies": {
     "typescript": "latest",
     "@types/bun": "latest",
+    "rimraf": "^6.1.3",
     "@leipzigtreechat/typescript-config": "workspace: *"
   },
   "dependencies": {
