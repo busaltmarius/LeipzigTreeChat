@@ -367,6 +367,8 @@ export const Nodes = <const N extends string[]>(
         // Get the first open question (guaranteed to exist because we checked hasOpenQuestions above!)
         const openQuestion = state.clarification.getFirstOpenQuestion()!;
 
+        state.clarification.setCurrentQuestion(openQuestion.uri);
+
         const chatbotResponseContent = yield* llmService.generateClarificationQuestion(state.input, {
           data: openQuestion,
         });
@@ -380,6 +382,7 @@ export const Nodes = <const N extends string[]>(
             input: "",
             chatmode: "CLARIFICATION",
             messages: state.messages,
+            clarification: state.clarification,
           },
           goto: nextNode,
         });
