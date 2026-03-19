@@ -6,7 +6,7 @@ import { Config, Effect, Either, Logger, Match, Schema } from "effect";
 import { type InvalidInputError, MissingMessageError } from "./errors.js";
 import { runLangGraphRuntime } from "./langgraph-runtime.js";
 import { LLMService } from "./llm-service.js";
-import type { AgentState } from "./state/index.js";
+import { type AgentState } from "./state/index.js";
 import type { Unit } from "./unit.js";
 
 /**
@@ -74,6 +74,7 @@ export const Nodes = <const N extends string[]>(
 
         return await runLangGraphRuntime(program.pipe(Effect.provide(NodeLoggerLayer("UserInputNode"))));
       },
+
     /**
      * This node sends the user's input to the Qanary question answering pipeline.
      * @param routingConfig The routing configuration for the next node and error node
@@ -145,6 +146,7 @@ export const Nodes = <const N extends string[]>(
         program.pipe(Effect.provide(FetchHttpClient.layer), Effect.provide(NodeLoggerLayer("QanaryNode")))
       );
     },
+
     /**
      * This node decides which node to route to based on the conversation state.
      * @param routingConfig The routing configuration for the different successor nodes
@@ -159,23 +161,43 @@ export const Nodes = <const N extends string[]>(
         userInputNode: NodeID;
       }) =>
       async (state: AgentState) => {
-        const { questionAnsweringNode, requestClarificationNode } = routingConfig;
+        const { questionAnsweringNode, requestClarificationNode, responseNode } = routingConfig;
         const program = Effect.gen(function* () {
           yield* Effect.logDebug("State: ", state);
 
-          if (state.conversation.hasOpenQuestions()) {
-            return command({
-              goto: requestClarificationNode,
-            });
-          }
+          switch (state.chatmode) {
+            case "QUESTION_ANSWERING":
+              {
+                if (state.has_user_question) {
+                  return command({
+                    goto: questionAnsweringNode,
+                  });
+                }
 
-          return command({
-            goto: questionAnsweringNode, // always route to question answering for now
-          });
+                return command({
+                  goto: responseNode,
+                });
+              }
+              break;
+            case "CLARIFICATION":
+              {
+                if (state.conversation.hasOpenQuestions()) {
+                  return command({
+                    goto: requestClarificationNode,
+                  });
+                }
+
+                return command({
+                  goto: responseNode,
+                });
+              }
+              break;
+          }
         });
 
         return await runLangGraphRuntime(program.pipe(Effect.provide(NodeLoggerLayer("RouterNode"))));
       },
+
     /**
      * This node validates the last user message with a provided function
      * @param validationFunction The function to validate the user message
@@ -251,6 +273,7 @@ export const Nodes = <const N extends string[]>(
 
         return await runLangGraphRuntime(program.pipe(Effect.provide(NodeLoggerLayer("ValidationNode"))));
       },
+
     /**
      * This Node generates a human-readable chatbot response using the current gathered data stored in the state.
      * @param routingConfig The routing configuration for the next node
@@ -291,6 +314,7 @@ export const Nodes = <const N extends string[]>(
         return command({
           update: {
             input: "",
+            chatmode: "QUESTION_ANSWERING",
             messages: state.messages,
           },
           goto: nextNode,
