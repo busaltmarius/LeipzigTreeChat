@@ -7,6 +7,7 @@ export * from "./enums/component-list.js";
 export * from "./enums/domains.js";
 export * from "./enums/intents.js";
 export * from "./enums/representation.js";
+export * from "./helpers/create-annotation.js";
 export * from "./helpers/get-question.js";
 export * from "./helpers/get-question-uri.js";
 export * from "./helpers/message-operations.js";
