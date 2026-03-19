@@ -90,7 +90,7 @@ export const Nodes = <const N extends string[]>(
             case "QUESTION_ANSWERING": {
               return command({
                 update: {
-                  input: userInput,
+                  user_question: userInput,
                   has_user_question: true,
                 },
                 goto: nextNode,
@@ -136,7 +136,7 @@ export const Nodes = <const N extends string[]>(
 
         const result = yield* HttpClientRequest.post(`${apiBaseUrl}questionanswering`).pipe(
           HttpClientRequest.setUrlParams({
-            textquestion: state.input,
+            textquestion: state.user_question,
             "componentlist[]": components,
           }),
           client.execute,
@@ -160,7 +160,6 @@ export const Nodes = <const N extends string[]>(
 
           return command({
             update: {
-              input: "",
               messages: state.messages,
             },
             goto: errorNode,
@@ -265,7 +264,7 @@ export const Nodes = <const N extends string[]>(
           yield* Effect.logDebug("State: ", state);
 
           const safeValidationFn = Effect.gen(function* () {
-            const msg = state.input;
+            const msg = state.user_question;
             yield* Effect.logDebug(`Validating message: ${msg}`);
             if (!msg) {
               yield* new MissingMessageError();
@@ -298,7 +297,6 @@ export const Nodes = <const N extends string[]>(
 
             return command({
               update: {
-                input: "",
                 messages: state.messages,
               },
               goto: errorNode,
@@ -314,7 +312,6 @@ export const Nodes = <const N extends string[]>(
 
           return command({
             update: {
-              input: "",
               messages: state.messages,
             },
             goto: nextNode,
@@ -355,7 +352,9 @@ export const Nodes = <const N extends string[]>(
           }).pipe(Effect.catchAll((error: any) => Effect.logError(error).pipe(Effect.as([]))));
         }
 
-        const chatbotResponseContent = yield* llmService.generateChatbotResponse(state.input, { data: responseData });
+        const chatbotResponseContent = yield* llmService.generateChatbotResponse(state.user_question, {
+          data: responseData,
+        });
 
         const msg = new AIMessage({ content: chatbotResponseContent });
         yield* printMessageEffect(msg);
@@ -363,7 +362,7 @@ export const Nodes = <const N extends string[]>(
 
         return command({
           update: {
-            input: "",
+            user_question: "",
             chatmode: "QUESTION_ANSWERING",
             messages: state.messages,
           },
@@ -411,7 +410,7 @@ export const Nodes = <const N extends string[]>(
 
         state.clarification.setCurrentQuestion(openQuestion.uri);
 
-        const chatbotResponseContent = yield* llmService.generateClarificationQuestion(state.input, {
+        const chatbotResponseContent = yield* llmService.generateClarificationQuestion(state.user_question, {
           data: openQuestion,
         });
 
@@ -421,7 +420,6 @@ export const Nodes = <const N extends string[]>(
 
         return command({
           update: {
-            input: "",
             chatmode: "CLARIFICATION",
             messages: state.messages,
             clarification: state.clarification,
