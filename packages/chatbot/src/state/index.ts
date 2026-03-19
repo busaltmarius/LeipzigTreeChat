@@ -4,7 +4,14 @@ import { Effect } from "effect";
 import { MissingMessageError } from "../errors.js";
 import { ClarificationConversation } from "./clarification_conversation.js";
 
-export { ClarificationConversation as Conversation } from "./clarification_conversation.js";
+export {
+  type Answer,
+  AnswerURI,
+  ClarificationConversation,
+  ConversationURI,
+  type Question,
+  QuestionURI,
+} from "./clarification_conversation.js";
 
 export type Chatmode = "QUESTION_ANSWERING" | "CLARIFICATION";
 

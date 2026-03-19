@@ -2,16 +2,9 @@ import { Terminal } from "@effect/platform";
 import { BunTerminal } from "@effect/platform-bun";
 import { AIMessage, BaseMessage, HumanMessage } from "@langchain/core/messages";
 import { ChatBotGraph } from "@leipzigtreechat/chatbot";
-import {
-  type AgentState,
-  Conversation,
-  ConversationURI,
-  getLastAIMessage,
-  getMessageContent,
-} from "@leipzigtreechat/chatbot/state";
+import { type AgentState, getMessageContent } from "@leipzigtreechat/chatbot/state";
 import { Effect } from "effect";
 import { readLine } from "./readline";
-import { handleSystemSignalError, type SystemSignalError } from "./system-signal";
 
 const printMessage = async (message: BaseMessage) => {
   const program = Effect.gen(function* () {
