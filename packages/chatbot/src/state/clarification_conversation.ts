@@ -149,6 +149,9 @@ export class ClarificationConversation extends Data.TaggedClass("Conversation")<
    * @param answer The answer to associate with the question.
    */
   answerCurrentQuestion(answer: Answer) {
+    if (this._currentQuestionUri === null) {
+      return;
+    }
     MutableHashMap.set(this._resolvedQuestions, this._currentQuestionUri, answer);
     MutableHashSet.remove(this._openQuestions, this._currentQuestionUri);
   }
