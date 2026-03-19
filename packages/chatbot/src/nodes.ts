@@ -96,6 +96,12 @@ export const Nodes = <const N extends string[]>(
                 goto: nextNode,
               });
             }
+            default: {
+              yield* Effect.logError("Unknown chatmode: ", state.chatmode);
+              return command({
+                goto: nextNode,
+              });
+            }
           }
         });
 
@@ -230,6 +236,12 @@ export const Nodes = <const N extends string[]>(
                 });
               }
               break;
+            default: {
+              yield* Effect.logError("Unknown chatmode: ", state.chatmode);
+              return command({
+                goto: responseNode,
+              });
+            }
           }
         });
 
