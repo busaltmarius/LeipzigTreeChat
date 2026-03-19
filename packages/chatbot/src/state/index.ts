@@ -29,6 +29,8 @@ export const AgentStateAnnotation = Annotation.Root({
   has_ended: Annotation<boolean>(),
   graph_uri: Annotation<string>(),
   clarification: Annotation<ClarificationConversation | undefined>(),
+  qanary_answer: Annotation<string>(),
+  clarifications: Annotation<string[]>(),
 });
 
 export type AgentState = typeof AgentStateAnnotation.State;
