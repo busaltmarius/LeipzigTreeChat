@@ -6,6 +6,7 @@ import { Config, Effect, Either, Logger, Match, Schema } from "effect";
 import { type InvalidInputError, MissingMessageError } from "./errors.js";
 import { runLangGraphRuntime } from "./langgraph-runtime.js";
 import { LLMService } from "./llm-service.js";
+import { ClarificationConversation, ConversationURI } from "./state/clarification_conversation.js";
 import { type AgentState } from "./state/index.js";
 import type { Unit } from "./unit.js";
 
@@ -66,6 +67,14 @@ export const Nodes = <const N extends string[]>(
 
           switch (state.chatmode) {
             case "CLARIFICATION": {
+              if (state.clarification === undefined) {
+                yield* Effect.logError("No clarification conversation present in AgentState");
+
+                return command({
+                  goto: nextNode,
+                });
+              }
+
               if (state.clarification.hasCurrentQuestion()) {
                 state.clarification.answerCurrentQuestion({ uri: null, content: userInput });
               } else {
@@ -155,8 +164,9 @@ export const Nodes = <const N extends string[]>(
         return command({
           update: {
             graph_uri: result.right.inGraph,
+            clarification: new ClarificationConversation(new ConversationURI(result.right.inGraph)),
           },
-          goto: nextNode, // always route to question answering for now
+          goto: nextNode,
         });
       });
 
@@ -188,6 +198,9 @@ export const Nodes = <const N extends string[]>(
               {
                 if (state.has_user_question) {
                   return command({
+                    update: {
+                      has_user_question: false,
+                    },
                     goto: questionAnsweringNode,
                   });
                 }
@@ -199,6 +212,13 @@ export const Nodes = <const N extends string[]>(
               break;
             case "CLARIFICATION":
               {
+                if (state.clarification === undefined) {
+                  yield* Effect.logError("No clarification conversation present in AgentState");
+                  return command({
+                    goto: responseNode,
+                  });
+                }
+
                 if (state.clarification.hasOpenQuestions()) {
                   return command({
                     goto: requestClarificationNode,
@@ -352,6 +372,16 @@ export const Nodes = <const N extends string[]>(
       const program = Effect.gen(function* () {
         yield* Effect.logDebug("State: ", state);
         const llmService = yield* LLMService;
+        if (state.clarification === undefined) {
+          yield* Effect.logError("No clarification conversation present in AgentState");
+          return command({
+            update: {
+              chatmode: "QUESTION_ANSWERING",
+              messages: state.messages,
+            },
+            goto: nextNode,
+          });
+        }
 
         if (!state.clarification.hasOpenQuestions()) {
           yield* Effect.logError("No open questions, switching to question answering mode");

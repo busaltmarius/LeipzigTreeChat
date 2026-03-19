@@ -45,9 +45,11 @@ async function main() {
   });
   const state: AgentState = {
     has_ended: false,
+    has_user_question: false,
+    chatmode: "QUESTION_ANSWERING",
     input: "",
     graph_uri: "",
-    conversation: new Conversation(new ConversationURI("")),
+    clarification: undefined,
     messages: [initialMessage],
   };
 
