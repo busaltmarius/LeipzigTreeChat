@@ -185,4 +185,16 @@ export class Conversation extends Data.TaggedClass("Conversation")<{
       MutableHashMap.get(this._questions, uri).pipe(Option.getOrThrow)
     );
   }
+
+  /**
+   * Returns the first unanswered question.
+   *
+   * @returns First question that is still awaiting an answer or undefined if there are no open questions.
+   */
+  getFirstOpenQuestion(): Question | undefined {
+    // We guarantee that the question exists because it was added before the answer. So it is a real error if it doesn't exist!
+    return Array.from(this._openQuestions)
+      .map((uri) => MutableHashMap.get(this._questions, uri).pipe(Option.getOrThrow))
+      .at(0);
+  }
 }
