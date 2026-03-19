@@ -349,7 +349,9 @@ export const Nodes = <const N extends string[]>(
         // Get the first open question (guaranteed to exist because we checked hasOpenQuestions above!)
         const openQuestion = state.conversation.getFirstOpenQuestion()!;
 
-        const chatbotResponseContent = yield* llmService.generateChatbotResponse(state.input, { data: openQuestion });
+        const chatbotResponseContent = yield* llmService.generateClarificationQuestion(state.input, {
+          data: openQuestion,
+        });
 
         const msg = new AIMessage({ content: chatbotResponseContent });
         yield* printMessageEffect(msg);

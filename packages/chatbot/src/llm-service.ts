@@ -45,6 +45,13 @@ type LLMServiceInterface = {
    * @returns The generated chatbot response as string.
    */
   readonly generateChatbotResponse: (userInput: string, data: any) => Effect.Effect<string, never, never>;
+  /**
+   * Generates a chatbot clarification question based on user input and provided data.
+   * @param userInput The original input/question from the user.
+   * @param data The data to assist in generating the clarification question.
+   * @returns The generated chatbot clarification question as string.
+   */
+  readonly generateClarificationQuestion: (userInput: string, data: any) => Effect.Effect<string, never, never>;
 };
 
 export class LLMService extends Context.Tag("LLMService")<LLMService, LLMServiceInterface>() {
@@ -83,6 +90,43 @@ export class LLMService extends Context.Tag("LLMService")<LLMService, LLMService
                       "Die Daten findest du als JSON-Format in der Nachricht mitangehängt.",
                       "Nimm die angehaengten Daten als wahr an und hinterfrage diese nicht.",
                       "Du MUSST die Daten zwingend in deine Antwort einbeziehen, auch wenn diese Koordinaten sind, ",
+                      "Bau diese mit ein und bewerte NICHT, ob diese die Antwort sein könnten.",
+                    ].join(""),
+                  },
+                  {
+                    role: "user",
+                    content: [
+                      "## Frage des Benutzers:",
+                      "\n",
+                      userInput,
+                      "## Bereitgestellte Daten:",
+                      "\n",
+                      JSON.stringify(data),
+                    ].join(""),
+                  },
+                ],
+              })
+            );
+
+            return text;
+          }),
+
+        generateClarificationQuestion: (userInput: string, data: any) =>
+          Effect.gen(function* () {
+            const deepseek_v3_2 = openrouterClient.chat("deepseek/deepseek-v3.2");
+            const { text } = yield* Effect.promise(() =>
+              generateText({
+                model: deepseek_v3_2,
+                messages: [
+                  {
+                    role: "system",
+                    content: [
+                      CHATBOT_PERSONA,
+                      "\n",
+                      "Erstelle eine prägnante, präzise Frage, die den Benutzer um zusätzliche Informationen verlangt.",
+                      "Du findest bereitgestellte Daten als JSON vor, welche die noch offen Punkte definieren.",
+                      "Nimm die angehängten Daten als wahr an und hinterfrage diese nicht.",
+                      "Du MUSST die Daten zwingend in deine Antwort einbeziehen.",
                       "Bau diese mit ein und bewerte NICHT, ob diese die Antwort sein könnten.",
                     ].join(""),
                   },
