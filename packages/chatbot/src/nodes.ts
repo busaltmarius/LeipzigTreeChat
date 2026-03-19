@@ -64,12 +64,30 @@ export const Nodes = <const N extends string[]>(
           yield* Effect.logDebug("State: ", state);
           const userInput = yield* Effect.promise(() => getUserInput());
 
-          return command({
-            update: {
-              input: userInput,
-            },
-            goto: nextNode,
-          });
+          switch (state.chatmode) {
+            case "CLARIFICATION": {
+              if (state.clarification.hasCurrentQuestion()) {
+                state.clarification.answerCurrentQuestion({ uri: null, content: userInput });
+              } else {
+                yield* Effect.logError("No current question to answer");
+              }
+              return command({
+                update: {
+                  clarification: state.clarification,
+                },
+                goto: nextNode,
+              });
+            }
+            case "QUESTION_ANSWERING": {
+              return command({
+                update: {
+                  input: userInput,
+                  has_user_question: true,
+                },
+                goto: nextNode,
+              });
+            }
+          }
         });
 
         return await runLangGraphRuntime(program.pipe(Effect.provide(NodeLoggerLayer("UserInputNode"))));
@@ -181,7 +199,7 @@ export const Nodes = <const N extends string[]>(
               break;
             case "CLARIFICATION":
               {
-                if (state.conversation.hasOpenQuestions()) {
+                if (state.clarification.hasOpenQuestions()) {
                   return command({
                     goto: requestClarificationNode,
                   });
@@ -335,7 +353,7 @@ export const Nodes = <const N extends string[]>(
         yield* Effect.logDebug("State: ", state);
         const llmService = yield* LLMService;
 
-        if (!state.conversation.hasOpenQuestions()) {
+        if (!state.clarification.hasOpenQuestions()) {
           yield* Effect.logError("No open questions, switching to question answering mode");
           return command({
             update: {
@@ -347,7 +365,7 @@ export const Nodes = <const N extends string[]>(
         }
 
         // Get the first open question (guaranteed to exist because we checked hasOpenQuestions above!)
-        const openQuestion = state.conversation.getFirstOpenQuestion()!;
+        const openQuestion = state.clarification.getFirstOpenQuestion()!;
 
         const chatbotResponseContent = yield* llmService.generateClarificationQuestion(state.input, {
           data: openQuestion,

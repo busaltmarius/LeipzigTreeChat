@@ -64,7 +64,7 @@ export type Answer = {
   /**
    * Stable identifier for the answer.
    */
-  uri: AnswerURI;
+  uri: AnswerURI | null;
 
   /**
    * User-facing answer text.
@@ -72,19 +72,19 @@ export type Answer = {
   content: string;
 };
 
-class URINotFound extends Data.TaggedError("URINotFound")<{
-  uri: QuestionURI | AnswerURI | ConversationURI;
-}> {}
-
 /**
  * Stores clarification questions from the chatbot to the user and the answers provided by the user.
  */
-export class Conversation extends Data.TaggedClass("Conversation")<{
+export class ClarificationConversation extends Data.TaggedClass("Conversation")<{
   uri: ConversationURI;
   _questions: MutableHashMap.MutableHashMap<QuestionURI, Question>;
   _openQuestions: MutableHashSet.MutableHashSet<QuestionURI>;
   _resolvedQuestions: MutableHashMap.MutableHashMap<QuestionURI, Answer>;
 }> {
+  /**
+   * Identifier of the question currently being answered, if one has been selected.
+   */
+  _currentQuestionUri: QuestionURI | null;
   /**
    * Creates an empty conversation for the given identifier.
    *
@@ -97,6 +97,8 @@ export class Conversation extends Data.TaggedClass("Conversation")<{
       _openQuestions: MutableHashSet.empty(),
       _resolvedQuestions: MutableHashMap.empty(),
     });
+
+    this._currentQuestionUri = null;
   }
 
   /**
@@ -120,20 +122,35 @@ export class Conversation extends Data.TaggedClass("Conversation")<{
   }
 
   /**
-   * Stores an answer for a question and removes the question from the open set.
+   * Marks a known question as the current question being answered.
    *
-   * @param questionUri The identifier of the question being answered.
+   * @param questionUri The identifier of the question to select as current.
+   */
+  setCurrentQuestion(questionUri: QuestionURI): void {
+    if (this.hasQuestion(questionUri)) {
+      this._currentQuestionUri = questionUri;
+    } else {
+      this._currentQuestionUri = null;
+    }
+  }
+
+  /**
+   * Checks whether there is a current question being answered.
+   *
+   * @returns `true` if a question is currently selected as current.
+   */
+  hasCurrentQuestion(): boolean {
+    return !!this._currentQuestionUri;
+  }
+
+  /**
+   * Stores an answer for the current question and removes the question from the open set.
+   *
    * @param answer The answer to associate with the question.
    */
-  addAnswer(questionUri: QuestionURI, answer: Answer): Effect.Effect<void, URINotFound> {
-    if (!this.hasQuestion(questionUri)) {
-      return Effect.fail(new URINotFound({ uri: questionUri }));
-    }
-
-    MutableHashMap.set(this._resolvedQuestions, questionUri, answer);
-    MutableHashSet.remove(this._openQuestions, questionUri);
-
-    return Effect.succeed({});
+  answerCurrentQuestion(answer: Answer) {
+    MutableHashMap.set(this._resolvedQuestions, this._currentQuestionUri, answer);
+    MutableHashSet.remove(this._openQuestions, this._currentQuestionUri);
   }
 
   /**
