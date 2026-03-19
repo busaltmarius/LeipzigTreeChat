@@ -6,7 +6,8 @@ import { Config, Effect, Either, Logger, Match, Schema } from "effect";
 import { type InvalidInputError, MissingMessageError } from "./errors.js";
 import { runLangGraphRuntime } from "./langgraph-runtime.js";
 import { LLMService } from "./llm-service.js";
-import type { AgentState } from "./state.js";
+import { ClarificationConversation, ConversationURI } from "./state/clarification_conversation.js";
+import { type AgentState } from "./state/index.js";
 import type { Unit } from "./unit.js";
 
 /**
@@ -51,6 +52,12 @@ export const Nodes = <const N extends string[]>(
   const printMessageEffect = (message: BaseMessage) => Effect.promise(() => printMessage(message));
 
   return {
+    /**
+     * This node prompts the user for input and stores it in the agent state.
+     * @param routingConfig The routing configuration for the next node
+     * @param getUserInput A function that retrieves the user's input asynchronously
+     * @returns The configured Node usable by LangGraph
+     */
     UserInputNode:
       (routingConfig: { nextNode: NodeID }, getUserInput: () => Promise<string>) => async (state: AgentState) => {
         const { nextNode } = routingConfig;
@@ -58,16 +65,54 @@ export const Nodes = <const N extends string[]>(
           yield* Effect.logDebug("State: ", state);
           const userInput = yield* Effect.promise(() => getUserInput());
 
-          return command({
-            update: {
-              input: userInput,
-            },
-            goto: nextNode,
-          });
+          switch (state.chatmode) {
+            case "CLARIFICATION": {
+              if (state.clarification === undefined) {
+                yield* Effect.logError("No clarification conversation present in AgentState");
+
+                return command({
+                  goto: nextNode,
+                });
+              }
+
+              if (state.clarification.hasCurrentQuestion()) {
+                state.clarification.answerCurrentQuestion({ uri: null, content: userInput });
+              } else {
+                yield* Effect.logError("No current question to answer");
+              }
+              return command({
+                update: {
+                  clarification: state.clarification,
+                },
+                goto: nextNode,
+              });
+            }
+            case "QUESTION_ANSWERING": {
+              return command({
+                update: {
+                  user_question: userInput,
+                  has_user_question: true,
+                },
+                goto: nextNode,
+              });
+            }
+            default: {
+              yield* Effect.logError("Unknown chatmode: ", state.chatmode);
+              return command({
+                goto: nextNode,
+              });
+            }
+          }
         });
 
         return await runLangGraphRuntime(program.pipe(Effect.provide(NodeLoggerLayer("UserInputNode"))));
       },
+
+    /**
+     * This node sends the user's input to the Qanary question answering pipeline.
+     * @param routingConfig The routing configuration for the next node and error node
+     * @returns The configured Node usable by LangGraph
+     */
     QanaryNode: (routingConfig: { nextNode: NodeID; errorNode: NodeID }) => async (state: AgentState) => {
       const { nextNode, errorNode } = routingConfig;
       const program = Effect.gen(function* () {
@@ -91,7 +136,7 @@ export const Nodes = <const N extends string[]>(
 
         const result = yield* HttpClientRequest.post(`${apiBaseUrl}questionanswering`).pipe(
           HttpClientRequest.setUrlParams({
-            textquestion: state.input,
+            textquestion: state.user_question,
             "componentlist[]": components,
           }),
           client.execute,
@@ -115,7 +160,6 @@ export const Nodes = <const N extends string[]>(
 
           return command({
             update: {
-              input: "",
               messages: state.messages,
             },
             goto: errorNode,
@@ -125,8 +169,9 @@ export const Nodes = <const N extends string[]>(
         return command({
           update: {
             graph_uri: result.right.inGraph,
+            clarification: new ClarificationConversation(new ConversationURI(result.right.inGraph)),
           },
-          goto: nextNode, // always route to question answering for now
+          goto: nextNode,
         });
       });
 
@@ -134,25 +179,74 @@ export const Nodes = <const N extends string[]>(
         program.pipe(Effect.provide(FetchHttpClient.layer), Effect.provide(NodeLoggerLayer("QanaryNode")))
       );
     },
+
+    /**
+     * This node decides which node to route to based on the conversation state.
+     * @param routingConfig The routing configuration for the different successor nodes
+     * @returns The configured Node usable by LangGraph
+     */
     RouterNode:
       (routingConfig: {
         questionAnsweringNode: NodeID;
+        requestClarificationNode: NodeID;
         responseNode: NodeID;
         endNode: NodeID;
         userInputNode: NodeID;
       }) =>
       async (state: AgentState) => {
-        const { questionAnsweringNode } = routingConfig;
+        const { questionAnsweringNode, requestClarificationNode, responseNode } = routingConfig;
         const program = Effect.gen(function* () {
           yield* Effect.logDebug("State: ", state);
 
-          return command({
-            goto: questionAnsweringNode, // always route to question answering for now
-          });
+          switch (state.chatmode) {
+            case "QUESTION_ANSWERING":
+              {
+                if (state.has_user_question) {
+                  return command({
+                    update: {
+                      has_user_question: false,
+                    },
+                    goto: questionAnsweringNode,
+                  });
+                }
+
+                return command({
+                  goto: responseNode,
+                });
+              }
+              break;
+            case "CLARIFICATION":
+              {
+                if (state.clarification === undefined) {
+                  yield* Effect.logError("No clarification conversation present in AgentState");
+                  return command({
+                    goto: responseNode,
+                  });
+                }
+
+                if (state.clarification.hasOpenQuestions()) {
+                  return command({
+                    goto: requestClarificationNode,
+                  });
+                }
+
+                return command({
+                  goto: responseNode,
+                });
+              }
+              break;
+            default: {
+              yield* Effect.logError("Unknown chatmode: ", state.chatmode);
+              return command({
+                goto: responseNode,
+              });
+            }
+          }
         });
 
         return await runLangGraphRuntime(program.pipe(Effect.provide(NodeLoggerLayer("RouterNode"))));
       },
+
     /**
      * This node validates the last user message with a provided function
      * @param validationFunction The function to validate the user message
@@ -170,7 +264,7 @@ export const Nodes = <const N extends string[]>(
           yield* Effect.logDebug("State: ", state);
 
           const safeValidationFn = Effect.gen(function* () {
-            const msg = state.input;
+            const msg = state.user_question;
             yield* Effect.logDebug(`Validating message: ${msg}`);
             if (!msg) {
               yield* new MissingMessageError();
@@ -203,7 +297,6 @@ export const Nodes = <const N extends string[]>(
 
             return command({
               update: {
-                input: "",
                 messages: state.messages,
               },
               goto: errorNode,
@@ -219,7 +312,6 @@ export const Nodes = <const N extends string[]>(
 
           return command({
             update: {
-              input: "",
               messages: state.messages,
             },
             goto: nextNode,
@@ -228,6 +320,7 @@ export const Nodes = <const N extends string[]>(
 
         return await runLangGraphRuntime(program.pipe(Effect.provide(NodeLoggerLayer("ValidationNode"))));
       },
+
     /**
      * This Node generates a human-readable chatbot response using the current gathered data stored in the state.
      * @param routingConfig The routing configuration for the next node
@@ -259,7 +352,9 @@ export const Nodes = <const N extends string[]>(
           }).pipe(Effect.catchAll((error: any) => Effect.logError(error).pipe(Effect.as([]))));
         }
 
-        const chatbotResponseContent = yield* llmService.generateChatbotResponse(state.input, { data: responseData });
+        const chatbotResponseContent = yield* llmService.generateChatbotResponse(state.user_question, {
+          data: responseData,
+        });
 
         const msg = new AIMessage({ content: chatbotResponseContent });
         yield* printMessageEffect(msg);
@@ -267,7 +362,8 @@ export const Nodes = <const N extends string[]>(
 
         return command({
           update: {
-            input: "",
+            user_question: "",
+            chatmode: "QUESTION_ANSWERING",
             messages: state.messages,
           },
           goto: nextNode,
@@ -275,6 +371,64 @@ export const Nodes = <const N extends string[]>(
       });
 
       return await runLangGraphRuntime(program.pipe(Effect.provide(NodeLoggerLayer("ResponseNode"))));
+    },
+
+    /**
+     * This node generates a clarification question using the current gathered data stored in the state.
+     * @param routingConfig The routing configuration for the next node
+     * @returns The configured Node usable by LangGraph
+     */
+    RequestClarificationNode: (routingConfig: { nextNode: NodeID }) => async (state: AgentState) => {
+      const { nextNode } = routingConfig;
+      const program = Effect.gen(function* () {
+        yield* Effect.logDebug("State: ", state);
+        const llmService = yield* LLMService;
+        if (state.clarification === undefined) {
+          yield* Effect.logError("No clarification conversation present in AgentState");
+          return command({
+            update: {
+              chatmode: "QUESTION_ANSWERING",
+              messages: state.messages,
+            },
+            goto: nextNode,
+          });
+        }
+
+        if (!state.clarification.hasOpenQuestions()) {
+          yield* Effect.logError("No open questions, switching to question answering mode");
+          return command({
+            update: {
+              chatmode: "QUESTION_ANSWERING",
+              messages: state.messages,
+            },
+            goto: nextNode,
+          });
+        }
+
+        // Get the first open question (guaranteed to exist because we checked hasOpenQuestions above!)
+        const openQuestion = state.clarification.getFirstOpenQuestion()!;
+
+        state.clarification.setCurrentQuestion(openQuestion.uri);
+
+        const chatbotResponseContent = yield* llmService.generateClarificationQuestion(state.user_question, {
+          data: openQuestion,
+        });
+
+        const msg = new AIMessage({ content: chatbotResponseContent });
+        yield* printMessageEffect(msg);
+        state.messages.push(msg);
+
+        return command({
+          update: {
+            chatmode: "CLARIFICATION",
+            messages: state.messages,
+            clarification: state.clarification,
+          },
+          goto: nextNode,
+        });
+      });
+
+      return await runLangGraphRuntime(program.pipe(Effect.provide(NodeLoggerLayer("RequestClarificationNode"))));
     },
   };
 };

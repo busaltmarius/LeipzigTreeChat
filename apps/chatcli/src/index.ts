@@ -2,10 +2,9 @@ import { Terminal } from "@effect/platform";
 import { BunTerminal } from "@effect/platform-bun";
 import { AIMessage, BaseMessage, HumanMessage } from "@langchain/core/messages";
 import { ChatBotGraph } from "@leipzigtreechat/chatbot";
-import { type AgentState, getLastAIMessage, getMessageContent } from "@leipzigtreechat/chatbot/state";
+import { type AgentState, getMessageContent } from "@leipzigtreechat/chatbot/state";
 import { Effect } from "effect";
 import { readLine } from "./readline";
-import { handleSystemSignalError, type SystemSignalError } from "./system-signal";
 
 const printMessage = async (message: BaseMessage) => {
   const program = Effect.gen(function* () {
@@ -39,8 +38,11 @@ async function main() {
   });
   const state: AgentState = {
     has_ended: false,
+    has_user_question: false,
+    chatmode: "QUESTION_ANSWERING",
     input: "",
     graph_uri: "",
+    clarification: undefined,
     messages: [initialMessage],
   };
 
