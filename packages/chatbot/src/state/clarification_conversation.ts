@@ -1,4 +1,4 @@
-import { Data, Effect, MutableHashMap, MutableHashSet, Option } from "effect";
+import { Data, MutableHashMap, MutableHashSet, Option } from "effect";
 
 /**
  * Identifies a question within a conversation.
