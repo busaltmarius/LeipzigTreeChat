@@ -123,11 +123,12 @@ export class LLMService extends Context.Tag("LLMService")<LLMService, LLMService
                     content: [
                       CHATBOT_PERSONA,
                       "\n",
-                      "Erstelle eine prägnante, präzise Frage, die den Benutzer um zusätzliche Informationen verlangt.",
+                      "Erstelle eine prägnante, präzise Frage, die den Benutzer um zusätzliche Informationen verlangt. ",
                       "Du findest bereitgestellte Daten als JSON vor, welche die noch offenen Punkte definieren.",
-                      "Nimm die angehängten Daten als wahr an und hinterfrage diese nicht.",
-                      "Du MUSST die Daten zwingend in deine Antwort einbeziehen.",
-                      "Bau diese mit ein und bewerte NICHT, ob diese die Antwort sein könnten.",
+                      "\n",
+                      "Nimm die angehängten Daten als wahr an und hinterfrage diese nicht. ",
+                      "Du MUSST die Daten zwingend in deine Antwort einbeziehen. ",
+                      "Bau diese mit ein und bewerte NICHT, ob diese die Antwort sein könnten. ",
                     ].join(""),
                   },
                   {
