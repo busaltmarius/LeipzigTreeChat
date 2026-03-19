@@ -1,12 +1,12 @@
 import { AIMessage, type BaseMessage } from "@langchain/core/messages";
 import { Annotation, type Messages, messagesStateReducer } from "@langchain/langgraph";
-
 import { Effect } from "effect";
-
 import { MissingMessageError } from "../errors.js";
 import { Conversation } from "./conversation.js";
 
 export { Conversation } from "./conversation.js";
+
+export type Chatmode = "QUESTION_ANSWERING" | "CLARIFICATION";
 
 /**
  * Global state of the chatbot agent
@@ -17,6 +17,8 @@ export const AgentStateAnnotation = Annotation.Root({
     default: () => [],
   }),
   input: Annotation<string>(),
+  chatmode: Annotation<Chatmode>(),
+  has_user_question: Annotation<boolean>(),
   has_ended: Annotation<boolean>(),
   graph_uri: Annotation<string>(),
   conversation: Annotation<Conversation>(),

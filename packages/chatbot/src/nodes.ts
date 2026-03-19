@@ -299,5 +299,49 @@ export const Nodes = <const N extends string[]>(
 
       return await runLangGraphRuntime(program.pipe(Effect.provide(NodeLoggerLayer("ResponseNode"))));
     },
+
+    /**
+     * This node generates a clarification question using the current gathered data stored in the state.
+     * @param routingConfig The routing configuration for the next node
+     * @returns The configured Node usable by LangGraph
+     */
+    RequestClarificationNode: (routingConfig: { nextNode: NodeID }) => async (state: AgentState) => {
+      const { nextNode } = routingConfig;
+      const program = Effect.gen(function* () {
+        yield* Effect.logDebug("State: ", state);
+        const llmService = yield* LLMService;
+
+        if (!state.conversation.hasOpenQuestions()) {
+          yield* Effect.logError("No open questions, switching to question answering mode");
+          return command({
+            update: {
+              chatmode: "QUESTION_ANSWERING",
+              messages: state.messages,
+            },
+            goto: nextNode,
+          });
+        }
+
+        // Get the first open question (guaranteed to exist because we checked hasOpenQuestions above!)
+        const openQuestion = state.conversation.getFirstOpenQuestion()!;
+
+        const chatbotResponseContent = yield* llmService.generateChatbotResponse(state.input, { data: openQuestion });
+
+        const msg = new AIMessage({ content: chatbotResponseContent });
+        yield* printMessageEffect(msg);
+        state.messages.push(msg);
+
+        return command({
+          update: {
+            input: "",
+            chatmode: "CLARIFICATION",
+            messages: state.messages,
+          },
+          goto: nextNode,
+        });
+      });
+
+      return await runLangGraphRuntime(program.pipe(Effect.provide(NodeLoggerLayer("RequestClarificationNode"))));
+    },
   };
 };
