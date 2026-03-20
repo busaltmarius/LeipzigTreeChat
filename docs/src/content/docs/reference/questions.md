@@ -1,4 +1,10 @@
+---
+title: Questions
+description: Sample questions for Baumbart
+---
+
 Beschlüsse:
+
 - In der Nähe === Gleiche PLZ || gleiche Straße (wenn Zeit später Nutzung Koordinaten und Geolocation)
 
 Fragen:
@@ -15,20 +21,19 @@ m (Jahr fehlt, mglw. berechenbar aus Pflanzjahr + Standalter): Welche Rhododendr
 m (Baum-Matching): Hat sich jemand um dich gekümmert?
 m (Baum-Matching): Welche Bäume haben Gießpaten? Wie oft wurden diese bewässert?
 
-
 Entities:
 Überall sind gleichartige Geo-Koordinaten dabei
 
 - Kita
-  - Ortsteil (roher String)
-  - Straße (roher String)
-  - Hausnummer
-  - PLZ
+    - Ortsteil (roher String)
+    - Straße (roher String)
+    - Hausnummer
+    - PLZ
 - District
-  - Feld "Name": wir verwenden hier String-Matches (bspw mit Kita Ortsteil)
-  -
+    - Feld "Name": wir verwenden hier String-Matches (bspw mit Kita Ortsteil)
+    -
 - Baum
-  - Feld "OT" für Ortsteil String-Match
-  - Straßenname (roher String)
+    - Feld "OT" für Ortsteil String-Match
+    - Straßenname (roher String)
 - Watering-Record
-  - Bezirk/OT (roher String)
+    - Bezirk/OT (roher String)
