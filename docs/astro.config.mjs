@@ -3,8 +3,13 @@
 import starlight from "@astrojs/starlight";
 import { defineConfig } from "astro/config";
 
+const [githubOwner, githubRepo] = (process.env.GITHUB_REPOSITORY ?? "").split("/");
+const isGitHubActions = process.env.GITHUB_ACTIONS === "true";
+
 // https://astro.build/config
 export default defineConfig({
+  site: githubOwner ? `https://${githubOwner}.github.io` : undefined,
+  base: isGitHubActions && githubRepo ? `/${githubRepo}` : undefined,
   integrations: [
     starlight({
       title: "Baumbart Documentation",

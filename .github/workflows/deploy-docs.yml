@@ -40,9 +40,8 @@ jobs:
 
       - name: Build docs
         env:
-          ASTRO_SITE: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
-          ASTRO_BASE: /${{ github.event.repository.name }}/
-        run: bun run build -- --site "$ASTRO_SITE" --base "$ASTRO_BASE"
+          GITHUB_PAGES: "true"
+        run: bun run build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
