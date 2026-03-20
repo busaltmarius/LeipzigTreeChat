@@ -1,7 +1,7 @@
 {
   "name": "chatcli",
   "scripts": {
-    "build": "bun --bun build --target bun src/index.ts",
+    "build": "bun --bun build --compile --outfile dist/baumbart-cli src/index.ts",
     "clean": "rimraf .turbo dist node_modules",
     "dev": "bun --bun run --target bun src/index.ts"
   },

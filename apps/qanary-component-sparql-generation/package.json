@@ -4,7 +4,7 @@
   "description": "A simple Qanary component to generate and execute SPARQL queries.",
   "license": "SEE LICENSE IN LICENSE",
   "scripts": {
-    "build": "bun build --target bun src/index.ts",
+    "build": "bun build --target bun --outdir dist src/index.ts",
     "clean": "rimraf .turbo dist node_modules",
     "dev": "bun --env-file=.env --watch src/index.ts",
     "format": "prettier --check src",
