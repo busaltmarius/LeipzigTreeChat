@@ -19,7 +19,6 @@ export const ChatBotGraph = (
     UserInputNode,
     ResponseNode,
     RouterNode,
-    QanaryNode,
     RequestClarificationNode,
     QanaryOrchestratorNode,
     QuestionRewriteNode,
@@ -60,8 +59,8 @@ export const ChatBotGraph = (
         ],
       }
     )
-    .addNode(QUESTION_REWRITE_NODE_ID, QuestionRewriteNode({ nextNode: QANARY_NODE_ID }), {
-      ends: [QANARY_NODE_ID],
+    .addNode(QUESTION_REWRITE_NODE_ID, QuestionRewriteNode({ nextNode: QANARY_ORCHESTRATOR_NODE_ID }), {
+      ends: [QANARY_ORCHESTRATOR_NODE_ID],
     })
     .addNode(
       QANARY_ORCHESTRATOR_NODE_ID,
