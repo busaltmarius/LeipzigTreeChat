@@ -1,5 +1,12 @@
 import { beforeEach, describe, expect, mock, test } from "bun:test";
-import type { KnownRelationType } from "../relation-classifier.ts";
+
+type KnownRelationType =
+  | "UNKNOWN"
+  | "AMOUNT_WATERED_DISTRICT"
+  | "SPONSORED_TREES"
+  | "WATERABLE_TREES_AT_ADDRESS"
+  | "TREES_BY_SPECIES_DISTRICT"
+  | "WATERABLE_TREES_AT_KITA";
 
 let mockRelationResult: { relationType: KnownRelationType; confidence: number } | null = null;
 let mockQuestion: string | null = null;
@@ -10,15 +17,15 @@ mock.module("../relation-classifier.ts", () => ({
   KNOWN_RELATION_TYPES: [
     "UNKNOWN",
     "AMOUNT_WATERED_DISTRICT",
-    "WATER_INTAKE_ADDRESS",
-    "WATER_TREE_AT_ADDRESS_AT_DATE",
-    "DESCRIBE_TREES_REGION",
+    "SPONSORED_TREES",
+    "WATERABLE_TREES_AT_ADDRESS",
+    "TREES_BY_SPECIES_DISTRICT",
+    "WATERABLE_TREES_AT_KITA",
   ],
 }));
 
 // Mock shared helpers
 mock.module("@leipzigtreechat/shared", () => ({
-  getQuestion: mock(async () => mockQuestion),
   QANARY_PREFIX: "urn:qanary#",
 }));
 
@@ -28,6 +35,7 @@ mock.module("@leipzigtreechat/qanary-component-helpers", () => ({
   getOutGraph: mock(() => "http://urn.org/graph"),
   getEndpointUrl: mock(() => "http://urn.org/sparql"),
   getEndpoint: mock(() => "http://urn.org/sparql"),
+  getQuestion: mock(async () => mockQuestion),
   getQuestionUri: mock(async () => "urn:qanary:question:123"),
   updateSparql: mockUpdateSparql,
 }));
@@ -77,7 +85,7 @@ describe("#Component handler", () => {
 
     expect(query).toContain("a <urn:qanary#AnnotationOfRelation>");
     expect(query).toContain("oa:hasTarget <urn:qanary:question:123>");
-    expect(query).toContain("oa:hasBody <urn:leipzigtreechat:intent:AMOUNT_WATERED_DISTRICT>");
+    expect(query).toContain('oa:hasBody """AMOUNT_WATERED_DISTRICT"""^^xsd:string');
     expect(query).toContain("oa:score '0.95'^^xsd:double");
     expect(query).toContain("oa:annotatedBy <urn:leipzigtreechat:component:relation-detection>");
   });

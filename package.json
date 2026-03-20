@@ -11,6 +11,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.11",
+    "@types/node-geocoder": "^4.2.6",
     "turbo": "^2.8.20",
     "typescript": "5.9.2"
   },
@@ -18,5 +19,8 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "node-geocoder": "^4.4.1"
+  }
 }

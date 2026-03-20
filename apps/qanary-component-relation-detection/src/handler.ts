@@ -1,7 +1,8 @@
 import type { IQanaryComponentMessageHandler } from "@leipzigtreechat/qanary-component-core";
-import { getEndpoint, getOutGraph, getQuestionUri, updateSparql } from "@leipzigtreechat/qanary-component-helpers";
-import { getQuestion, type IQanaryMessage, QANARY_PREFIX } from "@leipzigtreechat/shared";
-import { classifyRelationType, KNOWN_RELATION_TYPES, type KnownRelationType } from "./relation-classifier.ts";
+import { getEndpoint, getOutGraph, getQuestion, getQuestionUri, updateSparql } from "@leipzigtreechat/qanary-component-helpers";
+import { type IQanaryMessage, QANARY_PREFIX } from "@leipzigtreechat/shared";
+import { classifyRelationType } from "./relation-classifier.ts";
+import { KNOWN_RELATION_TYPES, type KnownRelationType } from "./relation-types.ts";
 
 /**
  * An event handler for incoming messages of the Qanary pipeline
@@ -33,13 +34,12 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
     );
     return message;
   }
-  const relationBodyUri = `urn:leipzigtreechat:intent:${normalisedRelationType}`;
 
   console.log(`[relation-detection] Relation for question "${question}":`, relationResult);
 
   await createRelationAnnotation({
     message,
-    relationBodyUri,
+    relationType: normalisedRelationType,
     confidence: relationResult.confidence,
     componentUri: "urn:leipzigtreechat:component:relation-detection",
     annotationType: `${QANARY_PREFIX}AnnotationOfRelation`,
@@ -57,7 +57,7 @@ const isValidRelationType = (relationType: string): relationType is KnownRelatio
 
 interface ICreateRelationAnnotationOptions {
   message: IQanaryMessage;
-  relationBodyUri: string;
+  relationType: KnownRelationType;
   confidence: number;
   componentUri: string;
   annotationType: string;
@@ -65,7 +65,7 @@ interface ICreateRelationAnnotationOptions {
 
 const createRelationAnnotation = async ({
   message,
-  relationBodyUri,
+  relationType,
   confidence,
   componentUri,
   annotationType,
@@ -95,7 +95,7 @@ INSERT {
   GRAPH <${outGraph}> {
     ?annotation a ${normalisedAnnotationType} ;
       oa:hasTarget <${questionUri}> ;
-      oa:hasBody <${relationBodyUri}> ;
+      oa:hasBody """${relationType}"""^^xsd:string ;
       oa:score '${confidence}'^^xsd:double ;
       oa:annotatedBy <${componentUri}> ;
       oa:annotatedAt ?time .

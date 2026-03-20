@@ -1,16 +1,28 @@
 import { getLlmModel } from "@leipzigtreechat/qanary-component-helpers";
 import { generateObject } from "ai";
 import { z } from "zod";
+import { getRelationTypeExplanation, KNOWN_RELATION_TYPES, type KnownRelationType } from "./relation-types.ts";
 
-export const KNOWN_RELATION_TYPES = [
+export { getRelationTypeExplanation, KNOWN_RELATION_TYPES, type KnownRelationType } from "./relation-types.ts";
+
+export const KNOWN_RELATION_TYPES_OLD = [
   "UNKNOWN",
+  "DESCRIBE_SYSTEM_CAPABILITIES",
+  "FIND_SPONSORED_TREES",
+  "FIND_SPONSORED_TREES_AT_ADDRESS",
+  "FIND_WATERABLE_TREES",
+  "FIND_WATERABLE_TREES_AT_ADDRESS",
+  "FIND_WATERABLE_TREES_NEAR_KITA",
+  "FIND_UNWATERED_TREES_BY_DATE",
+  "FIND_UNWATERED_TREES_BY_SPECIES",
+  "FIND_TREES_BY_SPECIES_DISTRICT",
+  "FIND_TREES_BY_SPECIES_PLANT_DATE",
+  "FIND_TREES_WITH_WATERING_HISTORY_AT_ADDRESS",
   "AMOUNT_WATERED_DISTRICT",
   "WATER_INTAKE_ADDRESS",
   "WATER_TREE_AT_ADDRESS_AT_DATE",
   "DESCRIBE_TREES_REGION",
 ] as const;
-
-export type KnownRelationType = (typeof KNOWN_RELATION_TYPES)[number];
 
 export interface RelationClassification {
   relationType: KnownRelationType;
@@ -20,9 +32,20 @@ export interface RelationClassification {
 const RelationClassificationSchema = z.object({
   relationType: z
     .enum(KNOWN_RELATION_TYPES)
-    .describe("Relation type in SCREAMING_SNAKE_CASE. " + "Prefer one of: " + KNOWN_RELATION_TYPES.join(", ") + "."),
+    .describe(
+      "Relation type in SCREAMING_SNAKE_CASE. " +
+        "Prefer one of: " +
+        KNOWN_RELATION_TYPES.map((relationType) => `${relationType} (${getRelationTypeExplanation(relationType)})`).join(
+          ", "
+        ) +
+        "."
+    ),
   confidence: z.number().min(0).max(1).describe("Confidence score between 0.0 and 1.0."),
 });
+
+const RELATION_TYPE_PROMPT_LIST = KNOWN_RELATION_TYPES.map(
+  (relationType) => `- ${relationType}: ${getRelationTypeExplanation(relationType)}`
+).join("\n");
 
 const SYSTEM_PROMPT = `You are a relation detection component in a Qanary question-answering pipeline about urban trees in Leipzig, Germany.
 
@@ -30,10 +53,7 @@ Your task:
 - Read the question and classify it into one RELATION_TYPE.
 
 Preferred RELATION_TYPE values:
-- AMOUNT_WATERED_DISTRICT: asks for watering amount/volume/count in a district.
-- WATER_INTAKE_ADDRESS: asks for water intake points near an address.
-- WATER_TREE_AT_ADDRESS_AT_DATE: asks which tree can be watered near an address at a date/time expression.
-- DESCRIBE_TREES_REGION: asks for descriptive information about trees in a city/region.
+${RELATION_TYPE_PROMPT_LIST}
 
 Rules:
 1. Return exactly one relationType.

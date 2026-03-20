@@ -46,7 +46,7 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
         range: { start: entity.start, end: entity.end },
         confidence: entity.confidence,
       },
-      annotationType: `${QANARY_PREFIX}AnnotationOfNerd`,
+      annotationType: `${QANARY_PREFIX}AnnotationOfSpotInstance`,
     });
   }
 

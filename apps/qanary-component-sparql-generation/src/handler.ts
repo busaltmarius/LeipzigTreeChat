@@ -1,13 +1,88 @@
 import type { IQanaryComponentMessageHandler } from "@leipzigtreechat/qanary-component-core";
 import {
   getEndpoint,
-  getInGraph,
   getOutGraph,
   getQuestionUri,
   selectSparql,
   updateSparql,
 } from "@leipzigtreechat/qanary-component-helpers";
 import { type IQanaryMessage, QANARY_PREFIX } from "@leipzigtreechat/shared";
+import { extractCoordinatesFromInstances } from "./extract-coordinates-from-instances.ts";
+import {
+  type AnnotationInformation,
+  getAnnotationInformation,
+} from "./get-annotation-information.ts";
+import { getSparqlTemplate } from "./get-predefined-sparql.ts";
+import proj4 from "proj4";
+
+const PLACEHOLDER_REGEX = /{{\s*([a-zA-Z0-9_]+)\s*}}/g;
+
+const escapeSparqlString = (value: string): string => {
+  return value.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+};
+
+const getBestInstanceValue = (
+  annotationInfo: AnnotationInformation,
+  entityType: string
+): string => {
+  const match = annotationInfo.instances
+    .filter((instance) => instance.entityType === entityType)
+    .sort((a, b) => b.spotConfidence - a.spotConfidence)[0];
+
+  return match?.exactQuote ?? "";
+};
+
+const getBestInstanceUrn = (
+  annotationInfo: AnnotationInformation,
+  entityType: string
+): string => {
+  const match = annotationInfo.instances
+    .filter((instance) => instance.entityType === entityType)
+    .sort((a, b) => b.instanceConfidence - a.instanceConfidence)[0];
+
+  return match?.entityUrn ?? "";
+};
+
+const fillSparqlPlaceholders = (
+  queryTemplate: string,
+  annotationInfo: AnnotationInformation,
+  utmCoordinates: { x: number; y: number } | null
+): string => {
+  const district = getBestInstanceValue(annotationInfo, "DISTRICT");
+  const species = getBestInstanceValue(annotationInfo, "SPECIES");
+  const street = getBestInstanceValue(annotationInfo, "STREET");
+  const streetNumber = getBestInstanceValue(annotationInfo, "STREET_NUMBER");
+  const zip = getBestInstanceValue(annotationInfo, "ZIP");
+  const city = getBestInstanceValue(annotationInfo, "CITY");
+  const kitaUrn = getBestInstanceUrn(annotationInfo, "KITA");
+
+  const replacements: Record<string, string> = {
+    district: district ? `"${escapeSparqlString(district)}"` : "",
+    species: species ? `"${escapeSparqlString(species)}"` : "",
+    street: street ? `"${escapeSparqlString(street)}"` : "",
+    streetNumber: streetNumber ? `"${escapeSparqlString(streetNumber)}"` : "",
+    zip: zip ? `"${escapeSparqlString(zip)}"` : "",
+    city: city ? `"${escapeSparqlString(city)}"` : "",
+    kitaUrn: kitaUrn ? `<${kitaUrn}>` : "",
+    utmAddressCoordinatesX: utmCoordinates ? `${utmCoordinates.x}` : "",
+    utmAddressCoordinatesY: utmCoordinates ? `${utmCoordinates.y}` : "",
+  };
+
+  return queryTemplate.replace(PLACEHOLDER_REGEX, (_, placeholder: string) => {
+    return replacements[placeholder] ?? `{{${placeholder}}}`;
+  });
+};
+
+const findUnresolvedPlaceholders = (query: string): string[] => {
+  const unresolved = new Set<string>();
+  for (const match of query.matchAll(PLACEHOLDER_REGEX)) {
+    const placeholder = match[1];
+    if (placeholder) {
+      unresolved.add(placeholder);
+    }
+  }
+  return [...unresolved];
+};
 
 /**
  * An event handler for incoming messages of the Qanary pipeline
@@ -22,48 +97,54 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
     return message;
   }
 
-  const inGraph = getInGraph(message);
-  if (!inGraph) {
-    console.warn("Missing inGraph");
+  // 1. Load the relation type and enriched instances
+  const annotationInfo = await getAnnotationInformation(message);
+  const { relationType } = annotationInfo;
+
+  if (!relationType) {
+    console.warn("No valid relation found for question:", questionUri);
     return message;
   }
 
-  // 1. Load the relation (AnnotationOfRelation)
-  const getRelationQuery = `
-    PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
-    SELECT ?relationBody WHERE {
-      GRAPH <${inGraph}> {
-        ?annotation a <${QANARY_PREFIX}AnnotationOfRelation> ;
-                    oa:hasTarget <${questionUri}> ;
-                    oa:hasBody ?relationBody .
-      }
-    }
-  `;
+  console.log("Found relation:", relationType);
 
-  let relationUri = "";
-  try {
-    const relationResponse = await selectSparql<{ relationBody: { value: string } }>(endpointUrl, getRelationQuery);
-    relationUri = relationResponse[0]?.relationBody.value ?? "";
-  } catch (error) {
-    console.error("Error fetching relation:", error);
+  // 2. Extract coordinates if address components (street, street number, zip) are present
+  const coordinates = await extractCoordinatesFromInstances(annotationInfo.instances);
+  let utmCoordinates: { x: number; y: number } | null = null;
+  if (coordinates) {
+    console.log(`Extracted coordinates: ${coordinates.latitude}, ${coordinates.longitude}`);
+    // Define the Leipzig UTM projection (EPSG:25833)
+    const utm33n =
+      "+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs";
+    const [x, y] = proj4("EPSG:4326", utm33n, [coordinates.longitude, coordinates.latitude]);
+    utmCoordinates = { x, y };
   }
 
-  if (!relationUri) {
-    console.warn("No relation found for question:", questionUri);
+  // 3. Load predefined SPARQL request depending on the relation
+  const sparqlTemplate = getSparqlTemplate(relationType);
+
+  if (!sparqlTemplate) {
+    console.warn("No predefined SPARQL query for relation:", relationType);
     return message;
   }
 
-  console.log("Found relation:", relationUri);
-
-  // 2. Load predefined SPARQL request depending on the relation
-  const sparqlQuery = getPredefinedSparql(relationUri);
-
-  if (!sparqlQuery) {
-    console.warn("No predefined SPARQL query for relation:", relationUri);
+  const sparqlQuery = fillSparqlPlaceholders(
+    sparqlTemplate,
+    annotationInfo,
+    utmCoordinates
+  );
+  const unresolvedPlaceholders = findUnresolvedPlaceholders(sparqlQuery);
+  if (unresolvedPlaceholders.length > 0) {
+    console.error(
+      "Unresolved SPARQL placeholders:",
+      unresolvedPlaceholders.join(", "),
+      "for relation",
+      relationType
+    );
     return message;
   }
 
-  // 3. Send the SPARQL request to the triplestore
+  // 4. Send the SPARQL request to the triplestore
   let resultJson = "";
   try {
     const rawResults = await selectSparql<any>(endpointUrl, sparqlQuery);
@@ -85,7 +166,7 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
     return message;
   }
 
-  // 4. Save the result in an AnnotationOfAnswerJson
+  // 5. Save the result in an AnnotationOfAnswerJson
   await createAnswerAnnotation({
     message,
     resultJson,
@@ -96,38 +177,6 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
 
   console.log("Done");
   return message;
-};
-
-const getPredefinedSparql = (relationUri: string): string | null => {
-  switch (relationUri) {
-    case "urn:leipzigtreechat:intent:AMOUNT_WATERED_DISTRICT":
-      return `
-        SELECT ?amount
-        WHERE {
-            ?treeId <urn:de:leipzig:trees:vocab:leipziggiesst:bezirk> "Kleinzschocher" ;
-                    <urn:de:leipzig:trees:vocab:leipziggiesst:wassersumme> ?amount .
-        }
-      `;
-    case "urn:leipzigtreechat:intent:WATER_TREE_AT_ADDRESS_AT_DATE":
-      return `
-        SELECT ?number ?long ?lat
-        WHERE {
-            ?s <urn:de:leipzig:trees:vocab:baumkataster:strasse> "Karl-Liebknecht-Straße" ;
-               <urn:de:leipzig:trees:vocab:baumkataster:baumnummer> ?number ;
-               <http://www.w3.org/2003/01/geo/wgs84_pos#long> ?long ;
-               <http://www.w3.org/2003/01/geo/wgs84_pos#lat> ?lat .
-        }
-      `;
-    case "urn:leipzigtreechat:intent:DESCRIBE_TREES_REGION":
-      return `
-        SELECT DISTINCT ?species
-        WHERE {
-            ?treeId <urn:de:leipzig:trees:vocab:baumkataster:gattung> ?species .
-        }
-      `;
-    default:
-      return null;
-  }
 };
 
 interface ICreateAnswerAnnotationOptions {

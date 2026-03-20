@@ -29,6 +29,17 @@ mock.module("@leipzigtreechat/qanary-component-helpers", () => ({
   updateSparql: mockUpdateSparql,
 }));
 
+mock.module("../../qanary-component-relation-detection/src/relation-types.ts", () => ({
+  KNOWN_RELATION_TYPES: [
+    "UNKNOWN",
+    "AMOUNT_WATERED_DISTRICT",
+    "SPONSORED_TREES",
+    "WATERABLE_TREES_AT_ADDRESS",
+    "TREES_BY_SPECIES_DISTRICT",
+    "WATERABLE_TREES_AT_KITA",
+  ],
+}));
+
 // Import AFTER mocks are registered.
 const { handler } = await import("../handler.ts");
 
@@ -57,10 +68,10 @@ describe("#Sparql Generation Component", () => {
   });
 
   test("executes query and saves AnnotationOfAnswerJson for valid relation", async () => {
-    mockRelation = "urn:leipzigtreechat:intent:DESCRIBE_TREES_REGION";
+    mockRelation = "AMOUNT_WATERED_DISTRICT";
     mockDataResults = [
-      { species: { type: "uri", value: "http://leipzig.data.de/tree/1" } },
-      { species: { type: "uri", value: "http://leipzig.data.de/tree/2" } },
+      { amount: { type: "literal", value: "12.5" } },
+      { amount: { type: "literal", value: "7.5" } },
     ];
 
     await handler({});
@@ -72,9 +83,8 @@ describe("#Sparql Generation Component", () => {
     const query = String(mockUpdateSparql.mock.calls[0]?.at(1) ?? "");
     expect(query).toContain("a <urn:qanary#AnnotationOfAnswerJson>");
     expect(query).toContain("oa:hasBody");
-    // Check if JSON contains the results
-    expect(query).toContain("http://leipzig.data.de/tree/1");
-    expect(query).toContain('vars":["species"]');
+    expect(query).toContain('vars":["amount"]');
+    expect(query).toContain('"value":"12.5"');
     expect(query).toContain("oa:annotatedBy <urn:leipzigtreechat:component:query_builder>");
   });
 });
