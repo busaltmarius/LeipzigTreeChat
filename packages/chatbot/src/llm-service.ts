@@ -46,6 +46,13 @@ type LLMServiceInterface = {
    */
   readonly generateChatbotResponse: (userInput: string, data: any) => Effect.Effect<string, never, never>;
   /**
+   * Generates a chatbot clarification question based on user input and provided data.
+   * @param userInput The original input/question from the user.
+   * @param data The data to assist in generating the clarification question.
+   * @returns The generated chatbot clarification question as string.
+   */
+  readonly generateClarificationQuestion: (userInput: string, data: any) => Effect.Effect<string, never, never>;
+  /**
    * Rewrites a question by consolidating conversation history with new input.
    * Combines known information from previous messages with new input into a single comprehensive question.
    * @param conversationHistory The previous messages in the conversation.
