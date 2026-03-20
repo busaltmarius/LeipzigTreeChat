@@ -52,6 +52,7 @@ export const ChatBotGraph = (
       {
         ends: [
           QANARY_ORCHESTRATOR_NODE_ID,
+          QUESTION_REWRITE_NODE_ID,
           CHATBOT_RESPONSE_NODE_ID,
           REQUEST_CLARIFICATION_NODE_ID,
           END,

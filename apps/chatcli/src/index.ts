@@ -40,10 +40,12 @@ async function main() {
     has_ended: false,
     has_user_question: false,
     chatmode: "QUESTION_ANSWERING",
-    input: "",
+    user_question: "",
     graph_uri: "",
     clarification: undefined,
     messages: [initialMessage],
+    qanary_answer: "",
+    clarifications: [],
   };
 
   await printMessage(initialMessage);
