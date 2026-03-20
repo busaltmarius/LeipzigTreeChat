@@ -1,8 +1,8 @@
 import { Terminal } from "@effect/platform";
 import { BunTerminal } from "@effect/platform-bun";
 import { AIMessage, BaseMessage, HumanMessage } from "@langchain/core/messages";
-import { ChatBotGraph } from "@leipzigtreechat/chatbot";
-import { type AgentState, getMessageContent } from "@leipzigtreechat/chatbot/state";
+import { createInitialAgentState, runChatTurn } from "@leipzigtreechat/chatbot";
+import { getMessageContent } from "@leipzigtreechat/chatbot/state";
 import { Effect } from "effect";
 import { readLine } from "./readline";
 
@@ -33,30 +33,21 @@ const getUserInput = async () => {
 
 // Run the main function
 async function main() {
-  const initialMessage = new AIMessage({
-    content: "Hallo, ich bin der Baumwächter von Leipzig. Wie kann ich dir helfen?",
-  });
-  const state: AgentState = {
-    has_ended: false,
-    has_user_question: false,
-    chatmode: "QUESTION_ANSWERING",
-    user_question: "",
-    clarification: undefined,
-    messages: [initialMessage],
-    qanary_answer: undefined,
-  };
+	const state = createInitialAgentState();
+	const initialMessage = state.messages[0];
 
-  await printMessage(initialMessage);
+	if (initialMessage instanceof AIMessage) {
+		await printMessage(initialMessage);
+	}
 
-  const chatBotGraph = ChatBotGraph(printMessage, getUserInput);
-
-  while (!state.has_ended) {
-    try {
-      await chatBotGraph.invoke(state);
-    } catch (error) {
-      console.log("Ein Fehler ist aufgetreten:", error);
-    }
-  }
+	while (!state.has_ended) {
+		try {
+			const input = await getUserInput();
+			await runChatTurn(state, input, { onMessage: printMessage });
+		} catch (error) {
+			console.log("Ein Fehler ist aufgetreten:", error);
+		}
+	}
 }
 
 main();

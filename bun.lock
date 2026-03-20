@@ -30,6 +30,9 @@
     "apps/chatui": {
       "name": "chatui",
       "version": "0.0.1",
+      "dependencies": {
+        "@leipzigtreechat/chatbot": "workspace: *",
+      },
       "devDependencies": {
         "@sveltejs/adapter-node": "^5.5.4",
         "@sveltejs/kit": "^2.49.1",

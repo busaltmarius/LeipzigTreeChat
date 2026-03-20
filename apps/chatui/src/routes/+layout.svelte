@@ -1,9 +1,8 @@
 <script lang="ts">
-import "./layout.css";
-import favicon from "$lib/assets/favicon.svg";
+	import "./layout.css";
 
-const { children } = $props();
+	const { children } = $props();
 </script>
 
-<svelte:head><link rel="icon" href={favicon} /></svelte:head>
+<svelte:head><link rel="icon" href="/baumbart-logo.png" /></svelte:head>
 {@render children()}
