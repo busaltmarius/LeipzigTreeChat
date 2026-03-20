@@ -513,14 +513,14 @@ export const Nodes = <const N extends string[]>(
           .join("\n");
 
         // Rewrite the question by combining history with new input
-        const rewrittenQuestion = yield* llmService.rewriteQuestion(conversationHistory, state.input);
+        const rewrittenQuestion = yield* llmService.rewriteQuestion(conversationHistory, state.user_question);
 
-        yield* Effect.logDebug("Original input: ", state.input);
+        yield* Effect.logDebug("Original input: ", state.user_question);
         yield* Effect.logDebug("Rewritten question: ", rewrittenQuestion);
 
         return command({
           update: {
-            input: rewrittenQuestion,
+            user_question: rewrittenQuestion,
           },
           goto: nextNode,
         });
