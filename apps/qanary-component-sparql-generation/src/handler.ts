@@ -15,7 +15,6 @@ import { getSparqlTemplate } from "./get-predefined-sparql.ts";
 const KNOWLEDGE_BASE_ENDPOINT = "http://localhost:8000";
 const PLACEHOLDER_REGEX = /{{\s*([a-zA-Z0-9_]+)\s*}}/g;
 
-
 const escapeSparqlString = (value: string): string => {
   return value.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
 };

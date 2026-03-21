@@ -52,7 +52,7 @@ export const askSparql = async (endpointUrl: string, query: string): Promise<boo
 export const updateSparql = async (endpointUrl: string, query: string): Promise<void> => {
   console.log("[updateSparql] Writing to endpoint:", endpointUrl);
   console.log("[updateSparql] Query:\n", query.substring(0, 500) + (query.length > 500 ? "...[truncated]" : ""));
-  
+
   try {
     const client: SparqlClient = new SparqlClient({ updateUrl: endpointUrl });
     await client.query.update(query);

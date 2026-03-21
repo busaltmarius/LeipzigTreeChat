@@ -1,11 +1,5 @@
 import type { IQanaryMessage } from "@leipzigtreechat/qanary-component-helpers";
-import {
-  getInGraph,
-  getOutGraph,
-  getQuestionUri,
-  QANARY_PREFIX,
-  selectSparql,
-} from "@leipzigtreechat/shared";
+import { getInGraph, getOutGraph, getQuestionUri, QANARY_PREFIX, selectSparql } from "@leipzigtreechat/shared";
 import {
   KNOWN_RELATION_TYPES,
   type KnownRelationType,
@@ -164,7 +158,7 @@ WHERE {
     const bindings = (await selectSparql(ANNOTATION_TRIPLESTORE_ENDPOINT, query)) as any[];
 
     console.log(`[getEnrichedInstances] Found ${bindings.length} enriched instance(s)`);
-    
+
     if (bindings.length > 0) {
       console.log("[getEnrichedInstances] First enriched instance:", JSON.stringify(bindings[0], null, 2));
     } else {

@@ -6,7 +6,13 @@ import {
   QANARY_PREFIX,
   selectSparql,
 } from "@leipzigtreechat/shared";
-import { type EntityType, ENTITY_TYPE_CONFIGS, extractEntityTypeFromUri, generateEntityQuery, getEntityTypeConfig } from "./entity-types";
+import {
+  ENTITY_TYPE_CONFIGS,
+  type EntityType,
+  extractEntityTypeFromUri,
+  generateEntityQuery,
+  getEntityTypeConfig,
+} from "./entity-types";
 import { similarity } from "./fuzzy-matching";
 import type { DisambiguationResult, NerAnnotation } from "./types";
 
@@ -16,6 +22,15 @@ import type { DisambiguationResult, NerAnnotation } from "./types";
 // This is separate from the Qanary triplestore endpoint which comes from the message
 const KNOWLEDGE_BASE_ENDPOINT = "http://localhost:8000";
 const COMPONENT_NAME = "leipzigtreechat:component:disambiguation";
+
+function hasRawdataUrl(value: unknown): value is { rawdata: string } {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "rawdata" in value &&
+    typeof (value as { rawdata?: unknown }).rawdata === "string"
+  );
+}
 
 const FUZZY_THRESHOLDS: Record<EntityType, number> = {
   TREE: 0.7,
@@ -81,7 +96,12 @@ export async function fetchNerAnnotations(message: IQanaryMessage, questionUri: 
   let questionText = "";
   try {
     const metaResponse = await fetch(questionUri);
-    const meta = await metaResponse.json();
+    const meta = (await metaResponse.json()) as unknown;
+
+    if (!hasRawdataUrl(meta)) {
+      throw new Error("Question metadata does not contain a valid rawdata URL");
+    }
+
     const rawUrl = meta.rawdata;
 
     console.log(`Fetching raw question from: ${rawUrl}`);
