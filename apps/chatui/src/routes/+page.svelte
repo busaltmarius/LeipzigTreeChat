@@ -1,7 +1,7 @@
 <script lang="ts">
 import { onMount } from "svelte";
 import { browser } from "$app/environment";
-import type { ChatMessage, ChatSocketClientMessage, ChatSocketServerMessage } from "$lib/chat/types";
+import type { ChatMessage, ChatSocketClientMessage, ChatSocketMetadataEvent, ChatSocketServerMessage } from "$lib/chat/types";
 import ChatComposer from "$lib/components/chat/ChatComposer.svelte";
 import ChatShell from "$lib/components/chat/ChatShell.svelte";
 import ChatTranscript from "$lib/components/chat/ChatTranscript.svelte";
@@ -15,6 +15,7 @@ let prompt = $state("");
 let isSubmitting = $state(false);
 let error = $state("");
 let isConnected = $state(false);
+let metadata = $state<ChatSocketMetadataEvent | null>(null);
 
 let socket: WebSocket | null = null;
 let reconnectTimeout: number | null = null;
@@ -41,11 +42,27 @@ const handleSocketMessage = (rawEvent: MessageEvent<string>) => {
       isSubmitting = false;
       previousMessagesBeforeSubmit = null;
       error = payload.error;
+      metadata = {
+        type: "chat.metadata",
+        status: "ERROR",
+        message: payload.error,
+      };
       return;
     }
 
     if (payload.type === "chat.state") {
       messages = payload.messages;
+      return;
+    }
+
+    if (payload.type === "chat.metadata") {
+      metadata = payload;
+
+      if (payload.status === "WAITING_FOR_INPUT" || payload.status === "ERROR") {
+        isSubmitting = false;
+        previousMessagesBeforeSubmit = null;
+      }
+
       return;
     }
 
@@ -174,7 +191,19 @@ onMount(() => {
 	<div class="flex min-h-0 flex-1 flex-col">
 		{#if !isConnected}
 			<div class="border-b border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 sm:px-6">
-				Verbinde den Chat ueber WebSocket...
+				Verbinde den Chat über WebSocket...
+			</div>
+		{:else if metadata}
+			<div
+				class={`border-b px-4 py-3 text-sm sm:px-6 ${
+					metadata.status === "ERROR"
+						? "border-rose-200 bg-rose-50 text-rose-700"
+						: metadata.status === "WAITING_FOR_INPUT"
+							? "border-emerald-200 bg-emerald-50 text-emerald-800"
+							: "border-sky-200 bg-sky-50 text-sky-800"
+				}`}
+			>
+				{metadata.message}
 			</div>
 		{/if}
 

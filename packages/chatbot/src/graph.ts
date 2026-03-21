@@ -1,5 +1,6 @@
 import { type BaseMessage } from "@langchain/core/messages";
 import { END, START, StateGraph } from "@langchain/langgraph";
+import type { ChatBotMetadataCallback } from "./metadata.js";
 import { Nodes } from "./nodes.js";
 import { AgentStateAnnotation } from "./state/index.js";
 
@@ -12,7 +13,8 @@ const QUESTION_REWRITE_NODE_ID = "question_rewrite";
 
 export const ChatBotGraph = (
   printMessage: (message: BaseMessage) => Promise<void>,
-  getUserInput: () => Promise<string>
+  getUserInput: () => Promise<string>,
+  onMetadata?: ChatBotMetadataCallback
 ) => {
   const {
     UserInputNode,
@@ -23,6 +25,7 @@ export const ChatBotGraph = (
     QuestionRewriteNode,
   } = Nodes(
     printMessage,
+    onMetadata,
     START,
     END,
     CHATBOT_RESPONSE_NODE_ID,

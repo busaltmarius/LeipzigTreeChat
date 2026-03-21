@@ -1,11 +1,12 @@
 import type { IncomingMessage } from "node:http";
-import { ChatBotGraph } from "@leipzigtreechat/chatbot";
+import { ChatBot, createChatBotMetadataEvent, type ChatBotMetadataEvent } from "@leipzigtreechat/chatbot";
 import { type RawData, type WebSocket, WebSocketServer } from "ws";
 import type {
   ChatMessage,
   ChatSocketClientMessage,
   ChatSocketErrorMessage,
   ChatSocketMessageEvent,
+  ChatSocketMetadataEvent,
   ChatSocketServerMessage,
   ChatSocketStateMessage,
 } from "$lib/chat/types";
@@ -70,6 +71,10 @@ const sendSocketError = (socket: WebSocket, sessionId: string, error: string) =>
   sendSocketMessage(socket, errorMessage);
 };
 
+const metadataEventKey = (event: ChatBotMetadataEvent) => {
+  return `${event.status}:${event.message}:${event.terminal ? "terminal" : "nonterminal"}`;
+};
+
 const serializeChatMessage = (message: RuntimeMessage): ChatMessage => ({
   role: message.getType() === "human" ? "user" : "assistant",
   content: typeof message.content === "string" ? message.content : (JSON.stringify(message.content) ?? ""),
@@ -83,6 +88,13 @@ const sendPrintedMessage = (socket: WebSocket, message: RuntimeMessage) => {
 
   sendSocketMessage(socket, messageEvent);
 };
+
+const createSocketMetadataEvent = (event: ChatBotMetadataEvent): ChatSocketMetadataEvent => ({
+  type: "chat.metadata",
+  status: event.status,
+  message: event.message,
+  terminal: event.terminal,
+});
 
 const parseClientMessage = (rawData: RawData): ChatSocketClientMessage | null => {
   try {
@@ -126,7 +138,20 @@ const registerConnection = (socket: WebSocket, request: IncomingMessage) => {
   let pendingPromptResolver: ((value: string) => void) | null = null;
   let pendingPromptRejecter: ((reason?: unknown) => void) | null = null;
   let isClosed = false;
-  const chatbot = ChatBotGraph(
+  let lastMetadataKey: string | null = null;
+
+  const sendMetadata = (event: ChatBotMetadataEvent) => {
+    const nextKey = metadataEventKey(event);
+
+    if (nextKey === lastMetadataKey) {
+      return;
+    }
+
+    lastMetadataKey = nextKey;
+    sendSocketMessage(socket, createSocketMetadataEvent(event));
+  };
+
+  const chatbot = ChatBot(
     async (message) => {
       sendPrintedMessage(socket, message);
     },
@@ -141,6 +166,9 @@ const registerConnection = (socket: WebSocket, request: IncomingMessage) => {
         pendingPromptResolver = resolve;
         pendingPromptRejecter = reject;
       });
+    },
+    async (event) => {
+      sendMetadata(event);
     }
   );
 
@@ -157,6 +185,7 @@ const registerConnection = (socket: WebSocket, request: IncomingMessage) => {
   };
 
   sendSocketState(socket, sessionId);
+  sendMetadata(createChatBotMetadataEvent("WAITING_FOR_INPUT"));
 
   void (async () => {
     try {
@@ -168,6 +197,7 @@ const registerConnection = (socket: WebSocket, request: IncomingMessage) => {
 
       console.error("Failed to run websocket chatbot", error);
       sendSocketError(socket, sessionId, CHAT_FAILURE_ERROR);
+      sendMetadata(createChatBotMetadataEvent("ERROR", { message: CHAT_FAILURE_ERROR, terminal: true }));
     } finally {
       if (!isClosed && state.has_ended) {
         socket.close(1000, "Conversation finished.");
