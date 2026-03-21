@@ -15,9 +15,9 @@ const llmMocks = {
 };
 
 const triplestoreMocks = {
-  queryClarifications: mock<(graphUri: string) => Effect.Effect<Array<{ uri: unknown; content: string }>, never, never>>(
-    (_graphUri: string) => Effect.succeed([])
-  ),
+  queryClarifications: mock<
+    (graphUri: string) => Effect.Effect<Array<{ uri: unknown; content: string }>, never, never>
+  >((_graphUri: string) => Effect.succeed([])),
   queryFinalAnswer: mock<(graphUri: string) => Effect.Effect<unknown, unknown, never>>((_graphUri: string) =>
     Effect.succeed({
       _tag: "QanaryFinalAnswer" as const,
@@ -27,7 +27,9 @@ const triplestoreMocks = {
   ),
 };
 
-const MockHttpClientTag = Context.GenericTag<{ execute: (request: unknown) => Effect.Effect<unknown> }>("MockHttpClient");
+const MockHttpClientTag = Context.GenericTag<{ execute: (request: unknown) => Effect.Effect<unknown> }>(
+  "MockHttpClient"
+);
 const MockLLMServiceTag = Context.GenericTag<{
   rewriteQuestion: (conversationHistory: string | undefined, input: string) => Effect.Effect<string>;
   generateChatbotResponse: () => Effect.Effect<string>;
@@ -52,21 +54,15 @@ mock.module("@effect/platform", () => ({
   },
   HttpClientRequest: {
     post: (url: string) => createRequest(url),
-    setUrlParams:
-      (params: Record<string, string | string[]>) =>
-      (request: ReturnType<typeof createRequest>) => ({
-        ...request,
-        params,
-      }),
+    setUrlParams: (params: Record<string, string | string[]>) => (request: ReturnType<typeof createRequest>) => ({
+      ...request,
+      params,
+    }),
   },
   HttpClientResponse: {
-    filterStatusOk:
-      (response: { status: number }) =>
+    filterStatusOk: (response: { status: number }) =>
       response.status >= 200 && response.status < 300 ? Effect.succeed(response) : Effect.fail(new Error("Not OK")),
-    schemaBodyJson:
-      (_schema: unknown) =>
-      (response: { body: unknown }) =>
-        Effect.succeed(response.body),
+    schemaBodyJson: (_schema: unknown) => (response: { body: unknown }) => Effect.succeed(response.body),
   },
 }));
 
@@ -116,7 +112,8 @@ mock.module("../langgraph-runtime.js", () => {
   );
 
   return {
-    runLangGraphRuntime: (effect: Effect.Effect<unknown, unknown, never>) => Effect.runPromise(effect.pipe(Effect.provide(layer))),
+    runLangGraphRuntime: (effect: Effect.Effect<unknown, unknown, never>) =>
+      Effect.runPromise(effect.pipe(Effect.provide(layer))),
   };
 });
 

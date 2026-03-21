@@ -2,10 +2,10 @@ import { HttpClient, HttpClientRequest, HttpClientResponse } from "@effect/platf
 import { AIMessage, type BaseMessage, HumanMessage } from "@langchain/core/messages";
 import { Command } from "@langchain/langgraph";
 import { Clock, Config, Effect, Either, Logger, Match, Schema } from "effect";
-import { createChatBotMetadataEvent, type ChatBotMetadataCallback } from "./metadata.js";
 import { type InvalidInputError, MissingMessageError } from "./errors.js";
 import { runLangGraphRuntime } from "./langgraph-runtime.js";
 import { LLMService } from "./llm-service.js";
+import { type ChatBotMetadataCallback, ChatBotMetadataStatus } from "./metadata.js";
 import {
   type AgentState,
   ClarificationConversation,
@@ -76,10 +76,8 @@ export const Nodes = <const N extends string[]>(
   const command = (commandArgs: { update?: Partial<AgentState>; goto: NodeID }) => new Command(commandArgs);
 
   const printMessageEffect = (message: BaseMessage) => Effect.promise(() => printMessage(message));
-  const metadataEffect = (status: Parameters<typeof createChatBotMetadataEvent>[0], message?: string, terminal?: boolean) =>
-    onMetadata
-      ? Effect.promise(() => Promise.resolve(onMetadata(createChatBotMetadataEvent(status, { message, terminal }))))
-      : Effect.void;
+  const sendMetadataEffect = (status: ChatBotMetadataStatus, message?: string) =>
+    onMetadata ? Effect.promise(() => Promise.resolve(onMetadata({ status }))) : Effect.void;
 
   return {
     /**
@@ -93,7 +91,7 @@ export const Nodes = <const N extends string[]>(
         const { nextNode } = routingConfig;
         const program = Effect.gen(function* () {
           yield* Effect.logDebug("State: ", state);
-          yield* metadataEffect("WAITING_FOR_INPUT");
+          yield* sendMetadataEffect("WAITING_FOR_INPUT");
           const userInput = yield* Effect.promise(() => getUserInput());
 
           state.messages.push(new HumanMessage(userInput));
@@ -157,7 +155,7 @@ export const Nodes = <const N extends string[]>(
       const { routerNode } = routingConfig;
       const program = Effect.gen(function* () {
         yield* Effect.logDebug("State: ", state);
-        yield* metadataEffect("GATHERING_DATA");
+        yield* sendMetadataEffect("GATHERING_DATA");
 
         // 1. Access the HTTP Client from the context
         const client = yield* HttpClient.HttpClient;
@@ -193,13 +191,9 @@ export const Nodes = <const N extends string[]>(
         if (Either.isLeft(result)) {
           const error = result.left;
           yield* Effect.logError("Error in Qanary pipeline:", error);
-          const errorMessageContent = "Entschuldigung, es gab ein Problem bei der Verarbeitung deiner Anfrage.";
-          const errorMessage = new AIMessage({
-            content: errorMessageContent,
-          });
-          yield* metadataEffect("ERROR", errorMessageContent);
-          yield* printMessageEffect(errorMessage);
-          state.messages.push(errorMessage);
+          const errorMessageContent =
+            "Entschuldigung, es gab ein Problem bei der Verarbeitung deiner Anfrage durch Qanary.";
+          yield* sendMetadataEffect("ERROR", errorMessageContent);
 
           return command({
             update: {
@@ -222,17 +216,11 @@ export const Nodes = <const N extends string[]>(
 
           if (error._tag === "NotFoundError") {
             yield* Effect.logError(`Could not find item of type ${error.itemType} in the triplestore.`);
+            yield* sendMetadataEffect("ERROR", "Es konnten keine Antworten im Triplestore gefunden werden.");
           } else if (error._tag === "SPARQLError") {
             yield* Effect.logError("Error while executing SPARQL query:", error.reason);
+            yield* sendMetadataEffect("ERROR", "Es gab ein Problem beim Ausführen der SPARQL-Abfrage.");
           }
-
-          const errorMessageContent = "Entschuldigung, es gab ein Problem bei der Verarbeitung deiner Anfrage.";
-          const errorMessage = new AIMessage({
-            content: errorMessageContent,
-          });
-          yield* metadataEffect("ERROR", errorMessageContent);
-          yield* printMessageEffect(errorMessage);
-          state.messages.push(errorMessage);
 
           return command({
             update: {
@@ -360,7 +348,7 @@ export const Nodes = <const N extends string[]>(
             );
 
             yield* Effect.logDebug(error.logMessage);
-            yield* metadataEffect("ERROR", error.message);
+            yield* sendMetadataEffect("ERROR", error.message);
             yield* printMessageEffect(new AIMessage({ content: error.message }));
             state.messages.push(new AIMessage({ content: error.message }));
 
@@ -398,7 +386,7 @@ export const Nodes = <const N extends string[]>(
       const { nextNode } = routingConfig;
       const program = Effect.gen(function* () {
         yield* Effect.logDebug("State: ", state);
-        yield* metadataEffect("GENERATING_RESPONSE");
+        yield* sendMetadataEffect("GENERATING_RESPONSE");
 
         if (state.qanary_answer === undefined) {
           const msg = new AIMessage({
@@ -439,7 +427,7 @@ export const Nodes = <const N extends string[]>(
       const { nextNode } = routingConfig;
       const program = Effect.gen(function* () {
         yield* Effect.logDebug("State: ", state);
-        yield* metadataEffect("GENERATING_CLARIFICATION");
+        yield* sendMetadataEffect("GENERATING_CLARIFICATION");
         const llmService = yield* LLMService;
         if (state.clarification === undefined) {
           yield* Effect.logError("No clarification conversation present in AgentState");
@@ -497,7 +485,7 @@ export const Nodes = <const N extends string[]>(
       const { nextNode } = routingConfig;
       const program = Effect.gen(function* () {
         yield* Effect.logDebug("State: ", state);
-        yield* metadataEffect("REWRITING_QUESTION");
+        yield* sendMetadataEffect("REWRITING_QUESTION");
         const llmService = yield* LLMService;
 
         // Build conversation history from messages

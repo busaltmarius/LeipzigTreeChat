@@ -1,5 +1,5 @@
 import type { IncomingMessage } from "node:http";
-import { ChatBot, createChatBotMetadataEvent, type ChatBotMetadataEvent } from "@leipzigtreechat/chatbot";
+import { ChatBotGraph, type ChatBotMetadataEvent } from "@leipzigtreechat/chatbot";
 import { type RawData, type WebSocket, WebSocketServer } from "ws";
 import type {
   ChatMessage,
@@ -72,7 +72,7 @@ const sendSocketError = (socket: WebSocket, sessionId: string, error: string) =>
 };
 
 const metadataEventKey = (event: ChatBotMetadataEvent) => {
-  return `${event.status}:${event.message}:${event.terminal ? "terminal" : "nonterminal"}`;
+  return event.status;
 };
 
 const serializeChatMessage = (message: RuntimeMessage): ChatMessage => ({
@@ -92,8 +92,6 @@ const sendPrintedMessage = (socket: WebSocket, message: RuntimeMessage) => {
 const createSocketMetadataEvent = (event: ChatBotMetadataEvent): ChatSocketMetadataEvent => ({
   type: "chat.metadata",
   status: event.status,
-  message: event.message,
-  terminal: event.terminal,
 });
 
 const parseClientMessage = (rawData: RawData): ChatSocketClientMessage | null => {
@@ -151,7 +149,7 @@ const registerConnection = (socket: WebSocket, request: IncomingMessage) => {
     sendSocketMessage(socket, createSocketMetadataEvent(event));
   };
 
-  const chatbot = ChatBot(
+  const chatbot = ChatBotGraph(
     async (message) => {
       sendPrintedMessage(socket, message);
     },
@@ -185,7 +183,7 @@ const registerConnection = (socket: WebSocket, request: IncomingMessage) => {
   };
 
   sendSocketState(socket, sessionId);
-  sendMetadata(createChatBotMetadataEvent("WAITING_FOR_INPUT"));
+  sendMetadata({ status: "WAITING_FOR_INPUT" });
 
   void (async () => {
     try {
@@ -197,7 +195,6 @@ const registerConnection = (socket: WebSocket, request: IncomingMessage) => {
 
       console.error("Failed to run websocket chatbot", error);
       sendSocketError(socket, sessionId, CHAT_FAILURE_ERROR);
-      sendMetadata(createChatBotMetadataEvent("ERROR", { message: CHAT_FAILURE_ERROR, terminal: true }));
     } finally {
       if (!isClosed && state.has_ended) {
         socket.close(1000, "Conversation finished.");

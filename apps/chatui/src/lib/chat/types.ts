@@ -3,6 +3,7 @@ import type { ChatBotMetadataEvent, ChatBotMetadataStatus } from "@leipzigtreech
 export type ChatMessage = {
   role: "user" | "assistant";
   content: string;
+  variant?: "default" | "error";
 };
 
 export type ChatSocketClientMessage = {
@@ -23,8 +24,6 @@ export type ChatSocketMessageEvent = {
 export type ChatSocketMetadataEvent = {
   type: "chat.metadata";
   status: ChatBotMetadataStatus;
-  message: ChatBotMetadataEvent["message"];
-  terminal?: ChatBotMetadataEvent["terminal"];
 };
 
 export type ChatSocketErrorMessage = {
