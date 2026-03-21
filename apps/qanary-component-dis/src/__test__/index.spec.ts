@@ -2,7 +2,7 @@ import { describe, expect, mock, test } from "bun:test";
 
 mock.module("../implementation.ts", () => ({
   fetchNerAnnotations: mock(async () => []),
-  disambiguate: mock(async () => null),
+  disambiguate: mock(async () => ({ result: null, candidates: [] })),
   writeDisambiguationAnnotation: mock(async () => {}),
 }));
 
@@ -19,7 +19,10 @@ mock.module("@leipzigtreechat/shared", () => ({
 // ← separater Mock für helpers
 mock.module("@leipzigtreechat/qanary-component-helpers", () => ({
   getQuestionUri: mock(async () => "http://localhost:8080/question/stored-question__text_test"),
+  getQuestion: mock(async () => "Wie viel wurde im Stadtteil Connewitz gegossen?"),
   createAnnotationInKnowledgeGraph: mock(async () => {}),
+  generateClarificationQuestion: mock(async () => null),
+  createClarificationAnnotation: mock(async () => {}),
 }));
 
 describe("#Component handler", () => {
@@ -53,7 +56,10 @@ describe("#Component handler", () => {
 
     mock.module("@leipzigtreechat/qanary-component-helpers", () => ({
       getQuestionUri: mock(async () => null),
+      getQuestion: mock(async () => null),
       createAnnotationInKnowledgeGraph: mock(async () => {}),
+      generateClarificationQuestion: mock(async () => null),
+      createClarificationAnnotation: mock(async () => {}),
     }));
 
     const { handler: fn } = await import("../handler.ts");
@@ -84,7 +90,10 @@ describe("#Component handler", () => {
       getQuestionUri: mock(async () => {
         throw new Error("Test pipeline error");
       }),
+      getQuestion: mock(async () => null),
       createAnnotationInKnowledgeGraph: mock(async () => {}),
+      generateClarificationQuestion: mock(async () => null),
+      createClarificationAnnotation: mock(async () => {}),
     }));
 
     const { handler: fn } = await import("../handler.ts");

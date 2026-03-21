@@ -24,6 +24,16 @@ export interface DisambiguationResult {
 }
 
 /**
+ * Outcome of a disambiguation attempt, including all candidates above threshold.
+ */
+export interface DisambiguationOutcome {
+  /** The best match, or null if no candidates met the threshold. */
+  result: DisambiguationResult | null;
+  /** All candidates that met the fuzzy threshold, sorted by similarity descending. */
+  candidates: DisambiguationResult[];
+}
+
+/**
  * SPARQL binding result interface
  */
 export interface SparqlBinding {

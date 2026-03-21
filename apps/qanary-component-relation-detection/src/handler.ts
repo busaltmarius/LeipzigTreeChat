@@ -1,5 +1,7 @@
 import type { IQanaryComponentMessageHandler } from "@leipzigtreechat/qanary-component-core";
 import {
+  createClarificationAnnotation,
+  generateClarificationQuestion,
   getEndpoint,
   getOutGraph,
   getQuestion,
@@ -9,6 +11,11 @@ import {
 import { type IQanaryMessage, QANARY_PREFIX } from "@leipzigtreechat/shared";
 import { classifyRelationType } from "./relation-classifier.ts";
 import { KNOWN_RELATION_TYPES, type KnownRelationType } from "./relation-types.ts";
+
+/**
+ * Confidence threshold below which a clarification question is generated.
+ */
+const CLARIFICATION_CONFIDENCE_THRESHOLD = 0.5;
 
 /**
  * An event handler for incoming messages of the Qanary pipeline
@@ -30,6 +37,7 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
   console.log("[qanary-component-relation-detection] question:", question);
 
   const relationResult = await classifyRelationType(question);
+
   if (!relationResult) {
     console.warn(`[qanary-component-relation-detection] could not classify relation for: "${question}"`);
     return message;
@@ -37,6 +45,7 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
 
   const rawRelationType = relationResult.relationType;
   const normalisedRelationType = typeof rawRelationType === "string" ? rawRelationType.trim().toUpperCase() : "";
+
   if (!isValidRelationType(normalisedRelationType)) {
     console.warn(
       `[relation-detection] invalid relation type "${rawRelationType}" for question "${question}". Skipping annotation.`
@@ -54,9 +63,47 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
     annotationType: `${QANARY_PREFIX}AnnotationOfRelation`,
   });
 
+  // --- Clarification: low confidence ---------------------------------------
+  if (relationResult.confidence < CLARIFICATION_CONFIDENCE_THRESHOLD) {
+    await writeClarificationIfNeeded(
+      message,
+      question,
+      `Die Relation wurde als "${normalisedRelationType}" klassifiziert, jedoch mit niedriger Konfidenz (${relationResult.confidence.toFixed(2)}).`
+    );
+  }
+
   console.log("[qanary-component-relation-detection] relation annotation created");
   console.log(`[qanary-component-relation-detection] ended in ${Date.now() - startedAt}ms`);
   return message;
+};
+
+/**
+ * Generates a clarification question via the LLM and writes it as an
+ * `AnnotationOfClarification` into the knowledge graph.
+ */
+const writeClarificationIfNeeded = async (
+  message: IQanaryMessage,
+  question: string,
+  ambiguityDescription: string
+): Promise<void> => {
+  try {
+    const clarificationText = await generateClarificationQuestion({
+      question,
+      componentName: "qanary-component-relation-detection",
+      ambiguityDescription,
+    });
+
+    if (clarificationText) {
+      await createClarificationAnnotation({
+        message,
+        componentName: "qanary-component-relation-detection",
+        clarificationQuestion: clarificationText,
+      });
+      console.log("[qanary-component-relation-detection] clarification annotation written");
+    }
+  } catch (error) {
+    console.error("[qanary-component-relation-detection] error generating/writing clarification:", error);
+  }
 };
 
 const KNOWN_RELATION_TYPE_SET = new Set<string>(KNOWN_RELATION_TYPES);

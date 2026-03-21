@@ -5,6 +5,16 @@ export {
   type IAnnotationInformation,
   type IAnnotationInformationRange,
 } from "./create-annotation.js";
+export {
+  createClarificationAnnotation,
+  escapeSparqlTripleQuoted,
+  type ICreateClarificationAnnotationOptions,
+} from "./create-clarification-annotation.js";
+export {
+  type ClarificationContext,
+  type GenerateTextFn,
+  generateClarificationQuestion,
+} from "./generate-clarification-question.js";
 export { extractJsonFromText, generateObjectWithRetry } from "./generate-object-retry.js";
 export { getQuestion } from "./get-question.js";
 export { getQuestionUri } from "./get-question-uri.js";

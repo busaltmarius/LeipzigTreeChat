@@ -38,6 +38,8 @@ mock.module("@leipzigtreechat/qanary-component-helpers", () => ({
   getQuestion: mock(async () => mockQuestion),
   getQuestionUri: mock(async () => "urn:qanary:question:123"),
   updateSparql: mockUpdateSparql,
+  generateClarificationQuestion: mock(async () => "Clarification question from LLM"),
+  createClarificationAnnotation: mock(async () => {}),
 }));
 
 // Import AFTER mocks are registered.

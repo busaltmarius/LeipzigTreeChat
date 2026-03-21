@@ -14,7 +14,7 @@ import {
   getEntityTypeConfig,
 } from "./entity-types";
 import { similarity } from "./fuzzy-matching";
-import type { DisambiguationResult, NerAnnotation } from "./types";
+import type { DisambiguationOutcome, DisambiguationResult, NerAnnotation } from "./types";
 
 // Config Part
 
@@ -145,7 +145,7 @@ export async function fetchNerAnnotations(message: IQanaryMessage, questionUri: 
 
 //  Disambiguates a NER annotation by finding the best matching entity in the KB
 
-export async function disambiguate(annotation: NerAnnotation): Promise<DisambiguationResult | null> {
+export async function disambiguate(annotation: NerAnnotation): Promise<DisambiguationOutcome> {
   // annotation.entityType is now a plain string (e.g., "CITY", "DISTRICT")
   // from the JSON body, not a full URI
   let entityType: EntityType | null = null;
@@ -160,7 +160,7 @@ export async function disambiguate(annotation: NerAnnotation): Promise<Disambigu
 
   if (!entityType) {
     console.warn(`Unsupported or invalid entity type: ${annotation.entityType}`);
-    return null;
+    return { result: null, candidates: [] };
   }
 
   const fuzzyThreshold = FUZZY_THRESHOLDS[entityType] ?? 0.75;
@@ -170,7 +170,7 @@ export async function disambiguate(annotation: NerAnnotation): Promise<Disambigu
 
   if (bindings.length === 0) {
     console.warn(`Knowledge base returned no candidates for ${entityType} entity: "${annotation.exactQuote}"`);
-    return null;
+    return { result: null, candidates: [] };
   }
 
   // Score each candidate with fuzzy similarity
@@ -182,6 +182,12 @@ export async function disambiguate(annotation: NerAnnotation): Promise<Disambigu
     }))
     .filter((c) => c.similarity >= fuzzyThreshold)
     .sort((a, b) => b.similarity - a.similarity);
+
+  const candidates: DisambiguationResult[] = scored.map((s) => ({
+    entityUrn: s.entityUrn,
+    label: s.label,
+    score: s.similarity,
+  }));
 
   if (scored.length === 0) {
     const bestMatch = bindings
@@ -195,12 +201,12 @@ export async function disambiguate(annotation: NerAnnotation): Promise<Disambigu
       `No fuzzy match found for ${entityType}: "${annotation.exactQuote}" ` +
         `(best match is "${bestMatch?.label ?? "none"}" with similarity ${bestMatch?.similarity.toFixed(2)} which is below threshold ${fuzzyThreshold})`
     );
-    return null;
+    return { result: null, candidates: [] };
   }
 
   const best = scored[0];
   if (!best) {
-    return null;
+    return { result: null, candidates: [] };
   }
 
   // Kombinierter Score wird oft benutzt, könnte man noch einabuen. confidence * similarity
@@ -212,9 +218,12 @@ export async function disambiguate(annotation: NerAnnotation): Promise<Disambigu
   );
 
   return {
-    entityUrn: best.entityUrn,
-    label: best.label,
-    score: best.similarity,
+    result: {
+      entityUrn: best.entityUrn,
+      label: best.label,
+      score: best.similarity,
+    },
+    candidates,
   };
 }
 
