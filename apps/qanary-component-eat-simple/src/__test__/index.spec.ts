@@ -29,9 +29,13 @@ mock.module("@leipzigtreechat/shared", () => ({
 }));
 
 const mockCreateAnnotation = mock(async () => {});
+const mockCreateClarificationAnnotation = mock(async () => {});
+const mockGenerateClarificationQuestion = mock(async () => null);
 
 mock.module("@leipzigtreechat/qanary-component-helpers", () => ({
   createAnnotationInKnowledgeGraph: mockCreateAnnotation,
+  createClarificationAnnotation: mockCreateClarificationAnnotation,
+  generateClarificationQuestion: mockGenerateClarificationQuestion,
 }));
 
 // Import AFTER all mocks are registered.
