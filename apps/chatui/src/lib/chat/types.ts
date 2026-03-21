@@ -1,4 +1,4 @@
-import type { ChatBotMetadataEvent, ChatBotMetadataStatus } from "@leipzigtreechat/chatbot";
+import type { ChatBotMetadataStatus } from "@leipzigtreechat/chatbot";
 
 export type ChatMessage = {
   role: "user" | "assistant";
@@ -24,6 +24,7 @@ export type ChatSocketMessageEvent = {
 export type ChatSocketMetadataEvent = {
   type: "chat.metadata";
   status: ChatBotMetadataStatus;
+  message: string;
 };
 
 export type ChatSocketErrorMessage = {

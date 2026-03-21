@@ -1,5 +1,9 @@
 import type { IncomingMessage } from "node:http";
-import { ChatBotGraph, type ChatBotMetadataEvent } from "@leipzigtreechat/chatbot";
+import {
+  CHATBOT_METADATA_MESSAGES,
+  ChatBotGraph,
+  type ChatBotMetadataEvent,
+} from "@leipzigtreechat/chatbot";
 import { type RawData, type WebSocket, WebSocketServer } from "ws";
 import type {
   ChatMessage,
@@ -72,7 +76,12 @@ const sendSocketError = (socket: WebSocket, sessionId: string, error: string) =>
 };
 
 const metadataEventKey = (event: ChatBotMetadataEvent) => {
-  return event.status;
+  const message = event.message ?? CHATBOT_METADATA_MESSAGES[event.status];
+
+  return JSON.stringify({
+    status: event.status,
+    message,
+  });
 };
 
 const serializeChatMessage = (message: RuntimeMessage): ChatMessage => ({
@@ -89,10 +98,13 @@ const sendPrintedMessage = (socket: WebSocket, message: RuntimeMessage) => {
   sendSocketMessage(socket, messageEvent);
 };
 
-const createSocketMetadataEvent = (event: ChatBotMetadataEvent): ChatSocketMetadataEvent => ({
-  type: "chat.metadata",
-  status: event.status,
-});
+const createSocketMetadataEvent = (event: ChatBotMetadataEvent): ChatSocketMetadataEvent => {
+  return {
+    type: "chat.metadata",
+    status: event.status,
+    message: event.message ?? CHATBOT_METADATA_MESSAGES[event.status],
+  };
+};
 
 const parseClientMessage = (rawData: RawData): ChatSocketClientMessage | null => {
   try {
@@ -183,7 +195,10 @@ const registerConnection = (socket: WebSocket, request: IncomingMessage) => {
   };
 
   sendSocketState(socket, sessionId);
-  sendMetadata({ status: "WAITING_FOR_INPUT" });
+  sendMetadata({
+    status: "WAITING_FOR_INPUT",
+    message: "Bereit fuer deine naechste Frage.",
+  });
 
   void (async () => {
     try {

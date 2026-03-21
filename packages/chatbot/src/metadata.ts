@@ -1,4 +1,4 @@
-import { ReadonlyRecord } from "effect/Record";
+import type { ReadonlyRecord } from "effect/Record";
 
 export type ChatBotMetadataStatus =
   | "WAITING_FOR_INPUT"
@@ -10,6 +10,7 @@ export type ChatBotMetadataStatus =
 
 export type ChatBotMetadataEvent = {
   status: ChatBotMetadataStatus;
+  message?: string;
 };
 
 export type ChatBotMetadataCallback = (event: ChatBotMetadataEvent) => Promise<void> | void;

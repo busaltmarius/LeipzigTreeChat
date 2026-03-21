@@ -120,6 +120,10 @@ const handleSocketMessage = (rawEvent: MessageEvent<string>) => {
         previousMessagesBeforeSubmit = null;
       }
 
+      if (payload.status === "ERROR") {
+        appendAssistantErrorMessage(payload.message);
+      }
+
       return;
     }
 

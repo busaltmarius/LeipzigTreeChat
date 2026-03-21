@@ -5,7 +5,7 @@ import { Clock, Config, Effect, Either, Logger, Match, Schema } from "effect";
 import { type InvalidInputError, MissingMessageError } from "./errors.js";
 import { runLangGraphRuntime } from "./langgraph-runtime.js";
 import { LLMService } from "./llm-service.js";
-import { type ChatBotMetadataCallback, ChatBotMetadataStatus } from "./metadata.js";
+import { type ChatBotMetadataCallback, type ChatBotMetadataStatus } from "./metadata.js";
 import {
   type AgentState,
   ClarificationConversation,
@@ -77,7 +77,7 @@ export const Nodes = <const N extends string[]>(
 
   const printMessageEffect = (message: BaseMessage) => Effect.promise(() => printMessage(message));
   const sendMetadataEffect = (status: ChatBotMetadataStatus, message?: string) =>
-    onMetadata ? Effect.promise(() => Promise.resolve(onMetadata({ status }))) : Effect.void;
+    onMetadata ? Effect.promise(() => Promise.resolve(onMetadata({ status, message }))) : Effect.void;
 
   return {
     /**
