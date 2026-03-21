@@ -6,7 +6,7 @@ import { TriplestoreService } from "./triplestore-service.js";
 const layer = Layer.mergeAll(
   LLMService.Live.pipe(Layer.provide(OpenRouter.Live)),
   TriplestoreService.Live,
-  Logger.minimumLogLevel(LogLevel.Error),
+  Logger.minimumLogLevel(LogLevel.Trace),
   FetchHttpClient.layer
 );
 

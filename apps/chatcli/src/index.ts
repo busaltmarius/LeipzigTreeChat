@@ -1,7 +1,7 @@
 import { Terminal } from "@effect/platform";
 import { BunTerminal } from "@effect/platform-bun";
 import { AIMessage, BaseMessage, HumanMessage } from "@langchain/core/messages";
-import { createInitialAgentState, runChatTurn } from "@leipzigtreechat/chatbot";
+import { ChatBotGraph, createInitialAgentState } from "@leipzigtreechat/chatbot";
 import { getMessageContent } from "@leipzigtreechat/chatbot/state";
 import { Effect } from "effect";
 import { readLine } from "./readline";
@@ -12,7 +12,7 @@ const printMessage = async (message: BaseMessage) => {
     const content = yield* getMessageContent(message);
 
     if (message instanceof AIMessage) {
-      yield* terminal.display(`-- Baumwächter: ${content}\n`);
+      yield* terminal.display(`-- Baumbart: ${content}\n`);
     } else if (message instanceof HumanMessage) {
       yield* terminal.display(`-- Deine Nachricht: ${content}\n`);
     }
@@ -20,6 +20,7 @@ const printMessage = async (message: BaseMessage) => {
 
   return Effect.runPromise(program.pipe(Effect.provide(BunTerminal.layer)));
 };
+
 const getUserInput = async () => {
   return Effect.runPromise(
     Effect.scoped(
@@ -39,14 +40,12 @@ async function main() {
   if (initialMessage instanceof AIMessage) {
     await printMessage(initialMessage);
   }
+  const graph = ChatBotGraph(printMessage, getUserInput);
 
-  while (!state.has_ended) {
-    try {
-      const input = await getUserInput();
-      await runChatTurn(state, input, { onMessage: printMessage });
-    } catch (error) {
-      console.log("Ein Fehler ist aufgetreten:", error);
-    }
+  try {
+    await graph.invoke(state);
+  } catch (error) {
+    console.log("Ein Fehler ist aufgetreten:", error);
   }
 }
 

@@ -12,8 +12,8 @@ import {
   QanaryClarificationAnswer,
   QanaryClarificationQuestion,
 } from "./state/index.js";
-import { NotFoundError, TriplestoreService } from "./triplestore-service.js";
-import { Unit } from "./unit.js";
+import { TriplestoreService } from "./triplestore-service.js";
+import type { Unit } from "./unit.js";
 
 /**
  * Logger that prints the node name in each log message.
@@ -89,12 +89,17 @@ export const Nodes = <const N extends string[]>(
           yield* Effect.logDebug("State: ", state);
           const userInput = yield* Effect.promise(() => getUserInput());
 
+          state.messages.push(new HumanMessage(userInput));
+
           switch (state.chatmode) {
             case "CLARIFICATION": {
               if (state.clarification === undefined) {
                 yield* Effect.logError("No clarification conversation present in AgentState");
 
                 return command({
+                  update: {
+                    messages: state.messages,
+                  },
                   goto: nextNode,
                 });
               }
@@ -107,15 +112,16 @@ export const Nodes = <const N extends string[]>(
               return command({
                 update: {
                   clarification: state.clarification,
+                  messages: state.messages,
                 },
                 goto: nextNode,
               });
             }
-            case "QUESTION_ANSWERING": {
+            case "USER_QUESTION": {
               return command({
                 update: {
                   user_question: userInput,
-                  has_user_question: true,
+                  messages: state.messages,
                 },
                 goto: nextNode,
               });
@@ -123,6 +129,9 @@ export const Nodes = <const N extends string[]>(
             default: {
               yield* Effect.logError("Unknown chatmode: ", state.chatmode);
               return command({
+                update: {
+                  messages: state.messages,
+                },
                 goto: nextNode,
               });
             }
@@ -137,106 +146,109 @@ export const Nodes = <const N extends string[]>(
      * @param routingConfig The routing configuration for the next node and error node
      * @returns The configured Node usable by LangGraph
      */
-    QanaryOrchestratorNode:
-      (routingConfig: { nextNode: NodeID; userInputNode: NodeID }) => async (state: AgentState) => {
-        const { nextNode, userInputNode } = routingConfig;
-        const program = Effect.gen(function* () {
-          yield* Effect.logDebug("State: ", state);
+    QanaryOrchestratorNode: (routingConfig: { routerNode: NodeID }) => async (state: AgentState) => {
+      const { routerNode } = routingConfig;
+      const program = Effect.gen(function* () {
+        yield* Effect.logDebug("State: ", state);
 
-          // 1. Access the HTTP Client from the context
-          const client = yield* HttpClient.HttpClient;
+        // 1. Access the HTTP Client from the context
+        const client = yield* HttpClient.HttpClient;
 
-          const components = [
-            "qanary-component-eat-simple",
-            "qanary-component-nerd-simple",
-            "qanary-component-dis",
-            "qanary-component-relation-detection",
-            "qanary-component-sparql-generation",
-          ];
-          const apiBaseUrl = yield* Config.url("QANARY_API_BASE_URL");
+        const components = [
+          "qanary-component-eat-simple",
+          "qanary-component-nerd-simple",
+          "qanary-component-dis",
+          "qanary-component-relation-detection",
+          "qanary-component-sparql-generation",
+        ];
+        const apiBaseUrl = yield* Config.url("QANARY_API_BASE_URL");
 
-          const QanaryResponse = Schema.Struct({
-            inGraph: Schema.String,
+        const QanaryResponse = Schema.Struct({
+          inGraph: Schema.String,
+        });
+
+        const result = yield* HttpClientRequest.post(`${apiBaseUrl}questionanswering`).pipe(
+          HttpClientRequest.setUrlParams({
+            textquestion: state.user_question,
+            "componentlist[]": components,
+          }),
+          client.execute,
+          Effect.flatMap(HttpClientResponse.filterStatusOk),
+          Effect.flatMap(HttpClientResponse.schemaBodyJson(QanaryResponse)),
+          Effect.timeout("60 seconds"),
+          Effect.scoped,
+          Effect.either
+        );
+
+        yield* Effect.logDebug("Qanary Result: ", result);
+
+        if (Either.isLeft(result)) {
+          const error = result.left;
+          yield* Effect.logError("Error in Qanary pipeline:", error);
+          const errorMessage = new AIMessage({
+            content: "Entschuldigung, es gab ein Problem bei der Verarbeitung deiner Anfrage.",
           });
-
-          const result = yield* HttpClientRequest.post(`${apiBaseUrl}questionanswering`).pipe(
-            HttpClientRequest.setUrlParams({
-              textquestion: state.user_question,
-              "componentlist[]": components,
-            }),
-            client.execute,
-            Effect.flatMap(HttpClientResponse.filterStatusOk),
-            Effect.flatMap(HttpClientResponse.schemaBodyJson(QanaryResponse)),
-            Effect.timeout("60 seconds"),
-            Effect.scoped,
-            Effect.either
-          );
-
-          yield* Effect.logDebug("Qanary Result: ", result);
-
-          if (Either.isLeft(result)) {
-            const error = result.left;
-            yield* Effect.logError("Error in Qanary pipeline:", error);
-            const errorMessage = new AIMessage({
-              content: "Entschuldigung, es gab ein Problem bei der Verarbeitung deiner Anfrage.",
-            });
-            yield* printMessageEffect(errorMessage);
-            state.messages.push(errorMessage);
-
-            return command({
-              update: {
-                messages: state.messages,
-              },
-              goto: userInputNode,
-            });
-          }
-
-          const graph_uri = result.right.inGraph;
-
-          const triplestore = yield* TriplestoreService;
-
-          const qanary_answer = yield* Effect.either(triplestore.queryFinalAnswer(graph_uri));
-
-          if (Either.isLeft(qanary_answer)) {
-            const error = qanary_answer.left;
-
-            if (error._tag === "NotFoundError") {
-              yield* Effect.logError(`Could not find item of type ${error.itemType} in the triplestore.`);
-            } else if (error._tag === "SPARQLError") {
-              yield* Effect.logError("Error while executing SPARQL query:", error.reason);
-            }
-
-            const errorMessage = new AIMessage({
-              content: "Entschuldigung, es gab ein Problem bei der Verarbeitung deiner Anfrage.",
-            });
-            yield* printMessageEffect(errorMessage);
-            state.messages.push(errorMessage);
-
-            return command({
-              update: {
-                messages: state.messages,
-              },
-              goto: userInputNode,
-            });
-          }
-
-          const clarifications = yield* triplestore.queryClarifications(graph_uri);
-          const clarification = new ClarificationConversation(new ConversationURI(graph_uri));
-          for (const item of clarifications) {
-            clarification.addQuestion(new QanaryClarificationQuestion(item.uri, item.content));
-          }
+          yield* printMessageEffect(errorMessage);
+          state.messages.push(errorMessage);
 
           return command({
             update: {
-              qanary_answer: qanary_answer.right,
-              clarification,
+              qanary_answer: undefined,
+              messages: state.messages,
+              clarification: undefined,
             },
-            goto: nextNode,
+            goto: routerNode,
           });
-        });
+        }
 
-        return await runTimedNode("QanaryOrchestratorNode", program);
-      },
+        const graph_uri = result.right.inGraph;
+
+        const triplestore = yield* TriplestoreService;
+
+        const qanary_answer = yield* Effect.either(triplestore.queryFinalAnswer(graph_uri));
+
+        if (Either.isLeft(qanary_answer)) {
+          const error = qanary_answer.left;
+
+          if (error._tag === "NotFoundError") {
+            yield* Effect.logError(`Could not find item of type ${error.itemType} in the triplestore.`);
+          } else if (error._tag === "SPARQLError") {
+            yield* Effect.logError("Error while executing SPARQL query:", error.reason);
+          }
+
+          const errorMessage = new AIMessage({
+            content: "Entschuldigung, es gab ein Problem bei der Verarbeitung deiner Anfrage.",
+          });
+          yield* printMessageEffect(errorMessage);
+          state.messages.push(errorMessage);
+
+          return command({
+            update: {
+              qanary_answer: undefined,
+              messages: state.messages,
+              clarification: undefined,
+            },
+            goto: routerNode,
+          });
+        }
+
+        const clarifications = yield* triplestore.queryClarifications(graph_uri);
+        const clarification = new ClarificationConversation(new ConversationURI(graph_uri));
+        for (const item of clarifications) {
+          clarification.addQuestion(new QanaryClarificationQuestion(item.uri, item.content));
+        }
+
+        return command({
+          update: {
+            qanary_answer: qanary_answer.right,
+            clarification,
+          },
+          goto: routerNode,
+        });
+      });
+
+      return await runTimedNode("QanaryOrchestratorNode", program);
+    },
 
     /**
      * This node decides which node to route to based on the conversation state.
@@ -244,62 +256,48 @@ export const Nodes = <const N extends string[]>(
      * @returns The configured Node usable by LangGraph
      */
     RouterNode:
-      (routingConfig: {
-        questionAnsweringNode: NodeID;
-        requestClarificationNode: NodeID;
-        responseNode: NodeID;
-        endNode: NodeID;
-        userInputNode: NodeID;
-      }) =>
+      (routingConfig: { questionAnsweringNode: NodeID; requestClarificationNode: NodeID; responseNode: NodeID }) =>
       async (state: AgentState) => {
         const { questionAnsweringNode, requestClarificationNode, responseNode } = routingConfig;
         const program = Effect.gen(function* () {
           yield* Effect.logDebug("State: ", state);
 
-          switch (state.chatmode) {
-            case "QUESTION_ANSWERING":
-              {
-                if (state.has_user_question) {
-                  return command({
-                    update: {
-                      has_user_question: false,
-                    },
-                    goto: questionAnsweringNode,
-                  });
-                }
-
-                return command({
-                  goto: responseNode,
-                });
-              }
-              break;
-            case "CLARIFICATION":
-              {
-                if (state.clarification === undefined) {
-                  yield* Effect.logError("No clarification conversation present in AgentState");
-                  return command({
-                    goto: responseNode,
-                  });
-                }
-
-                if (state.clarification.hasOpenQuestions()) {
-                  return command({
-                    goto: requestClarificationNode,
-                  });
-                }
-
-                return command({
-                  goto: responseNode,
-                });
-              }
-              break;
-            default: {
-              yield* Effect.logError("Unknown chatmode: ", state.chatmode);
-              return command({
-                goto: responseNode,
-              });
-            }
+          if (
+            state.clarification?.hasOpenQuestions() &&
+            (state.chatmode === "RESPONSE" || state.chatmode === "CLARIFICATION")
+          ) {
+            return command({
+              update: {
+                chatmode: "CLARIFICATION",
+              },
+              goto: requestClarificationNode,
+            });
           }
+
+          if (state.chatmode === "CLARIFICATION" && !state.clarification?.hasOpenQuestions()) {
+            return command({
+              update: {
+                chatmode: "RESPONSE",
+              },
+              goto: questionAnsweringNode,
+            });
+          }
+
+          if (state.chatmode === "USER_QUESTION") {
+            return command({
+              update: {
+                chatmode: "RESPONSE",
+              },
+              goto: questionAnsweringNode,
+            });
+          }
+
+          return command({
+            update: {
+              chatmode: "USER_QUESTION",
+            },
+            goto: responseNode,
+          });
         });
 
         return await runTimedNode("RouterNode", program);
@@ -361,7 +359,6 @@ export const Nodes = <const N extends string[]>(
             });
           }
 
-          // Happy path
           const msg = new AIMessage({
             content: "Danke für deine Eingabe! Ich habe deine Anfrage verstanden und werde sie nun bearbeiten.",
           });
@@ -390,29 +387,26 @@ export const Nodes = <const N extends string[]>(
         yield* Effect.logDebug("State: ", state);
 
         if (state.qanary_answer === undefined) {
-          yield* Effect.logDebug("Missing qanary_answer, skipping chatbot response");
-          return command({
-            update: {
-              chatmode: "QUESTION_ANSWERING",
-              messages: state.messages,
-            },
-            goto: nextNode,
+          const msg = new AIMessage({
+            content:
+              "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
           });
+          yield* printMessageEffect(msg);
+          state.messages.push(msg);
+        } else {
+          const llmService = yield* LLMService;
+          const chatbotResponseContent = yield* llmService.generateChatbotResponse(
+            state.user_question,
+            state.qanary_answer
+          );
+
+          const msg = new AIMessage({ content: chatbotResponseContent });
+          yield* printMessageEffect(msg);
+          state.messages.push(msg);
         }
-
-        const llmService = yield* LLMService;
-        const chatbotResponseContent = yield* llmService.generateChatbotResponse(
-          state.user_question,
-          state.qanary_answer
-        );
-
-        const msg = new AIMessage({ content: chatbotResponseContent });
-        yield* printMessageEffect(msg);
-        state.messages.push(msg);
 
         return command({
           update: {
-            chatmode: "QUESTION_ANSWERING",
             messages: state.messages,
           },
           goto: nextNode,
@@ -436,7 +430,6 @@ export const Nodes = <const N extends string[]>(
           yield* Effect.logError("No clarification conversation present in AgentState");
           return command({
             update: {
-              chatmode: "QUESTION_ANSWERING",
               messages: state.messages,
             },
             goto: nextNode,
@@ -444,10 +437,9 @@ export const Nodes = <const N extends string[]>(
         }
 
         if (!state.clarification.hasOpenQuestions()) {
-          yield* Effect.logError("No open questions, switching to question answering mode");
+          yield* Effect.logError("No open questions, skipping RequestClarificationNode");
           return command({
             update: {
-              chatmode: "QUESTION_ANSWERING",
               messages: state.messages,
             },
             goto: nextNode,
@@ -470,7 +462,6 @@ export const Nodes = <const N extends string[]>(
 
         return command({
           update: {
-            chatmode: "CLARIFICATION",
             messages: state.messages,
             clarification: state.clarification,
           },
