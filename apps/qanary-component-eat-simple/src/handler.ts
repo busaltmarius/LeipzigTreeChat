@@ -10,32 +10,35 @@ import { classifyExpectedAnswerType, type EatType, eatTypeToUrl } from "./eat-cl
  * @param message incoming qanary pipeline message
  */
 export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMessage) => {
-  console.log(message);
+  const startedAt = Date.now();
+  const startedAtIso = new Date(startedAt).toISOString();
+  console.log(`[qanary-component-eat-simple] started at ${startedAtIso}`);
+  console.log("[qanary-component-eat-simple] incoming message:", message);
 
   const question = await getQuestion(message);
   if (!question) {
-    console.warn("No question found in message.");
+    console.warn("[qanary-component-eat-simple] no question found in message");
     return message;
   }
-  console.log("Question:", question);
+  console.log("[qanary-component-eat-simple] question:", question);
 
   const eatResult = await classifyExpectedAnswerType(question);
   if (!eatResult) {
-    console.warn(`[eat-simple] Could not determine expected answer type for: "${question}"`);
+    console.warn(`[qanary-component-eat-simple] could not determine expected answer type for: "${question}"`);
     return message;
   }
 
   const expectedEntityTypeUrl = eatTypeToUrl(eatResult.expectedAnswerType as EatType);
   console.log(
-    `Expected entity type for question '${question}':`,
+    `[qanary-component-eat-simple] expected entity type for question "${question}":`,
     expectedEntityTypeUrl.toString(),
     `(confidence: ${eatResult.confidence})`
   );
 
   const componentName = "qanary-component-eat-simple";
   await createAnnotationInKnowledgeGraph({
-    message: message,
-    componentName: componentName,
+    message,
+    componentName,
     annotation: {
       value: expectedEntityTypeUrl.toString(),
       range: { start: 0, end: question.length },
@@ -44,8 +47,8 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
     annotationType: `${QANARY_PREFIX}AnnotationOfExpectedAnswerType`,
   });
 
-  console.log("Done");
-
+  console.log("[qanary-component-eat-simple] annotation created");
+  console.log(`[qanary-component-eat-simple] ended in ${Date.now() - startedAt}ms`);
   return message;
 };
 

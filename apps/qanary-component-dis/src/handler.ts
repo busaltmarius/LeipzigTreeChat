@@ -55,14 +55,18 @@ async function disambiguateNERResults(message: IQanaryMessage): Promise<void> {
  * @param message incoming qanary pipeline message
  */
 export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMessage) => {
-  console.log("Disambiguation component received message:", message);
+  const startedAt = Date.now();
+  const startedAtIso = new Date(startedAt).toISOString();
+  console.log(`[qanary-component-dis] started at ${startedAtIso}`);
+  console.log("[qanary-component-dis] incoming message:", message);
 
   try {
     // Run the disambiguation pipeline
     await disambiguateNERResults(message);
-    console.log("Disambiguation pipeline completed successfully");
+    console.log("[qanary-component-dis] disambiguation pipeline completed successfully");
+    console.log(`[qanary-component-dis] ended in ${Date.now() - startedAt}ms`);
   } catch (error) {
-    console.error("Error in disambiguation pipeline:", error);
+    console.error("[qanary-component-dis] error in disambiguation pipeline:", error);
     // Don't throw - return the original message to keep the pipeline running
   }
 

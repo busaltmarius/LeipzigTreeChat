@@ -13,7 +13,7 @@ export type SparqlPlaceholderName =
 
 const PREDEFINED_SPARQL_BY_RELATION_TYPE: Partial<Record<KnownRelationType, string>> = {
   AMOUNT_WATERED_DISTRICT: `
-    PREFIX lg_vocab: urn:de:leipzig:trees:vocab:leipziggiesst:
+    PREFIX lg_vocab: <urn:de:leipzig:trees:vocab:leipziggiesst:>
 
     SELECT (SUM(?amount) AS ?totalWateredVolume) (COUNT(?record) AS ?totalWateredCount)
     WHERE {
@@ -32,7 +32,7 @@ const PREDEFINED_SPARQL_BY_RELATION_TYPE: Partial<Record<KnownRelationType, stri
             bk_vocab:status_patenbaum ?patenStatus .
     
     # Assuming sponsored trees have a non-empty status string
-    FILTER(?patenStatus == "vergeben") 
+        FILTER(?patenStatus = "vergeben") 
     }`,
   WATERABLE_TREES_AT_ADDRESS: `
     PREFIX geo1: <http://www.w3.org/2003/01/geo/wgs84_pos#>
@@ -126,15 +126,10 @@ const PREDEFINED_SPARQL_BY_RELATION_TYPE: Partial<Record<KnownRelationType, stri
   `,
 };
 
-const REQUIRED_PLACEHOLDERS_BY_RELATION_TYPE: Partial<
-  Record<KnownRelationType, SparqlPlaceholderName[]>
-> = {
+const REQUIRED_PLACEHOLDERS_BY_RELATION_TYPE: Partial<Record<KnownRelationType, SparqlPlaceholderName[]>> = {
   AMOUNT_WATERED_DISTRICT: ["district"],
   SPONSORED_TREES: [],
-  WATERABLE_TREES_AT_ADDRESS: [
-    "utmAddressCoordinatesX",
-    "utmAddressCoordinatesY",
-  ],
+  WATERABLE_TREES_AT_ADDRESS: ["utmAddressCoordinatesX", "utmAddressCoordinatesY"],
   TREES_BY_SPECIES_DISTRICT: ["species", "district"],
   WATERABLE_TREES_AT_KITA: ["kitaUrn"],
   UNKNOWN: [],
@@ -144,8 +139,6 @@ export const getSparqlTemplate = (relationType: KnownRelationType): string | nul
   return PREDEFINED_SPARQL_BY_RELATION_TYPE[relationType] ?? null;
 };
 
-export const getRequiredPlaceholders = (
-  relationType: KnownRelationType
-): SparqlPlaceholderName[] => {
+export const getRequiredPlaceholders = (relationType: KnownRelationType): SparqlPlaceholderName[] => {
   return REQUIRED_PLACEHOLDERS_BY_RELATION_TYPE[relationType] ?? [];
 };

@@ -50,6 +50,15 @@ export const askSparql = async (endpointUrl: string, query: string): Promise<boo
  * @param query the update query to execute
  */
 export const updateSparql = async (endpointUrl: string, query: string): Promise<void> => {
-  const client: SparqlClient = new SparqlClient({ updateUrl: endpointUrl });
-  await client.query.update(query);
+  console.log("[updateSparql] Writing to endpoint:", endpointUrl);
+  console.log("[updateSparql] Query:\n", query.substring(0, 500) + (query.length > 500 ? "...[truncated]" : ""));
+  
+  try {
+    const client: SparqlClient = new SparqlClient({ updateUrl: endpointUrl });
+    await client.query.update(query);
+    console.log("[updateSparql] UPDATE query executed successfully");
+  } catch (error) {
+    console.error("[updateSparql] Error executing UPDATE query:", error);
+    throw error;
+  }
 };

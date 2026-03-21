@@ -1,5 +1,11 @@
 import type { IQanaryComponentMessageHandler } from "@leipzigtreechat/qanary-component-core";
-import { getEndpoint, getOutGraph, getQuestion, getQuestionUri, updateSparql } from "@leipzigtreechat/qanary-component-helpers";
+import {
+  getEndpoint,
+  getOutGraph,
+  getQuestion,
+  getQuestionUri,
+  updateSparql,
+} from "@leipzigtreechat/qanary-component-helpers";
 import { type IQanaryMessage, QANARY_PREFIX } from "@leipzigtreechat/shared";
 import { classifyRelationType } from "./relation-classifier.ts";
 import { KNOWN_RELATION_TYPES, type KnownRelationType } from "./relation-types.ts";
@@ -11,18 +17,21 @@ import { KNOWN_RELATION_TYPES, type KnownRelationType } from "./relation-types.t
  */
 // eslint-disable-next-line sonarjs/no-invariant-returns
 export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMessage) => {
-  console.log(message);
+  const startedAt = Date.now();
+  const startedAtIso = new Date(startedAt).toISOString();
+  console.log(`[qanary-component-relation-detection] started at ${startedAtIso}`);
+  console.log("[qanary-component-relation-detection] incoming message:", message);
 
   const question = await getQuestion(message);
   if (!question) {
-    console.warn("No question found in message.");
+    console.warn("[qanary-component-relation-detection] no question found in message");
     return message;
   }
-  console.log("Question:", question);
+  console.log("[qanary-component-relation-detection] question:", question);
 
   const relationResult = await classifyRelationType(question);
   if (!relationResult) {
-    console.warn(`[relation-detection] Could not classify relation for: "${question}"`);
+    console.warn(`[qanary-component-relation-detection] could not classify relation for: "${question}"`);
     return message;
   }
 
@@ -30,12 +39,12 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
   const normalisedRelationType = typeof rawRelationType === "string" ? rawRelationType.trim().toUpperCase() : "";
   if (!isValidRelationType(normalisedRelationType)) {
     console.warn(
-      `[relation-detection] Invalid relation type "${rawRelationType}" for question "${question}". Skipping annotation.`
+      `[relation-detection] invalid relation type "${rawRelationType}" for question "${question}". Skipping annotation.`
     );
     return message;
   }
 
-  console.log(`[relation-detection] Relation for question "${question}":`, relationResult);
+  console.log(`[relation-detection] detected relation for question "${question}":`, relationResult);
 
   await createRelationAnnotation({
     message,
@@ -45,8 +54,8 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
     annotationType: `${QANARY_PREFIX}AnnotationOfRelation`,
   });
 
-  console.log("Done");
-
+  console.log("[qanary-component-relation-detection] relation annotation created");
+  console.log(`[qanary-component-relation-detection] ended in ${Date.now() - startedAt}ms`);
   return message;
 };
 
@@ -105,6 +114,8 @@ WHERE {
   BIND (IRI(CONCAT("urn:qanary:annotation:relation-", STRUUID())) AS ?annotation)
   BIND (NOW() AS ?time)
 }`;
+
+  console.log("[relation-detection] relation annotation query:\n", relationAnnotationQuery);
 
   try {
     await updateSparql(endpointUrl, relationAnnotationQuery);

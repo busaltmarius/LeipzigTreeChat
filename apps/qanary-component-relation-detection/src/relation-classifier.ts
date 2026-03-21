@@ -35,9 +35,9 @@ const RelationClassificationSchema = z.object({
     .describe(
       "Relation type in SCREAMING_SNAKE_CASE. " +
         "Prefer one of: " +
-        KNOWN_RELATION_TYPES.map((relationType) => `${relationType} (${getRelationTypeExplanation(relationType)})`).join(
-          ", "
-        ) +
+        KNOWN_RELATION_TYPES.map(
+          (relationType) => `${relationType} (${getRelationTypeExplanation(relationType)})`
+        ).join(", ") +
         "."
     ),
   confidence: z.number().min(0).max(1).describe("Confidence score between 0.0 and 1.0."),

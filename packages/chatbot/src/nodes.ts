@@ -29,6 +29,21 @@ const NodeLoggerLayer = (nodeName: string) =>
     )
   );
 
+type LangGraphRuntimeEnvironment =
+  Parameters<typeof runLangGraphRuntime>[0] extends Effect.Effect<any, any, infer R> ? R : never;
+
+const runTimedNode = async <A, E>(
+  nodeName: string,
+  effect: Effect.Effect<A, E, LangGraphRuntimeEnvironment>
+): Promise<A> => {
+  const startedAt = Date.now();
+  const startedAtIso = new Date(startedAt).toISOString();
+  console.log(`[${nodeName}] started at ${startedAtIso}`);
+  const result = await runLangGraphRuntime(effect.pipe(Effect.provide(NodeLoggerLayer(nodeName))));
+  console.log(`[${nodeName}] ended in ${Date.now() - startedAt}ms`);
+  return result;
+};
+
 /**
  * Constructor for Nodes with type-safe routing between them.
  *
@@ -105,7 +120,7 @@ export const Nodes = <const N extends string[]>(
           }
         });
 
-        return await runLangGraphRuntime(program.pipe(Effect.provide(NodeLoggerLayer("UserInputNode"))));
+        return await runTimedNode("UserInputNode", program);
       },
 
     /**
@@ -182,6 +197,8 @@ export const Nodes = <const N extends string[]>(
 
         const triplestoreUrl = yield* Config.string("TRIPLESTORE_URL");
 
+        yield* Effect.logInfo("Executing SPARQL query for answer annotation", { getDataQuery });
+
         const responseData = yield* Effect.tryPromise({
           try: () => selectSparql(triplestoreUrl, getDataQuery) as Promise<Array<{ answer: { value: string } }>>,
           catch: (unknown: any) => new Error(`Error querying SPARQL endpoint: ${unknown}`),
@@ -209,6 +226,8 @@ export const Nodes = <const N extends string[]>(
           }
         `;
 
+        yield* Effect.logInfo("Executing SPARQL query for clarifications", { getClarificationsQuery });
+
         const clarificationsData = yield* Effect.tryPromise({
           try: () =>
             selectSparql(triplestoreUrl, getClarificationsQuery) as Promise<
@@ -234,9 +253,7 @@ export const Nodes = <const N extends string[]>(
         });
       });
 
-      return await runLangGraphRuntime(
-        program.pipe(Effect.provide(FetchHttpClient.layer), Effect.provide(NodeLoggerLayer("QanaryOrchestratorNode")))
-      );
+      return await runTimedNode("QanaryOrchestratorNode", program.pipe(Effect.provide(FetchHttpClient.layer)));
     },
 
     /**
@@ -303,7 +320,7 @@ export const Nodes = <const N extends string[]>(
           }
         });
 
-        return await runLangGraphRuntime(program.pipe(Effect.provide(NodeLoggerLayer("RouterNode"))));
+        return await runTimedNode("RouterNode", program);
       },
 
     /**
@@ -377,7 +394,7 @@ export const Nodes = <const N extends string[]>(
           });
         });
 
-        return await runLangGraphRuntime(program.pipe(Effect.provide(NodeLoggerLayer("ValidationNode"))));
+        return await runTimedNode("ValidationNode", program);
       },
 
     /**
@@ -407,6 +424,8 @@ export const Nodes = <const N extends string[]>(
 
           const triplestoreUrl = yield* Config.string("TRIPLESTORE_URL");
 
+          yield* Effect.logInfo("Executing SPARQL query for chatbot response", { getDataQuery });
+
           responseData = yield* Effect.tryPromise({
             try: () => selectSparql(triplestoreUrl, getDataQuery),
             catch: (unknown: any) => new Error(`Error querying SPARQL endpoint: ${unknown}`),
@@ -431,7 +450,7 @@ export const Nodes = <const N extends string[]>(
         });
       });
 
-      return await runLangGraphRuntime(program.pipe(Effect.provide(NodeLoggerLayer("ResponseNode"))));
+      return await runTimedNode("ResponseNode", program);
     },
 
     /**
@@ -489,7 +508,7 @@ export const Nodes = <const N extends string[]>(
         });
       });
 
-      return await runLangGraphRuntime(program.pipe(Effect.provide(NodeLoggerLayer("RequestClarificationNode"))));
+      return await runTimedNode("RequestClarificationNode", program);
     },
     /**
      * This node rewrites a question by consolidating conversation history with new input.
@@ -526,7 +545,7 @@ export const Nodes = <const N extends string[]>(
         });
       });
 
-      return await runLangGraphRuntime(program.pipe(Effect.provide(NodeLoggerLayer("QuestionRewriteNode"))));
+      return await runTimedNode("QuestionRewriteNode", program);
     },
   };
 };

@@ -69,10 +69,7 @@ describe("#Sparql Generation Component", () => {
 
   test("executes query and saves AnnotationOfAnswerJson for valid relation", async () => {
     mockRelation = "AMOUNT_WATERED_DISTRICT";
-    mockDataResults = [
-      { amount: { type: "literal", value: "12.5" } },
-      { amount: { type: "literal", value: "7.5" } },
-    ];
+    mockDataResults = [{ amount: { type: "literal", value: "12.5" } }, { amount: { type: "literal", value: "7.5" } }];
 
     await handler({});
 

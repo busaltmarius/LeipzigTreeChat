@@ -6,7 +6,7 @@ import {
   QANARY_PREFIX,
   selectSparql,
 } from "@leipzigtreechat/shared";
-import { type EntityType, extractEntityTypeFromUri, generateEntityQuery, getEntityTypeConfig } from "./entity-types";
+import { type EntityType, ENTITY_TYPE_CONFIGS, extractEntityTypeFromUri, generateEntityQuery, getEntityTypeConfig } from "./entity-types";
 import { similarity } from "./fuzzy-matching";
 import type { DisambiguationResult, NerAnnotation } from "./types";
 
@@ -42,13 +42,13 @@ export async function fetchNerAnnotations(message: IQanaryMessage, questionUri: 
     PREFIX oa:  <http://www.w3.org/ns/openannotation/core/>
     PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
-    SELECT ?annotation ?target ?entityType ?score ?start ?end
+    SELECT ?annotation ?target ?spotBody ?score ?start ?end
     WHERE {
       GRAPH <${graphUri}> {
         ?annotation  a              qa:AnnotationOfSpotInstance ;
-                     oa:hasBody     ?entityType ;
+                     oa:hasBody     ?spotBody ;
                      oa:score       ?score ;
-                     oa:annotatedBy <urn:component:ner> ;
+                     oa:annotatedBy <urn:qanary-component-nerd-simple> ;
                      oa:hasTarget   ?target .
 
         ?target      oa:hasSelector ?selector .
@@ -97,12 +97,23 @@ export async function fetchNerAnnotations(message: IQanaryMessage, questionUri: 
     const end = parseInt(binding.end?.value ?? "0");
     const exactQuote = questionText ? questionText.substring(start, end) : "";
 
-    console.log(`Extracted Entity: "${exactQuote}" [${start}, ${end}]`);
+    // Parse the JSON body to extract entity type
+    let entityTypeString = "";
+    try {
+      const bodyValue = binding.spotBody?.value ?? "";
+      const parsed = JSON.parse(bodyValue);
+      entityTypeString = parsed.type ?? "";
+    } catch (e) {
+      console.warn(`Failed to parse spot body JSON: ${binding.spotBody?.value}`, e);
+      entityTypeString = "";
+    }
+
+    console.log(`Extracted Entity: "${exactQuote}" [${start}, ${end}] with type: ${entityTypeString}`);
 
     return {
       annotationUri: binding.annotation?.value ?? "",
       spotResourceUri: binding.target?.value ?? "",
-      entityType: binding.entityType?.value ?? "",
+      entityType: entityTypeString,
       score: parseFloat(binding.score?.value ?? "0"),
       exactQuote,
       start,
@@ -115,10 +126,20 @@ export async function fetchNerAnnotations(message: IQanaryMessage, questionUri: 
 //  Disambiguates a NER annotation by finding the best matching entity in the KB
 
 export async function disambiguate(annotation: NerAnnotation): Promise<DisambiguationResult | null> {
-  const entityType = extractEntityTypeFromUri(annotation.entityType);
+  // annotation.entityType is now a plain string (e.g., "CITY", "DISTRICT")
+  // from the JSON body, not a full URI
+  let entityType: EntityType | null = null;
+
+  // Try to use the string directly if it's a valid EntityType
+  if (annotation.entityType in ENTITY_TYPE_CONFIGS) {
+    entityType = annotation.entityType as EntityType;
+  } else {
+    // Fall back to old URI extraction for backwards compatibility
+    entityType = extractEntityTypeFromUri(annotation.entityType);
+  }
 
   if (!entityType) {
-    console.warn(`Unsupported or invalid entity type URI: ${annotation.entityType}`);
+    console.warn(`Unsupported or invalid entity type: ${annotation.entityType}`);
     return null;
   }
 
@@ -184,6 +205,14 @@ export async function writeDisambiguationAnnotation(
   result: DisambiguationResult
 ): Promise<void> {
   try {
+    console.log("[writeDisambiguationAnnotation] Writing annotation with details:", {
+      entityQuote: annotation.exactQuote,
+      entityUrn: result.entityUrn,
+      start: annotation.start,
+      end: annotation.end,
+      confidence: result.score,
+    });
+
     await createAnnotationInKnowledgeGraph({
       message,
       componentName: COMPONENT_NAME,

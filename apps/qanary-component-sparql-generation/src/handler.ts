@@ -7,24 +7,20 @@ import {
   updateSparql,
 } from "@leipzigtreechat/qanary-component-helpers";
 import { type IQanaryMessage, QANARY_PREFIX } from "@leipzigtreechat/shared";
-import { extractCoordinatesFromInstances } from "./extract-coordinates-from-instances.ts";
-import {
-  type AnnotationInformation,
-  getAnnotationInformation,
-} from "./get-annotation-information.ts";
-import { getSparqlTemplate } from "./get-predefined-sparql.ts";
 import proj4 from "proj4";
+import { extractCoordinatesFromInstances } from "./extract-coordinates-from-instances.ts";
+import { type AnnotationInformation, getAnnotationInformation } from "./get-annotation-information.ts";
+import { getSparqlTemplate } from "./get-predefined-sparql.ts";
 
+const KNOWLEDGE_BASE_ENDPOINT = "http://localhost:8000";
 const PLACEHOLDER_REGEX = /{{\s*([a-zA-Z0-9_]+)\s*}}/g;
+
 
 const escapeSparqlString = (value: string): string => {
   return value.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
 };
 
-const getBestInstanceValue = (
-  annotationInfo: AnnotationInformation,
-  entityType: string
-): string => {
+const getBestInstanceValue = (annotationInfo: AnnotationInformation, entityType: string): string => {
   const match = annotationInfo.instances
     .filter((instance) => instance.entityType === entityType)
     .sort((a, b) => b.spotConfidence - a.spotConfidence)[0];
@@ -32,10 +28,7 @@ const getBestInstanceValue = (
   return match?.exactQuote ?? "";
 };
 
-const getBestInstanceUrn = (
-  annotationInfo: AnnotationInformation,
-  entityType: string
-): string => {
+const getBestInstanceUrn = (annotationInfo: AnnotationInformation, entityType: string): string => {
   const match = annotationInfo.instances
     .filter((instance) => instance.entityType === entityType)
     .sort((a, b) => b.instanceConfidence - a.instanceConfidence)[0];
@@ -89,6 +82,9 @@ const findUnresolvedPlaceholders = (query: string): string[] => {
  * @param message incoming qanary pipeline message
  */
 export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMessage) => {
+  const startedAt = Date.now();
+  const startedAtIso = new Date(startedAt).toISOString();
+  console.log(`[qanary-component-sparql-generation] started at ${startedAtIso}`);
   const endpointUrl = getEndpoint(message) ?? "";
   const questionUri = (await getQuestionUri(message)) ?? "";
 
@@ -96,6 +92,9 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
     console.warn("Missing questionUri or endpointUrl");
     return message;
   }
+
+  console.log("[qanary-component-sparql-generation] question URI:", questionUri);
+  console.log("[qanary-component-sparql-generation] endpoint:", endpointUrl);
 
   // 1. Load the relation type and enriched instances
   const annotationInfo = await getAnnotationInformation(message);
@@ -107,6 +106,7 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
   }
 
   console.log("Found relation:", relationType);
+  console.log("[qanary-component-sparql-generation] annotation instances:", annotationInfo.instances.length);
 
   // 2. Extract coordinates if address components (street, street number, zip) are present
   const coordinates = await extractCoordinatesFromInstances(annotationInfo.instances);
@@ -114,8 +114,7 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
   if (coordinates) {
     console.log(`Extracted coordinates: ${coordinates.latitude}, ${coordinates.longitude}`);
     // Define the Leipzig UTM projection (EPSG:25833)
-    const utm33n =
-      "+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs";
+    const utm33n = "+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs";
     const [x, y] = proj4("EPSG:4326", utm33n, [coordinates.longitude, coordinates.latitude]);
     utmCoordinates = { x, y };
   }
@@ -128,26 +127,20 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
     return message;
   }
 
-  const sparqlQuery = fillSparqlPlaceholders(
-    sparqlTemplate,
-    annotationInfo,
-    utmCoordinates
-  );
+  const sparqlQuery = fillSparqlPlaceholders(sparqlTemplate, annotationInfo, utmCoordinates);
+  console.log("[qanary-component-sparql-generation] SPARQL template:\n", sparqlTemplate);
+  console.log("[qanary-component-sparql-generation] SPARQL query after placeholder replacement:\n", sparqlQuery);
   const unresolvedPlaceholders = findUnresolvedPlaceholders(sparqlQuery);
   if (unresolvedPlaceholders.length > 0) {
-    console.error(
-      "Unresolved SPARQL placeholders:",
-      unresolvedPlaceholders.join(", "),
-      "for relation",
-      relationType
-    );
+    console.error("Unresolved SPARQL placeholders:", unresolvedPlaceholders.join(", "), "for relation", relationType);
     return message;
   }
 
   // 4. Send the SPARQL request to the triplestore
   let resultJson = "";
   try {
-    const rawResults = await selectSparql<any>(endpointUrl, sparqlQuery);
+    const rawResults = await selectSparql<any>(KNOWLEDGE_BASE_ENDPOINT, sparqlQuery);
+    console.log("[qanary-component-sparql-generation] SPARQL result rows:", rawResults.length);
     const variables = rawResults.length > 0 ? Object.keys(rawResults[0]) : [];
     const bindings = rawResults.map((row) => {
       const binding: any = {};
@@ -176,6 +169,7 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
   });
 
   console.log("Done");
+  console.log(`[qanary-component-sparql-generation] ended in ${Date.now() - startedAt}ms`);
   return message;
 };
 
@@ -229,6 +223,8 @@ WHERE {
   BIND (IRI(CONCAT("urn:qanary:annotation:ans-", STRUUID())) AS ?annotation)
   BIND (NOW() AS ?time)
 }`;
+
+  console.log("[sparql-generation] answer annotation query:\n", annotationQuery);
 
   try {
     await updateSparql(endpointUrl, annotationQuery);

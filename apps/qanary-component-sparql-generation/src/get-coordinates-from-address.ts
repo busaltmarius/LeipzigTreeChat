@@ -1,5 +1,5 @@
-import NodeGeocoder from "node-geocoder";
 import { promises as fs } from "fs";
+import NodeGeocoder from "node-geocoder";
 
 export interface Coordinates {
   latitude: number;
@@ -7,16 +7,16 @@ export interface Coordinates {
 }
 
 const options: NodeGeocoder.Options = {
-  provider: 'openstreetmap',
+  provider: "openstreetmap",
   timeout: 10000,
   formatter: null,
-  email: 'eric.behrendt@stud.htwk-leipzig.de',
+  email: "eric.behrendt@stud.htwk-leipzig.de",
 };
 
 const geocoder = NodeGeocoder(options);
 
 // --- New Constants for Caching & Rate Limiting ---
-const CACHE_FILE = './geocache.json';
+const CACHE_FILE = "./geocache.json";
 const MIN_DELAY_MS = 1100; // 1.1 seconds to be safely over the 1s limit
 
 // In-memory representations
@@ -29,7 +29,7 @@ let requestQueue = Promise.resolve();
 async function loadCache(): Promise<Record<string, Coordinates>> {
   if (cache) return cache;
   try {
-    const data = await fs.readFile(CACHE_FILE, 'utf-8');
+    const data = await fs.readFile(CACHE_FILE, "utf-8");
     cache = JSON.parse(data);
   } catch (error) {
     // If the file doesn't exist yet or is invalid, start with an empty cache
@@ -44,7 +44,7 @@ async function loadCache(): Promise<Record<string, Coordinates>> {
 async function saveCache() {
   if (!cache) return;
   try {
-    await fs.writeFile(CACHE_FILE, JSON.stringify(cache, null, 2), 'utf-8');
+    await fs.writeFile(CACHE_FILE, JSON.stringify(cache, null, 2), "utf-8");
   } catch (error) {
     console.error("[geocoder] Failed to save cache to disk:", error);
   }
@@ -94,11 +94,11 @@ export const getCoordinatesFromAddress = async (address: string): Promise<Coordi
               latitude: result.latitude,
               longitude: result.longitude,
             };
-            
+
             // Save to memory cache and persist to the text file
             currentCache[normalizedAddress] = coords;
             await saveCache();
-            
+
             resolve(coords);
           }
         }
@@ -109,7 +109,7 @@ export const getCoordinatesFromAddress = async (address: string): Promise<Coordi
 
       // 3. Enforce the Rate Limit
       // We force the queue to pause here for 1.1 seconds before allowing the next item to process
-      await new Promise(res => setTimeout(res, MIN_DELAY_MS));
+      await new Promise((res) => setTimeout(res, MIN_DELAY_MS));
     });
   });
 };

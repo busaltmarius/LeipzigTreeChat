@@ -61,6 +61,17 @@ export const createAnnotationInKnowledgeGraph = async ({
   const endpointUrl: string = getEndpoint(message) ?? "";
   const questionUri: string = (await getQuestionUri(message)) ?? "";
 
+  console.log("[createAnnotationInKnowledgeGraph] Creating annotation with:", {
+    outGraph,
+    endpointUrl,
+    questionUri,
+    componentName,
+    annotationType,
+    annotationValue: annotation.value,
+    annotationRange: annotation.range,
+    annotationConfidence: annotation.confidence,
+  });
+
   const annotationQuery = `
 PREFIX qa: <http://www.wdaqua.eu/qa#>
 PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
@@ -88,9 +99,12 @@ WHERE {
     BIND (now() as ?time)
 }`;
 
+  console.log("[createAnnotationInKnowledgeGraph] SPARQL query:\n", annotationQuery);
+
   try {
     await updateSparql(endpointUrl, annotationQuery);
+    console.log("[createAnnotationInKnowledgeGraph] Successfully executed INSERT query");
   } catch (error) {
-    console.error(error);
+    console.error("[createAnnotationInKnowledgeGraph] Error updating SPARQL:", error);
   }
 };
