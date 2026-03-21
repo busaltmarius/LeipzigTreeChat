@@ -72,7 +72,7 @@ const sendSocketError = (socket: WebSocket, sessionId: string, error: string) =>
 
 const serializeChatMessage = (message: RuntimeMessage): ChatMessage => ({
   role: message.getType() === "human" ? "user" : "assistant",
-  content: typeof message.content === "string" ? message.content : JSON.stringify(message.content) ?? "",
+  content: typeof message.content === "string" ? message.content : (JSON.stringify(message.content) ?? ""),
 });
 
 const sendPrintedMessage = (socket: WebSocket, message: RuntimeMessage) => {

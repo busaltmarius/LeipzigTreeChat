@@ -32,28 +32,28 @@ const scheduleReconnect = () => {
   }, 1000);
 };
 
-	const handleSocketMessage = (rawEvent: MessageEvent<string>) => {
-		try {
-			const payload = JSON.parse(rawEvent.data) as ChatSocketServerMessage;
+const handleSocketMessage = (rawEvent: MessageEvent<string>) => {
+  try {
+    const payload = JSON.parse(rawEvent.data) as ChatSocketServerMessage;
 
-			if (payload.type === "chat.error") {
-				messages = payload.messages;
-				isSubmitting = false;
-				previousMessagesBeforeSubmit = null;
-				error = payload.error;
-				return;
-			}
+    if (payload.type === "chat.error") {
+      messages = payload.messages;
+      isSubmitting = false;
+      previousMessagesBeforeSubmit = null;
+      error = payload.error;
+      return;
+    }
 
-			if (payload.type === "chat.state") {
-				messages = payload.messages;
-				return;
-			}
+    if (payload.type === "chat.state") {
+      messages = payload.messages;
+      return;
+    }
 
-			messages = [...messages, payload.message];
-			isSubmitting = false;
-			previousMessagesBeforeSubmit = null;
-			error = "";
-		} catch (parseError) {
+    messages = [...messages, payload.message];
+    isSubmitting = false;
+    previousMessagesBeforeSubmit = null;
+    error = "";
+  } catch (parseError) {
     console.error("Failed to parse websocket payload", parseError);
     error = "Die Antwort des Chatbots konnte nicht gelesen werden.";
     isSubmitting = false;

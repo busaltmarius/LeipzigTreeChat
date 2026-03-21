@@ -9,19 +9,19 @@ export type ChatSocketClientMessage = {
 };
 
 export type ChatSocketStateMessage = {
-	type: "chat.state";
-	messages: ChatMessage[];
+  type: "chat.state";
+  messages: ChatMessage[];
 };
 
 export type ChatSocketMessageEvent = {
-	type: "chat.message";
-	message: ChatMessage;
+  type: "chat.message";
+  message: ChatMessage;
 };
 
 export type ChatSocketErrorMessage = {
-	type: "chat.error";
-	error: string;
-	messages: ChatMessage[];
+  type: "chat.error";
+  error: string;
+  messages: ChatMessage[];
 };
 
 export type ChatSocketServerMessage = ChatSocketStateMessage | ChatSocketMessageEvent | ChatSocketErrorMessage;
