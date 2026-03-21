@@ -30,3 +30,9 @@ services:
       - virtuoso
     volumes:
       - qanary-questions:/qanary-questions
+
+  leipzig-tree-knowledge-graph:
+    build:
+      context: https://github.com/WSE-research/Leipzig-tree-knowledge-graph.git
+    ports:
+      - "8000:8000"
