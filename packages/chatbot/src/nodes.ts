@@ -67,6 +67,12 @@ export const Nodes = <const N extends string[]>(
   ..._nodes: N
 ) => {
   type NodeID = N[number];
+  const responseGenerationErrorMessage =
+    "Entschuldigung, ich konnte gerade keine Antwort formulieren. Bitte versuche es erneut.";
+  const clarificationGenerationErrorMessage =
+    "Entschuldigung, ich konnte gerade keine Rückfrage formulieren. Bitte versuche es erneut.";
+  const questionRewriteErrorMessage =
+    "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.";
 
   /**
    * Typed helper to create a Command. Use this to ensure type safety!
@@ -397,10 +403,17 @@ export const Nodes = <const N extends string[]>(
           state.messages.push(msg);
         } else {
           const llmService = yield* LLMService;
-          const chatbotResponseContent = yield* llmService.generateChatbotResponse(
-            state.user_question,
-            state.qanary_answer
-          );
+          const chatbotResponseContent = yield* llmService
+            .generateChatbotResponse(state.user_question, state.qanary_answer)
+            .pipe(
+              Effect.catchTag("LLMServiceError", (error) =>
+                Effect.gen(function* () {
+                  yield* Effect.logError("Error while generating chatbot response:", error);
+                  yield* sendMetadataEffect("ERROR", responseGenerationErrorMessage);
+                  return responseGenerationErrorMessage;
+                })
+              )
+            );
 
           const msg = new AIMessage({ content: chatbotResponseContent });
           yield* printMessageEffect(msg);
@@ -454,10 +467,17 @@ export const Nodes = <const N extends string[]>(
 
         state.clarification.setCurrentQuestion(openQuestion.uri);
 
-        const chatbotResponseContent = yield* llmService.generateClarificationQuestion(
-          state.user_question,
-          openQuestion
-        );
+        const chatbotResponseContent = yield* llmService
+          .generateClarificationQuestion(state.user_question, openQuestion)
+          .pipe(
+            Effect.catchTag("LLMServiceError", (error) =>
+              Effect.gen(function* () {
+                yield* Effect.logError("Error while generating clarification question:", error);
+                yield* sendMetadataEffect("ERROR", clarificationGenerationErrorMessage);
+                return clarificationGenerationErrorMessage;
+              })
+            )
+          );
 
         const msg = new AIMessage({ content: chatbotResponseContent });
         yield* printMessageEffect(msg);
@@ -498,7 +518,15 @@ export const Nodes = <const N extends string[]>(
           .join("\n");
 
         // Rewrite the question by combining history with new input
-        const rewrittenQuestion = yield* llmService.rewriteQuestion(conversationHistory, state.user_question);
+        const rewrittenQuestion = yield* llmService.rewriteQuestion(conversationHistory, state.user_question).pipe(
+          Effect.catchTag("LLMServiceError", (error) =>
+            Effect.gen(function* () {
+              yield* Effect.logError("Error while rewriting question:", error);
+              yield* sendMetadataEffect("ERROR", questionRewriteErrorMessage);
+              return state.user_question;
+            })
+          )
+        );
 
         yield* Effect.logDebug("Original input: ", state.user_question);
         yield* Effect.logDebug("Rewritten question: ", rewrittenQuestion);

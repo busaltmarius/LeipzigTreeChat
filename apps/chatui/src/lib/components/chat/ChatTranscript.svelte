@@ -26,7 +26,7 @@ $effect(() => {
 </script>
 
 <div bind:this={container} class="flex-1 overflow-y-auto px-4 py-5 sm:px-6">
-	<div class="mx-auto flex max-w-4xl flex-col gap-4">
+	<div class="mx-auto flex max-w-208 flex-col gap-10 px-1 pb-44 pt-8 sm:px-4">
 		{#each messages as message, index (`${message.role}-${index}-${message.content}`)}
 			<ChatMessageBubble role={message.role} content={message.content} />
 		{/each}

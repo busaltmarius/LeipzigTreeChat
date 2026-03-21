@@ -9,23 +9,40 @@ const isUserMessage = () => role === "user";
 const isErrorMessage = () => variant === "error";
 </script>
 
-<article class={`flex ${isUserMessage() ? "justify-end" : "justify-start"}`}>
-	<div
-		class={`max-w-[85%] rounded-3xl px-4 py-3 text-sm leading-6 shadow-sm sm:max-w-[75%] ${
-			isUserMessage()
-				? "rounded-br-md bg-emerald-700 text-white"
-				: isErrorMessage()
-					? "rounded-bl-md border border-rose-200 bg-rose-50 text-rose-900"
-					: "rounded-bl-md border border-stone-900/8 bg-stone-50 text-stone-800"
-		}`}
-	>
-		<p
-			class={`mb-1 text-[0.7rem] font-semibold uppercase tracking-[0.25em] ${
-				isErrorMessage() ? "text-rose-700" : "opacity-70"
-			}`}
+<article class={`rise-in flex ${isUserMessage() ? "justify-end" : "justify-start"}`}>
+	{#if isUserMessage()}
+		<div
+			class="max-w-[min(30rem,88%)] rounded-[1.75rem] rounded-br-md bg-emerald-600 px-5 py-4 text-white shadow-[0_24px_70px_-38px_rgba(16,185,129,0.9)]"
 		>
-			{isUserMessage() ? "Du" : "Baumbart"}
-		</p>
-		<p class="whitespace-pre-wrap wrap-break-words">{content}</p>
-	</div>
+			<p class="mb-2 text-[0.64rem] font-semibold uppercase tracking-[0.3em] text-white/72">
+				Du
+			</p>
+			<p class="whitespace-pre-wrap wrap-break-word text-[0.97rem] leading-7">{content}</p>
+		</div>
+	{:else}
+		<div class="max-w-[min(46rem,100%)]">
+			<div
+				class={`mb-3 flex items-center gap-3 text-[0.64rem] font-semibold uppercase tracking-[0.3em] ${
+					isErrorMessage() ? "text-rose-700" : "text-stone-500"
+				}`}
+			>
+				<span
+					class={`h-2.5 w-2.5 rounded-full ${
+						isErrorMessage() ? "bg-rose-500" : "bg-emerald-500 soft-pulse"
+					}`}
+				></span>
+				<span>{isErrorMessage() ? "Hinweis" : "Baumbart"}</span>
+			</div>
+
+			<div
+				class={`rounded-[1.9rem] px-6 py-5 text-stone-800 ${
+					isErrorMessage()
+						? "border border-rose-200/80 bg-rose-50/90 text-rose-900 shadow-[0_18px_50px_-42px_rgba(225,29,72,0.52)]"
+						: "border border-white/70 bg-white/58 shadow-[0_30px_90px_-48px_rgba(28,25,23,0.46)] backdrop-blur-sm"
+				}`}
+			>
+				<p class="whitespace-pre-wrap wrap-break-word text-[1rem] leading-8">{content}</p>
+			</div>
+		</div>
+	{/if}
 </article>

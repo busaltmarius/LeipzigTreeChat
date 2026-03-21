@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, mock, test } from "bun:test";
+import { AIMessage } from "@langchain/core/messages";
 import { Context, Data, Effect, Layer } from "effect";
 
 const mockHttpState = {
@@ -31,9 +32,9 @@ const MockHttpClientTag = Context.GenericTag<{ execute: (request: unknown) => Ef
   "MockHttpClient"
 );
 const MockLLMServiceTag = Context.GenericTag<{
-  rewriteQuestion: (conversationHistory: string | undefined, input: string) => Effect.Effect<string>;
-  generateChatbotResponse: () => Effect.Effect<string>;
-  generateClarificationQuestion: () => Effect.Effect<string>;
+  rewriteQuestion: (conversationHistory: string | undefined, input: string) => Effect.Effect<string, unknown>;
+  generateChatbotResponse: () => Effect.Effect<string, unknown>;
+  generateClarificationQuestion: () => Effect.Effect<string, unknown>;
 }>("MockLLMService");
 const MockTriplestoreServiceTag = Context.GenericTag<{
   queryClarifications: (graphUri: string) => Effect.Effect<unknown[]>;
@@ -89,6 +90,12 @@ mock.module("../triplestore-service.js", () => ({
 }));
 
 mock.module("../langgraph-runtime.js", () => {
+  const llmFailure = (operation: string) => (reason: unknown) => ({
+    _tag: "LLMServiceError" as const,
+    operation,
+    reason,
+  });
+
   const layer = Layer.mergeAll(
     Layer.succeed(MockHttpClientTag, {
       execute: ((_request: unknown) =>
@@ -101,9 +108,20 @@ mock.module("../langgraph-runtime.js", () => {
     }),
     Layer.succeed(MockLLMServiceTag, {
       rewriteQuestion: (conversationHistory: string | undefined, input: string) =>
-        Effect.promise(() => llmMocks.rewriteQuestion(conversationHistory, input)),
-      generateChatbotResponse: () => Effect.promise(() => llmMocks.generateChatbotResponse()),
-      generateClarificationQuestion: () => Effect.promise(() => llmMocks.generateClarificationQuestion()),
+        Effect.tryPromise({
+          try: () => llmMocks.rewriteQuestion(conversationHistory, input),
+          catch: llmFailure("rewriteQuestion"),
+        }),
+      generateChatbotResponse: () =>
+        Effect.tryPromise({
+          try: () => llmMocks.generateChatbotResponse(),
+          catch: llmFailure("generateChatbotResponse"),
+        }),
+      generateClarificationQuestion: () =>
+        Effect.tryPromise({
+          try: () => llmMocks.generateClarificationQuestion(),
+          catch: llmFailure("generateClarificationQuestion"),
+        }),
     }),
     Layer.succeed(MockTriplestoreServiceTag, {
       queryClarifications: (graphUri: string) => triplestoreMocks.queryClarifications(graphUri),
@@ -303,5 +321,124 @@ describe("chatbot metadata events", () => {
     applyCommandUpdate(state, await nodes.QanaryOrchestratorNode({ routerNode: NODE_IDS.router })(state));
 
     expect(metadataEvents).toEqual(["WAITING_FOR_INPUT", "REWRITING_QUESTION", "GATHERING_DATA", "ERROR"]);
+  });
+
+  test("falls back when rewriting the question fails", async () => {
+    const metadataEvents: string[] = [];
+    const state = createInitialAgentState();
+    const nodes = createNodeSuite(metadataEvents);
+
+    llmMocks.rewriteQuestion.mockImplementationOnce(async () => {
+      throw new Error("rewrite failed");
+    });
+
+    applyCommandUpdate(
+      state,
+      await nodes.UserInputNode({ nextNode: NODE_IDS.router }, async () => "Welche Hoehe hat der Baum?")(state)
+    );
+    applyCommandUpdate(state, await nodes.QuestionRewriteNode({ nextNode: NODE_IDS.qanary })(state));
+
+    expect(state.user_question).toBe("Welche Hoehe hat der Baum?");
+    expect(metadataEvents).toEqual(["WAITING_FOR_INPUT", "REWRITING_QUESTION", "ERROR"]);
+  });
+
+  test("falls back when generating the chatbot response fails", async () => {
+    const metadataEvents: string[] = [];
+    const state = createInitialAgentState();
+    const nodes = createNodeSuite(metadataEvents);
+
+    llmMocks.generateChatbotResponse.mockImplementationOnce(async () => {
+      throw new Error("response failed");
+    });
+
+    applyCommandUpdate(
+      state,
+      await nodes.UserInputNode({ nextNode: NODE_IDS.router }, async () => "Wie alt ist der Baum?")(state)
+    );
+    applyCommandUpdate(
+      state,
+      await nodes.RouterNode({
+        questionAnsweringNode: NODE_IDS.rewrite,
+        requestClarificationNode: NODE_IDS.clarification,
+        responseNode: NODE_IDS.response,
+      })(state)
+    );
+    applyCommandUpdate(state, await nodes.QuestionRewriteNode({ nextNode: NODE_IDS.qanary })(state));
+    applyCommandUpdate(state, await nodes.QanaryOrchestratorNode({ routerNode: NODE_IDS.router })(state));
+    applyCommandUpdate(
+      state,
+      await nodes.RouterNode({
+        questionAnsweringNode: NODE_IDS.rewrite,
+        requestClarificationNode: NODE_IDS.clarification,
+        responseNode: NODE_IDS.response,
+      })(state)
+    );
+    applyCommandUpdate(state, await nodes.ResponseNode({ nextNode: NODE_IDS.userInput })(state));
+
+    expect(state.messages.at(-1)).toBeInstanceOf(AIMessage);
+    expect((state.messages.at(-1) as AIMessage).content).toBe(
+      "Entschuldigung, ich konnte gerade keine Antwort formulieren. Bitte versuche es erneut."
+    );
+    expect(metadataEvents).toEqual([
+      "WAITING_FOR_INPUT",
+      "REWRITING_QUESTION",
+      "GATHERING_DATA",
+      "GENERATING_RESPONSE",
+      "ERROR",
+    ]);
+  });
+
+  test("falls back when generating the clarification question fails", async () => {
+    const metadataEvents: string[] = [];
+    const state = createInitialAgentState();
+    const nodes = createNodeSuite(metadataEvents);
+
+    triplestoreMocks.queryClarifications.mockImplementation((_graphUri: string) =>
+      Effect.succeed([
+        {
+          uri: new ClarificationQuestionURI("urn:test:clarification"),
+          content: "Welchen Baum meinst du genau?",
+        },
+      ])
+    );
+    llmMocks.generateClarificationQuestion.mockImplementationOnce(async () => {
+      throw new Error("clarification failed");
+    });
+
+    applyCommandUpdate(
+      state,
+      await nodes.UserInputNode({ nextNode: NODE_IDS.router }, async () => "Erzaehl mir etwas ueber den Baum")(state)
+    );
+    applyCommandUpdate(
+      state,
+      await nodes.RouterNode({
+        questionAnsweringNode: NODE_IDS.rewrite,
+        requestClarificationNode: NODE_IDS.clarification,
+        responseNode: NODE_IDS.response,
+      })(state)
+    );
+    applyCommandUpdate(state, await nodes.QuestionRewriteNode({ nextNode: NODE_IDS.qanary })(state));
+    applyCommandUpdate(state, await nodes.QanaryOrchestratorNode({ routerNode: NODE_IDS.router })(state));
+    applyCommandUpdate(
+      state,
+      await nodes.RouterNode({
+        questionAnsweringNode: NODE_IDS.rewrite,
+        requestClarificationNode: NODE_IDS.clarification,
+        responseNode: NODE_IDS.response,
+      })(state)
+    );
+    applyCommandUpdate(state, await nodes.RequestClarificationNode({ nextNode: NODE_IDS.userInput })(state));
+
+    expect(state.messages.at(-1)).toBeInstanceOf(AIMessage);
+    expect((state.messages.at(-1) as AIMessage).content).toBe(
+      "Entschuldigung, ich konnte gerade keine Rückfrage formulieren. Bitte versuche es erneut."
+    );
+    expect(metadataEvents).toEqual([
+      "WAITING_FOR_INPUT",
+      "REWRITING_QUESTION",
+      "GATHERING_DATA",
+      "GENERATING_CLARIFICATION",
+      "ERROR",
+    ]);
   });
 });

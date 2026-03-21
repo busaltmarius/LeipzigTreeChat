@@ -25,6 +25,7 @@ let socket: WebSocket | null = null;
 let reconnectTimeout: number | null = null;
 let shouldReconnect = true;
 let previousMessagesBeforeSubmit: ChatMessage[] | null = null;
+const emptyStateTopics = ["Standorte", "Baumarten", "Pflege", "Stadtklima"];
 
 const metadataDisplay = {
   GATHERING_DATA: {
@@ -245,37 +246,120 @@ onMount(() => {
 });
 
 const visibleMetadata = $derived(getVisibleMetadata(metadata));
+const hasMessages = $derived(messages.length > 0);
+const shellStatus = $derived.by(() => {
+	if (!isConnected) {
+		return {
+			label: "Verbindung",
+			detail: "WebSocket wird aufgebaut ...",
+			tone: "offline" as const,
+		};
+	}
+
+	if (visibleMetadata) {
+		return {
+			label: visibleMetadata.title,
+			detail: visibleMetadata.description,
+			tone: "busy" as const,
+		};
+	}
+
+	return {
+		label: "Bereit",
+		detail: "Baumwissen fuer Leipzig ist live.",
+		tone: "connected" as const,
+	};
+});
 </script>
 
-<ChatShell>
+<svelte:head>
+	<title>Baumbart</title>
+	<meta
+		name="description"
+		content="Baumbart beantwortet Fragen zu Baumarten, Standorten und Stadtgruen in Leipzig."
+	/>
+</svelte:head>
+
+<ChatShell
+	statusLabel={shellStatus.label}
+	statusDetail={shellStatus.detail}
+	statusTone={shellStatus.tone}
+>
 	<div class="flex min-h-0 flex-1 flex-col">
-		{#if !isConnected}
-			<div class="border-b border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 sm:px-6">
-				Verbinde den Chat über WebSocket...
-			</div>
-		{:else if visibleMetadata}
-			<div class="border-b border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900 sm:px-6">
-				<div class="flex items-center gap-3">
-					<div class="flex items-center gap-1.5">
-						<span class="h-2.5 w-2.5 animate-pulse rounded-full bg-sky-500"></span>
-						<span class="text-xs font-semibold uppercase tracking-[0.24em] text-sky-700">
-							{visibleMetadata.title}
-						</span>
+		{#if hasMessages}
+			<ChatTranscript {messages} />
+
+			<div class="pointer-events-none sticky bottom-0 z-10 px-4 pb-4 sm:px-6 lg:px-8">
+				<div class="mx-auto max-w-[56rem]">
+					{#if visibleMetadata}
+						<div
+							class="rise-in-delayed pointer-events-auto mb-3 inline-flex items-center gap-3 rounded-full border border-white/70 bg-white/72 px-4 py-2 text-sm text-stone-700 shadow-[0_18px_50px_-34px_rgba(28,25,23,0.36)] backdrop-blur"
+						>
+							<span class="h-2.5 w-2.5 rounded-full bg-sky-500 soft-pulse"></span>
+							<span class="font-medium">{visibleMetadata.description}</span>
+						</div>
+					{/if}
+
+					<div class="pointer-events-auto rise-in-delayed">
+						<ChatComposer
+							value={prompt}
+							pending={isSubmitting}
+							disabled={!isConnected}
+							onChange={handlePromptChange}
+							onSubmit={submitPrompt}
+						/>
 					</div>
-					<p class="text-sm text-sky-800">
-						{visibleMetadata.description}
-					</p>
 				</div>
 			</div>
-		{/if}
+		{:else}
+			<section class="flex flex-1 flex-col items-center justify-center px-4 pb-14 pt-10 text-center sm:px-6">
+				<div class="rise-in relative mx-auto max-w-3xl">
+					<div
+						class="absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-300/20 blur-3xl"
+						aria-hidden="true"
+					></div>
+					<p class="relative text-[0.72rem] font-semibold uppercase tracking-[0.34em] text-stone-500">
+						Baumwissen fuer Leipzig
+					</p>
+					<h2
+						class="relative mt-5 text-balance text-4xl font-semibold tracking-[-0.05em] text-stone-950 sm:text-5xl"
+					>
+						Was moechtest du heute ueber Leipzigs Baeume wissen?
+					</h2>
+					<p class="relative mt-5 text-balance text-base leading-8 text-stone-600 sm:text-lg">
+						Stelle Fragen zu Arten, Standorten, Pflege und den Gruenraeumen der Stadt.
+					</p>
+				</div>
 
-		<ChatTranscript {messages} />
-		<ChatComposer
-			value={prompt}
-			pending={isSubmitting}
-			disabled={!isConnected}
-			onChange={handlePromptChange}
-			onSubmit={submitPrompt}
-		/>
+				<div class="rise-in-delayed mt-5 flex flex-wrap items-center justify-center gap-3 text-sm text-stone-500">
+					{#each emptyStateTopics as topic, index}
+						<span>{topic}</span>
+						{#if index < emptyStateTopics.length - 1}
+							<span class="text-stone-300" aria-hidden="true">/</span>
+						{/if}
+					{/each}
+				</div>
+
+				<div class="rise-in-delayed mt-10 w-full max-w-4xl">
+					<ChatComposer
+						value={prompt}
+						pending={isSubmitting}
+						disabled={!isConnected}
+						onChange={handlePromptChange}
+						onSubmit={submitPrompt}
+					/>
+				</div>
+
+				<p class="rise-in-delayed mt-4 text-sm text-stone-500">
+					{#if !isConnected}
+						Verbinde den Chat gerade ueber WebSocket ...
+					{:else if visibleMetadata}
+						{visibleMetadata.description}
+					{:else}
+						Antworten erscheinen direkt im Verlauf darunter.
+					{/if}
+				</p>
+			</section>
+		{/if}
 	</div>
 </ChatShell>
