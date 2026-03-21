@@ -1,90 +1,176 @@
 <script lang="ts">
-	import ChatComposer from "$lib/components/chat/ChatComposer.svelte";
-	import ChatShell from "$lib/components/chat/ChatShell.svelte";
-	import ChatTranscript from "$lib/components/chat/ChatTranscript.svelte";
-	import type { ChatMessage } from "$lib/chat/types";
-	import type { PageData } from "./$types";
+import { onMount } from "svelte";
+import { browser } from "$app/environment";
+import type { ChatMessage, ChatSocketClientMessage, ChatSocketServerMessage } from "$lib/chat/types";
+import ChatComposer from "$lib/components/chat/ChatComposer.svelte";
+import ChatShell from "$lib/components/chat/ChatShell.svelte";
+import ChatTranscript from "$lib/components/chat/ChatTranscript.svelte";
+import type { PageData } from "./$types";
 
-	type ChatResponse = {
-		error?: string;
-		messages?: ChatMessage[];
-	};
+let { data }: { data: PageData } = $props();
+const createInitialMessages = () => data.messages.map((message) => ({ ...message }));
 
-	let { data }: { data: PageData } = $props();
-	const createInitialMessages = () => data.messages.map((message) => ({ ...message }));
+let messages = $state<ChatMessage[]>(createInitialMessages());
+let prompt = $state("");
+let isSubmitting = $state(false);
+let error = $state("");
+let isConnected = $state(false);
 
-	let messages = $state<ChatMessage[]>(createInitialMessages());
-	let prompt = $state("");
-	let isSubmitting = $state(false);
-	let error = $state("");
+let socket: WebSocket | null = null;
+let reconnectTimeout: number | null = null;
+let shouldReconnect = true;
+let previousMessagesBeforeSubmit: ChatMessage[] | null = null;
 
-	const handlePromptChange = (value: string) => {
-		prompt = value;
+const scheduleReconnect = () => {
+  if (!browser || reconnectTimeout || !shouldReconnect) {
+    return;
+  }
 
-		if (error) {
-			error = "";
-		}
-	};
+  reconnectTimeout = window.setTimeout(() => {
+    reconnectTimeout = null;
+    connectSocket();
+  }, 1000);
+};
 
-	const submitPrompt = async (nextPrompt: string) => {
-		if (isSubmitting) {
-			return;
-		}
+const handleSocketMessage = (rawEvent: MessageEvent<string>) => {
+  try {
+    const payload = JSON.parse(rawEvent.data) as ChatSocketServerMessage;
 
-		const trimmedPrompt = nextPrompt.trim();
+    messages = payload.messages;
+    isSubmitting = false;
+    previousMessagesBeforeSubmit = null;
 
-		if (!trimmedPrompt) {
-			return;
-		}
+    if (payload.type === "chat.error") {
+      error = payload.error;
+      return;
+    }
 
-		const previousMessages = [...messages];
+    error = "";
+  } catch (parseError) {
+    console.error("Failed to parse websocket payload", parseError);
+    error = "Die Antwort des Chatbots konnte nicht gelesen werden.";
+    isSubmitting = false;
 
-		messages = [
-			...messages,
-			{
-				role: "user",
-				content: trimmedPrompt,
-			},
-		];
-		prompt = "";
-		error = "";
-		isSubmitting = true;
+    if (previousMessagesBeforeSubmit) {
+      messages = previousMessagesBeforeSubmit;
+      previousMessagesBeforeSubmit = null;
+    }
+  }
+};
 
-		try {
-			const response = await fetch("/api/chat", {
-				method: "POST",
-				headers: {
-					"content-type": "application/json",
-				},
-				body: JSON.stringify({
-					prompt: trimmedPrompt,
-				}),
-			});
-			const payload = (await response.json().catch(() => null)) as ChatResponse | null;
+const connectSocket = () => {
+  if (!browser) {
+    return;
+  }
 
-			if (payload?.messages) {
-				messages = payload.messages;
-			}
+  socket?.close();
+  isConnected = false;
+  socket = new WebSocket(data.websocketUrl);
 
-			if (!response.ok) {
-				error = payload?.error ?? "Der Chatbot konnte gerade nicht antworten.";
+  socket.addEventListener("open", () => {
+    isConnected = true;
+    error = "";
+  });
 
-				if (!payload?.messages) {
-					messages = previousMessages;
-				}
-			}
-		} catch (requestError) {
-			console.error("Failed to submit chat prompt", requestError);
-			messages = previousMessages;
-			error = "Die Anfrage konnte nicht gesendet werden. Bitte versuche es erneut.";
-		} finally {
-			isSubmitting = false;
-		}
-	};
+  socket.addEventListener("message", handleSocketMessage);
+
+  socket.addEventListener("close", () => {
+    isConnected = false;
+
+    if (isSubmitting && previousMessagesBeforeSubmit) {
+      messages = previousMessagesBeforeSubmit;
+      previousMessagesBeforeSubmit = null;
+      isSubmitting = false;
+      error = "Die Verbindung wurde unterbrochen. Bitte versuche es erneut.";
+    }
+
+    if (shouldReconnect) {
+      scheduleReconnect();
+    }
+  });
+
+  socket.addEventListener("error", () => {
+    isConnected = false;
+    error = "Die Echtzeitverbindung ist aktuell nicht verfuegbar.";
+  });
+};
+
+const handlePromptChange = (value: string) => {
+  prompt = value;
+
+  if (error) {
+    error = "";
+  }
+};
+
+const submitPrompt = async (nextPrompt: string) => {
+  if (isSubmitting) {
+    return;
+  }
+
+  const trimmedPrompt = nextPrompt.trim();
+
+  if (!trimmedPrompt) {
+    return;
+  }
+
+  if (!socket || socket.readyState !== WebSocket.OPEN) {
+    error = "Die Echtzeitverbindung ist noch nicht bereit.";
+    return;
+  }
+
+  const previousMessages = [...messages];
+  previousMessagesBeforeSubmit = previousMessages;
+  const payload: ChatSocketClientMessage = {
+    type: "chat.send",
+    prompt: trimmedPrompt,
+  };
+
+  messages = [
+    ...messages,
+    {
+      role: "user",
+      content: trimmedPrompt,
+    },
+  ];
+  prompt = "";
+  error = "";
+  isSubmitting = true;
+
+  try {
+    socket.send(JSON.stringify(payload));
+  } catch (socketError) {
+    console.error("Failed to send websocket chat prompt", socketError);
+    messages = previousMessages;
+    previousMessagesBeforeSubmit = null;
+    error = "Die Anfrage konnte nicht gesendet werden. Bitte versuche es erneut.";
+    isSubmitting = false;
+  }
+};
+
+onMount(() => {
+  connectSocket();
+
+  return () => {
+    shouldReconnect = false;
+
+    if (reconnectTimeout) {
+      clearTimeout(reconnectTimeout);
+    }
+
+    socket?.close();
+  };
+});
 </script>
 
 <ChatShell>
 	<div class="flex min-h-0 flex-1 flex-col">
+		{#if !isConnected}
+			<div class="border-b border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 sm:px-6">
+				Verbinde den Chat ueber WebSocket...
+			</div>
+		{/if}
+
 		{#if error}
 			<div class="border-b border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 sm:px-6">
 				{error}
@@ -92,6 +178,12 @@
 		{/if}
 
 		<ChatTranscript {messages} />
-		<ChatComposer value={prompt} pending={isSubmitting} onChange={handlePromptChange} onSubmit={submitPrompt} />
+		<ChatComposer
+			value={prompt}
+			pending={isSubmitting}
+			disabled={!isConnected}
+			onChange={handlePromptChange}
+			onSubmit={submitPrompt}
+		/>
 	</div>
 </ChatShell>

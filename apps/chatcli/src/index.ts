@@ -33,21 +33,21 @@ const getUserInput = async () => {
 
 // Run the main function
 async function main() {
-	const state = createInitialAgentState();
-	const initialMessage = state.messages[0];
+  const state = createInitialAgentState();
+  const initialMessage = state.messages[0];
 
-	if (initialMessage instanceof AIMessage) {
-		await printMessage(initialMessage);
-	}
+  if (initialMessage instanceof AIMessage) {
+    await printMessage(initialMessage);
+  }
 
-	while (!state.has_ended) {
-		try {
-			const input = await getUserInput();
-			await runChatTurn(state, input, { onMessage: printMessage });
-		} catch (error) {
-			console.log("Ein Fehler ist aufgetreten:", error);
-		}
-	}
+  while (!state.has_ended) {
+    try {
+      const input = await getUserInput();
+      await runChatTurn(state, input, { onMessage: printMessage });
+    } catch (error) {
+      console.log("Ein Fehler ist aufgetreten:", error);
+    }
+  }
 }
 
 main();

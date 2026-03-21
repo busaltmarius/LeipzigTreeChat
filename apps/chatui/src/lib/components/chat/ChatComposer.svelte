@@ -1,58 +1,52 @@
 <script lang="ts">
-	type Props = {
-		value: string;
-		pending?: boolean;
-		disabled?: boolean;
-		onChange?: (value: string) => void;
-		onSubmit?: (value: string) => Promise<void> | void;
-	};
+type Props = {
+  value: string;
+  pending?: boolean;
+  disabled?: boolean;
+  onChange?: (value: string) => void;
+  onSubmit?: (value: string) => Promise<void> | void;
+};
 
-	let {
-		value,
-		pending = false,
-		disabled = false,
-		onChange,
-		onSubmit,
-	}: Props = $props();
+let { value, pending = false, disabled = false, onChange, onSubmit }: Props = $props();
 
-	let textarea: HTMLTextAreaElement | undefined;
+let textarea: HTMLTextAreaElement | undefined;
 
-	const resizeTextarea = () => {
-		if (!textarea) {
-			return;
-		}
+const resizeTextarea = () => {
+  if (!textarea) {
+    return;
+  }
 
-		textarea.style.height = "0px";
-		textarea.style.height = `${Math.min(textarea.scrollHeight, 224)}px`;
-	};
+  textarea.style.height = "0px";
+  textarea.style.height = `${Math.min(textarea.scrollHeight, 224)}px`;
+};
 
-	const handleInput = (event: Event) => {
-		const nextValue = (event.currentTarget as HTMLTextAreaElement).value;
-		onChange?.(nextValue);
-		queueMicrotask(resizeTextarea);
-	};
+const handleInput = (event: Event) => {
+  const nextValue = (event.currentTarget as HTMLTextAreaElement).value;
+  onChange?.(nextValue);
+  queueMicrotask(resizeTextarea);
+};
 
-	const submitPrompt = async () => {
-		const prompt = value.trim();
+const submitPrompt = async () => {
+  const prompt = value.trim();
 
-		if (!prompt || pending || disabled) {
-			return;
-		}
+  if (!prompt || pending || disabled) {
+    return;
+  }
 
-		await onSubmit?.(prompt);
-	};
+  await onSubmit?.(prompt);
+};
 
-	const handleKeyDown = (event: KeyboardEvent) => {
-		if (event.key === "Enter" && !event.shiftKey) {
-			event.preventDefault();
-			void submitPrompt();
-		}
-	};
+const handleKeyDown = (event: KeyboardEvent) => {
+  if (event.key === "Enter" && !event.shiftKey) {
+    event.preventDefault();
+    void submitPrompt();
+  }
+};
 
-	$effect(() => {
-		value;
-		resizeTextarea();
-	});
+$effect(() => {
+  value;
+  resizeTextarea();
+});
 </script>
 
 <div class="border-t border-stone-900/10 bg-stone-50/70 px-4 py-4 sm:px-6">

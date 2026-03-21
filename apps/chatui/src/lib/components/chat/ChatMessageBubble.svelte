@@ -1,11 +1,11 @@
 <script lang="ts">
-	import type { ChatMessage } from "$lib/chat/types";
+import type { ChatMessage } from "$lib/chat/types";
 
-	type Props = ChatMessage;
+type Props = ChatMessage;
 
-	let { role, content }: Props = $props();
+let { role, content }: Props = $props();
 
-	const isUserMessage = () => role === "user";
+const isUserMessage = () => role === "user";
 </script>
 
 <article class={`flex ${isUserMessage() ? "justify-end" : "justify-start"}`}>
