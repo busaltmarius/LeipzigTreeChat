@@ -3,14 +3,20 @@ import { Annotation, type Messages, messagesStateReducer } from "@langchain/lang
 import { Effect } from "effect";
 import { MissingMessageError } from "../errors.js";
 import { ClarificationConversation } from "./clarification_conversation.js";
+import { QanaryFinalAnswer } from "./qanary-types.js";
 
 export {
-  type Answer,
-  AnswerURI,
-  ClarificationConversation,
+    QanaryFinalAnswer,
   ConversationURI,
-  type Question,
-  QuestionURI,
+  FinalAnswerURI,
+  ClarificationAnswerURI,
+  QanaryClarificationAnswer,
+    QanaryClarificationQuestion,
+  ClarificationQuestionURI,
+} from "./qanary-types.js";
+
+export {
+    ClarificationConversation,
 } from "./clarification_conversation.js";
 
 export type Chatmode = "QUESTION_ANSWERING" | "CLARIFICATION";
@@ -26,11 +32,9 @@ export const AgentStateAnnotation = Annotation.Root({
   chatmode: Annotation<Chatmode>(),
   user_question: Annotation<string>(),
   has_user_question: Annotation<boolean>(),
-  has_ended: Annotation<boolean>(),
-  graph_uri: Annotation<string>(),
+  qanary_answer: Annotation<QanaryFinalAnswer | undefined>(),
   clarification: Annotation<ClarificationConversation | undefined>(),
-  qanary_answer: Annotation<string>(),
-  clarifications: Annotation<string[]>(),
+  has_ended: Annotation<boolean>(),
 });
 
 export type AgentState = typeof AgentStateAnnotation.State;

@@ -1,10 +1,12 @@
 import { FetchHttpClient } from "@effect/platform";
 import { Layer, Logger, LogLevel, ManagedRuntime } from "effect";
 import { LLMService, OpenRouter } from "./llm-service.js";
+import { TriplestoreService } from "./triplestore-service.js";
 
 const layer = Layer.mergeAll(
   LLMService.Live.pipe(Layer.provide(OpenRouter.Live)),
-  Logger.minimumLogLevel(LogLevel.Info),
+  TriplestoreService.Live,
+  Logger.minimumLogLevel(LogLevel.Error),
   FetchHttpClient.layer
 );
 
