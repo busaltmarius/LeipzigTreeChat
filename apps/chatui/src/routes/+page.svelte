@@ -266,7 +266,7 @@ const shellStatus = $derived.by(() => {
 
 	return {
 		label: "Bereit",
-		detail: "Baumwissen fuer Leipzig ist live.",
+		detail: "Baumbart ist live.",
 		tone: "connected" as const,
 	};
 });
@@ -290,7 +290,7 @@ const shellStatus = $derived.by(() => {
 			<ChatTranscript {messages} />
 
 			<div class="pointer-events-none sticky bottom-0 z-10 px-4 pb-4 sm:px-6 lg:px-8">
-				<div class="mx-auto max-w-[56rem]">
+				<div class="mx-auto max-w-4xl">
 					{#if visibleMetadata}
 						<div
 							class="rise-in-delayed pointer-events-auto mb-3 inline-flex items-center gap-3 rounded-full border border-white/70 bg-white/72 px-4 py-2 text-sm text-stone-700 shadow-[0_18px_50px_-34px_rgba(28,25,23,0.36)] backdrop-blur"
@@ -319,12 +319,12 @@ const shellStatus = $derived.by(() => {
 						aria-hidden="true"
 					></div>
 					<p class="relative text-[0.72rem] font-semibold uppercase tracking-[0.34em] text-stone-500">
-						Baumwissen fuer Leipzig
+						Baumwissen für Leipzig
 					</p>
 					<h2
 						class="relative mt-5 text-balance text-4xl font-semibold tracking-[-0.05em] text-stone-950 sm:text-5xl"
 					>
-						Was moechtest du heute ueber Leipzigs Baeume wissen?
+						Was möchtest du heute über Leipzigs Bäume wissen?
 					</h2>
 					<p class="relative mt-5 text-balance text-base leading-8 text-stone-600 sm:text-lg">
 						Stelle Fragen zu Arten, Standorten, Pflege und den Gruenraeumen der Stadt.
@@ -352,7 +352,7 @@ const shellStatus = $derived.by(() => {
 
 				<p class="rise-in-delayed mt-4 text-sm text-stone-500">
 					{#if !isConnected}
-						Verbinde den Chat gerade ueber WebSocket ...
+						Verbinde den Chat gerade über WebSocket ...
 					{:else if visibleMetadata}
 						{visibleMetadata.description}
 					{:else}

@@ -63,7 +63,7 @@ const statusDotClasses: Record<StatusTone, string> = {
 
 				<div class="min-w-0">
 					<p class="text-[0.64rem] font-semibold uppercase tracking-[0.32em] text-stone-500">
-						Leipzig Tree Guide
+						Leipziger Baumwächter
 					</p>
 					<h1 class="mt-1 text-[1.35rem] font-semibold tracking-[-0.03em] text-stone-950 sm:text-2xl">
 						Baumbart
