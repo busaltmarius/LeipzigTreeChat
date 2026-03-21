@@ -5,19 +5,16 @@ import { MissingMessageError } from "../errors.js";
 import { ClarificationConversation } from "./clarification_conversation.js";
 import { QanaryFinalAnswer } from "./qanary-types.js";
 
+export { ClarificationConversation } from "./clarification_conversation.js";
 export {
-    QanaryFinalAnswer,
+  ClarificationAnswerURI,
+  ClarificationQuestionURI,
   ConversationURI,
   FinalAnswerURI,
-  ClarificationAnswerURI,
   QanaryClarificationAnswer,
-    QanaryClarificationQuestion,
-  ClarificationQuestionURI,
+  QanaryClarificationQuestion,
+  QanaryFinalAnswer,
 } from "./qanary-types.js";
-
-export {
-    ClarificationConversation,
-} from "./clarification_conversation.js";
 
 export type Chatmode = "QUESTION_ANSWERING" | "CLARIFICATION";
 

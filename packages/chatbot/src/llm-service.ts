@@ -45,14 +45,20 @@ type LLMServiceInterface = {
    * @param qanaryAnswer The data to assist in generating the response.
    * @returns The generated chatbot response as string.
    */
-  readonly generateChatbotResponse: (userInput: string, qanaryAnswer: QanaryFinalAnswer) => Effect.Effect<string, never, never>;
+  readonly generateChatbotResponse: (
+    userInput: string,
+    qanaryAnswer: QanaryFinalAnswer
+  ) => Effect.Effect<string, never, never>;
   /**
    * Generates a chatbot clarification question based on user input and provided data.
    * @param userInput The original input/question from the user.
    * @param data The data to assist in generating the clarification question.
    * @returns The generated chatbot clarification question as string.
    */
-  readonly generateClarificationQuestion: (userInput: string, qanaryClarificationQuestion: QanaryClarificationQuestion) => Effect.Effect<string, never, never>;
+  readonly generateClarificationQuestion: (
+    userInput: string,
+    qanaryClarificationQuestion: QanaryClarificationQuestion
+  ) => Effect.Effect<string, never, never>;
   /**
    * Rewrites a question by consolidating conversation history with new input.
    * Combines known information from previous messages with new input into a single comprehensive question.
@@ -60,7 +66,10 @@ type LLMServiceInterface = {
    * @param newInput The new user input to be combined.
    * @returns The rewritten question as a string.
    */
-  readonly rewriteQuestion: (conversationHistory: string | undefined, newInput: string) => Effect.Effect<string, never, never>;
+  readonly rewriteQuestion: (
+    conversationHistory: string | undefined,
+    newInput: string
+  ) => Effect.Effect<string, never, never>;
 };
 
 export class LLMService extends Context.Tag("LLMService")<LLMService, LLMServiceInterface>() {
