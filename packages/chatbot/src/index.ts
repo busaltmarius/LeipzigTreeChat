@@ -46,8 +46,8 @@ export const ChatBotGraph = (
         questionAnsweringNode: QUESTION_REWRITE_NODE_ID,
         requestClarificationNode: REQUEST_CLARIFICATION_NODE_ID,
         responseNode: CHATBOT_RESPONSE_NODE_ID,
-        endNode: END,
         userInputNode: USER_INPUT_NODE_ID,
+        endNode: END,
       }),
       {
         ends: [
@@ -55,8 +55,8 @@ export const ChatBotGraph = (
           QUESTION_REWRITE_NODE_ID,
           CHATBOT_RESPONSE_NODE_ID,
           REQUEST_CLARIFICATION_NODE_ID,
-          END,
           USER_INPUT_NODE_ID,
+          END,
         ],
       }
     )
@@ -65,9 +65,9 @@ export const ChatBotGraph = (
     })
     .addNode(
       QANARY_ORCHESTRATOR_NODE_ID,
-      QanaryOrchestratorNode({ nextNode: CHATBOT_RESPONSE_NODE_ID, errorNode: USER_INPUT_NODE_ID }),
+      QanaryOrchestratorNode({ nextNode: ROUTER_NODE_ID, userInputNode: USER_INPUT_NODE_ID }),
       {
-        ends: [CHATBOT_RESPONSE_NODE_ID, USER_INPUT_NODE_ID],
+        ends: [ROUTER_NODE_ID, USER_INPUT_NODE_ID],
       }
     )
     .addEdge(START, USER_INPUT_NODE_ID)
