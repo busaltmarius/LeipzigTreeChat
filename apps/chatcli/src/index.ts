@@ -41,11 +41,9 @@ async function main() {
     has_user_question: false,
     chatmode: "QUESTION_ANSWERING",
     user_question: "",
-    graph_uri: "",
     clarification: undefined,
     messages: [initialMessage],
-    qanary_answer: "",
-    clarifications: [],
+    qanary_answer: undefined,
   };
 
   await printMessage(initialMessage);

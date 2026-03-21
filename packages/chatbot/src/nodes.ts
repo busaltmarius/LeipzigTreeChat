@@ -1,14 +1,19 @@
-import { FetchHttpClient, HttpClient, HttpClientRequest, HttpClientResponse } from "@effect/platform";
+import { HttpClient, HttpClientRequest, HttpClientResponse } from "@effect/platform";
 import { AIMessage, type BaseMessage, HumanMessage } from "@langchain/core/messages";
 import { Command } from "@langchain/langgraph";
-import { selectSparql } from "@leipzigtreechat/qanary-component-helpers";
-import { Config, Effect, Either, Logger, Match, Schema } from "effect";
+import { Clock, Config, Effect, Either, Logger, Match, Schema } from "effect";
 import { type InvalidInputError, MissingMessageError } from "./errors.js";
 import { runLangGraphRuntime } from "./langgraph-runtime.js";
 import { LLMService } from "./llm-service.js";
-import { ClarificationConversation, ConversationURI } from "./state/clarification_conversation.js";
-import { type AgentState } from "./state/index.js";
-import type { Unit } from "./unit.js";
+import {
+    type AgentState,
+    ClarificationConversation,
+	ConversationURI,
+	QanaryClarificationAnswer,
+	QanaryClarificationQuestion,
+} from "./state/index.js";
+import { NotFoundError, TriplestoreService } from "./triplestore-service.js";
+import { Unit } from "./unit.js";
 
 /**
  * Logger that prints the node name in each log message.
@@ -36,12 +41,20 @@ const runTimedNode = async <A, E>(
   nodeName: string,
   effect: Effect.Effect<A, E, LangGraphRuntimeEnvironment>
 ): Promise<A> => {
-  const startedAt = Date.now();
-  const startedAtIso = new Date(startedAt).toISOString();
-  console.log(`[${nodeName}] started at ${startedAtIso}`);
-  const result = await runLangGraphRuntime(effect.pipe(Effect.provide(NodeLoggerLayer(nodeName))));
-  console.log(`[${nodeName}] ended in ${Date.now() - startedAt}ms`);
-  return result;
+	return runLangGraphRuntime(
+		Effect.gen(function* () {
+			const startedAt = yield* Clock.currentTimeMillis;
+			yield* Effect.logTrace(
+				`[${nodeName}] Start execution`
+			);
+			const result = yield* effect.pipe(
+				Effect.provide(NodeLoggerLayer(nodeName))
+			);
+			const endedAt = yield* Clock.currentTimeMillis;
+			yield* Effect.logTrace(`[${nodeName}] Ended execution after ${endedAt - startedAt}ms`);
+			return result;
+		})
+	);
 };
 
 /**
@@ -91,7 +104,7 @@ export const Nodes = <const N extends string[]>(
               }
 
               if (state.clarification.hasCurrentQuestion()) {
-                state.clarification.answerCurrentQuestion({ uri: null, content: userInput });
+                state.clarification.answerCurrentQuestion(new QanaryClarificationAnswer(null, userInput));
               } else {
                 yield* Effect.logError("No current question to answer");
               }
@@ -128,8 +141,8 @@ export const Nodes = <const N extends string[]>(
      * @param routingConfig The routing configuration for the next node and error node
      * @returns The configured Node usable by LangGraph
      */
-    QanaryOrchestratorNode: (routingConfig: { nextNode: NodeID; errorNode: NodeID }) => async (state: AgentState) => {
-      const { nextNode, errorNode } = routingConfig;
+    QanaryOrchestratorNode: (routingConfig: { nextNode: NodeID; userInputNode: NodeID }) => async (state: AgentState) => {
+      const { nextNode, userInputNode } = routingConfig;
       const program = Effect.gen(function* () {
         yield* Effect.logDebug("State: ", state);
 
@@ -166,7 +179,7 @@ export const Nodes = <const N extends string[]>(
 
         if (Either.isLeft(result)) {
           const error = result.left;
-          yield* Effect.logError("Error in Qanary component:", error);
+          yield* Effect.logError("Error in Qanary pipeline:", error);
           const errorMessage = new AIMessage({
             content: "Entschuldigung, es gab ein Problem bei der Verarbeitung deiner Anfrage.",
           });
@@ -177,83 +190,55 @@ export const Nodes = <const N extends string[]>(
             update: {
               messages: state.messages,
             },
-            goto: errorNode,
+            goto: userInputNode,
           });
         }
 
-        const graphUri = result.right.inGraph;
+        const graph_uri = result.right.inGraph;
 
-        // Query for the extracted answer
-        let qanaryAnswer = "";
-        const getDataQuery = `
-          PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
-          SELECT ?answer WHERE {
-            GRAPH <${graphUri}> {
-              ?relationAnnotationId a <urn:qanary#AnnotationOfAnswerJson> ;
-                oa:hasBody ?answer .
+        const triplestore = yield* TriplestoreService;
+
+        const qanary_answer = yield* Effect.either(triplestore.queryFinalAnswer(graph_uri));
+
+        if (Either.isLeft(qanary_answer)) {
+            const error = qanary_answer.left;
+
+            if (error._tag === "NotFoundError") {
+                yield* Effect.logError(`Could not find item of type ${error.itemType} in the triplestore.`);
+            } else if (error._tag === "SPARQLError") {
+                yield* Effect.logError('Error while executing SPARQL query:', error.reason);
             }
-          }
-        `;
 
-        const triplestoreUrl = yield* Config.string("TRIPLESTORE_URL");
+            const errorMessage = new AIMessage({
+              content: "Entschuldigung, es gab ein Problem bei der Verarbeitung deiner Anfrage.",
+            });
+            yield* printMessageEffect(errorMessage);
+            state.messages.push(errorMessage);
 
-        yield* Effect.logInfo("Executing SPARQL query for answer annotation", { getDataQuery });
-
-        const responseData = yield* Effect.tryPromise({
-          try: () => selectSparql(triplestoreUrl, getDataQuery) as Promise<Array<{ answer: { value: string } }>>,
-          catch: (unknown: any) => new Error(`Error querying SPARQL endpoint: ${unknown}`),
-        }).pipe(
-          Effect.catchAll((error: any) =>
-            Effect.logError(error).pipe(Effect.as([] as Array<{ answer: { value: string } }>))
-          )
-        );
-
-        if (responseData.length > 0) {
-          const first = responseData[0];
-          if (first && first.answer) {
-            qanaryAnswer = first.answer.value;
-          }
+            return command({
+              update: {
+                messages: state.messages,
+              },
+              goto: userInputNode,
+            });
         }
 
-        // Query for all clarifications
-        const getClarificationsQuery = `
-          PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
-          SELECT ?clarification WHERE {
-            GRAPH <${graphUri}> {
-              ?annotationId a <urn:qanary#AnnotationOfClarification> ;
-                oa:hasBody ?clarification .
-            }
-          }
-        `;
-
-        yield* Effect.logInfo("Executing SPARQL query for clarifications", { getClarificationsQuery });
-
-        const clarificationsData = yield* Effect.tryPromise({
-          try: () =>
-            selectSparql(triplestoreUrl, getClarificationsQuery) as Promise<
-              Array<{ clarification: { value: string } }>
-            >,
-          catch: (unknown: any) => new Error(`Error querying SPARQL endpoint: ${unknown}`),
-        }).pipe(
-          Effect.catchAll((error: any) =>
-            Effect.logError(error).pipe(Effect.as([] as Array<{ clarification: { value: string } }>))
-          )
-        );
-
-        const clarifications = clarificationsData.map((item) => item.clarification?.value || "").filter(Boolean);
+        const clarifications = yield* triplestore.queryClarifications(graph_uri);
+        const clarification = new ClarificationConversation(new ConversationURI(graph_uri));
+        for (const item of clarifications) {
+          clarification.addQuestion(new QanaryClarificationQuestion(item.uri, item.content));
+        }
 
         return command({
           update: {
-            graph_uri: result.right.inGraph,
-            clarification: new ClarificationConversation(new ConversationURI(result.right.inGraph)),
-            qanary_answer: qanaryAnswer,
-            clarifications: clarifications,
+            qanary_answer: qanary_answer.right,
+            clarification,
           },
           goto: nextNode,
         });
       });
 
-      return await runTimedNode("QanaryOrchestratorNode", program.pipe(Effect.provide(FetchHttpClient.layer)));
+      return await runTimedNode("QanaryOrchestratorNode", program);
     },
 
     /**
@@ -406,35 +391,20 @@ export const Nodes = <const N extends string[]>(
       const { nextNode } = routingConfig;
       const program = Effect.gen(function* () {
         yield* Effect.logDebug("State: ", state);
+
+          if (state.qanary_answer === undefined) {
+              yield* Effect.logDebug("Missing qanary_answer, skipping chatbot response");
+              return command({
+                update: {
+                  chatmode: "QUESTION_ANSWERING",
+                  messages: state.messages,
+                },
+                goto: nextNode,
+              });
+            }
+
         const llmService = yield* LLMService;
-
-        let responseData: any[] = [];
-        if (state.qanary_answer) {
-          responseData = [{ answer: { value: state.qanary_answer } }];
-        } else if (state.graph_uri !== "") {
-          const getDataQuery = `
-              PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
-              SELECT ?answer WHERE {
-                GRAPH <${state.graph_uri}> {
-                  ?relationAnnotationId a <urn:qanary#AnnotationOfAnswer> ;
-                    oa:hasBody ?answer .
-                }
-              }
-              `;
-
-          const triplestoreUrl = yield* Config.string("TRIPLESTORE_URL");
-
-          yield* Effect.logInfo("Executing SPARQL query for chatbot response", { getDataQuery });
-
-          responseData = yield* Effect.tryPromise({
-            try: () => selectSparql(triplestoreUrl, getDataQuery),
-            catch: (unknown: any) => new Error(`Error querying SPARQL endpoint: ${unknown}`),
-          }).pipe(Effect.catchAll((error: any) => Effect.logError(error).pipe(Effect.as([]))));
-        }
-
-        const chatbotResponseContent = yield* llmService.generateChatbotResponse(state.user_question, {
-          data: responseData,
-        });
+        const chatbotResponseContent = yield* llmService.generateChatbotResponse(state.user_question, state.qanary_answer);
 
         const msg = new AIMessage({ content: chatbotResponseContent });
         yield* printMessageEffect(msg);
@@ -442,7 +412,6 @@ export const Nodes = <const N extends string[]>(
 
         return command({
           update: {
-            user_question: "",
             chatmode: "QUESTION_ANSWERING",
             messages: state.messages,
           },
@@ -490,9 +459,7 @@ export const Nodes = <const N extends string[]>(
 
         state.clarification.setCurrentQuestion(openQuestion.uri);
 
-        const chatbotResponseContent = yield* llmService.generateClarificationQuestion(state.user_question, {
-          data: openQuestion,
-        });
+        const chatbotResponseContent = yield* llmService.generateClarificationQuestion(state.user_question, openQuestion);
 
         const msg = new AIMessage({ content: chatbotResponseContent });
         yield* printMessageEffect(msg);
@@ -510,6 +477,7 @@ export const Nodes = <const N extends string[]>(
 
       return await runTimedNode("RequestClarificationNode", program);
     },
+
     /**
      * This node rewrites a question by consolidating conversation history with new input.
      * Combines known information from previous messages with new input into a single comprehensive question.

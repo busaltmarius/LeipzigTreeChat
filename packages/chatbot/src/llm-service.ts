@@ -3,6 +3,7 @@ import { generateText } from "ai";
 
 import { Config, ConfigProvider, Context, Effect, Layer, Redacted } from "effect";
 import { CHATBOT_PERSONA } from "./constants.js";
+import { QanaryClarificationQuestion, QanaryFinalAnswer } from "./state/qanary-types.js";
 
 globalThis.AI_SDK_LOG_WARNINGS = false;
 
@@ -41,17 +42,17 @@ type LLMServiceInterface = {
   /**
    * Generates a chatbot response based on user input and provided data.
    * @param userInput The original input/question from the user.
-   * @param data The data to assist in generating the response.
+   * @param qanaryAnswer The data to assist in generating the response.
    * @returns The generated chatbot response as string.
    */
-  readonly generateChatbotResponse: (userInput: string, data: any) => Effect.Effect<string, never, never>;
+  readonly generateChatbotResponse: (userInput: string, qanaryAnswer: QanaryFinalAnswer) => Effect.Effect<string, never, never>;
   /**
    * Generates a chatbot clarification question based on user input and provided data.
    * @param userInput The original input/question from the user.
    * @param data The data to assist in generating the clarification question.
    * @returns The generated chatbot clarification question as string.
    */
-  readonly generateClarificationQuestion: (userInput: string, data: any) => Effect.Effect<string, never, never>;
+  readonly generateClarificationQuestion: (userInput: string, qanaryClarificationQuestion: QanaryClarificationQuestion) => Effect.Effect<string, never, never>;
   /**
    * Rewrites a question by consolidating conversation history with new input.
    * Combines known information from previous messages with new input into a single comprehensive question.
@@ -59,7 +60,7 @@ type LLMServiceInterface = {
    * @param newInput The new user input to be combined.
    * @returns The rewritten question as a string.
    */
-  readonly rewriteQuestion: (conversationHistory: string, newInput: string) => Effect.Effect<string, never, never>;
+  readonly rewriteQuestion: (conversationHistory: string | undefined, newInput: string) => Effect.Effect<string, never, never>;
 };
 
 export class LLMService extends Context.Tag("LLMService")<LLMService, LLMServiceInterface>() {
@@ -82,7 +83,7 @@ export class LLMService extends Context.Tag("LLMService")<LLMService, LLMService
 
             return text;
           }),
-        generateChatbotResponse: (userInput: string, data: any) =>
+        generateChatbotResponse: (userInput, qanaryAnswer) =>
           Effect.gen(function* () {
             const deepseek_v3_2 = openrouterClient.chat("deepseek/deepseek-v3.2");
             const { text } = yield* Effect.promise(() =>
@@ -109,7 +110,7 @@ export class LLMService extends Context.Tag("LLMService")<LLMService, LLMService
                       userInput,
                       "## Bereitgestellte Daten:",
                       "\n",
-                      JSON.stringify(data),
+                      qanaryAnswer.content,
                     ].join(""),
                   },
                 ],
@@ -118,7 +119,7 @@ export class LLMService extends Context.Tag("LLMService")<LLMService, LLMService
 
             return text;
           }),
-        generateClarificationQuestion: (userInput: string, data: any) =>
+        generateClarificationQuestion: (userInput, qanaryClarificationQuestion) =>
           Effect.gen(function* () {
             const deepseek_v3_2 = openrouterClient.chat("deepseek/deepseek-v3.2");
             const { text } = yield* Effect.promise(() =>
@@ -146,7 +147,7 @@ export class LLMService extends Context.Tag("LLMService")<LLMService, LLMService
                       userInput,
                       "## Bereitgestellte Daten:",
                       "\n",
-                      JSON.stringify(data),
+                      qanaryClarificationQuestion.content,
                     ].join(""),
                   },
                 ],
@@ -155,7 +156,7 @@ export class LLMService extends Context.Tag("LLMService")<LLMService, LLMService
 
             return text;
           }),
-        rewriteQuestion: (conversationHistory: string, newInput: string) =>
+        rewriteQuestion: (conversationHistory, newInput) =>
           Effect.gen(function* () {
             const deepseek_v3_2 = openrouterClient.chat("deepseek/deepseek-v3.2");
             const { text } = yield* Effect.promise(() =>
