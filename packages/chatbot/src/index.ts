@@ -1,5 +1,5 @@
 import { AIMessage } from "@langchain/core/messages";
-import { AgentState } from "./state/index.js";
+import type { AgentState } from "./state/index.js";
 
 export { ChatBotGraph } from "./graph.js";
 
