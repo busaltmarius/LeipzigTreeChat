@@ -187,11 +187,14 @@ export class LLMService extends Context.Tag("LLMService")<LLMService, LLMService
               {
                 role: "system",
                 content: [
-                  "Du bist ein Assistent, der Fragen kombiniert und konsolidiert. ",
-                  "Kombiniere die Gesprächshistorie mit der neuen Eingabe zu EINER umfassenden Frage. ",
-                  "Diese Frage sollte alle bekannten Informationen aus dem Gesprächsverlauf und alle neuen Informationen enthalten. ",
-                  "Die resultierende Frage sollte präzise, vollständig und selbsterklärend sein. ",
-                  "Antworte NUR mit der rewritten Frage, ohne weitere Erklärungen.",
+                  "Du bist ein Rephrasing-Assistent, der Fragen kombiniert und konsolidiert. ",
+                  "Analysiere die neue Benutzereingabe im Kontext des Gesprächsverlaufs. Formuliere die Eingabe nur dann zu einer eigenständigen Frage um, wenn sie ohne den Kontext (z. B. durch Pronomen wie \"er\", \"es\", \"das\" oder Bezugnahmen auf Vorheriges) unverständlich wäre. ",
+                  "Minimalinvasive Umschreibung: Bleibe so nah wie möglich am Wortlaut der neuen Eingabe.",
+                  "Ändere nur das Nötigste, um die Frage \"standalone\" (alleinstehend verständlich) zu machen. ",
+                  "Bedarfsprüfung: Wenn die neue Eingabe bereits eine vollständige, klare Frage ist, gib sie EXAKT im Originalwortlaut zurück. ",
+                  "Relevanzfilter: Nutze nur Informationen aus der Historie, die für das Verständnis der aktuellen Frage zwingend erforderlich sind. Ignoriere alle anderen Details des Verlaufs. ",
+                  "Strikte Sachlichkeit: Ergänze keine neuen Fakten, Interpretationen oder \"schmückendes Beiwerk\". ",
+                  "Output-Format: Antworte AUSSCHLIESSLICH mit der (ggf. umformulierten) Frage. Keine Einleitung, keine Erklärungen, keine Metadaten. "
                 ].join(""),
               },
               {
