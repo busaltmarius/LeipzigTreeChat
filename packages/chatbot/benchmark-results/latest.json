@@ -1,0 +1,4321 @@
+{
+  "startedAt": "2026-03-22T12:49:25.237Z",
+  "finishedAt": "2026-03-22T12:49:43.986Z",
+  "totalDurationMs": 18749,
+  "cases": [
+    {
+      "fixture": {
+        "id": "Q1",
+        "title": "Gießmenge nach Stadtteil",
+        "kind": "question",
+        "userTurns": [
+          "Wie viel wurde im Stadtteil Connewitz gegossen?"
+        ],
+        "expectedFlow": {
+          "clarification": "forbidden",
+          "requiredMetadataStatuses": [
+            "WAITING_FOR_INPUT",
+            "REWRITING_QUESTION",
+            "GATHERING_DATA"
+          ],
+          "minAssistantMessages": 1
+        },
+        "requiredSignals": [
+          {
+            "label": "Antwort bezieht sich auf den Stadtteil",
+            "value": "Connewitz",
+            "axis": "grounding",
+            "critical": true,
+            "target": "assistant_last"
+          },
+          {
+            "label": "Antwort enthält eine Mengenangabe",
+            "value": "(Liter|l\\b)",
+            "axis": "task_completion",
+            "critical": false,
+            "target": "assistant_last",
+            "mode": "regex",
+            "flags": "i"
+          }
+        ],
+        "forbiddenSignals": [
+          {
+            "label": "Keine generische Entschuldigung",
+            "value": "Entschuldigung",
+            "axis": "task_completion",
+            "critical": true,
+            "target": "assistant_last"
+          }
+        ],
+        "notes": "Seed case from the existing docs for a direct district watering query."
+      },
+      "transcript": [
+        {
+          "role": "assistant",
+          "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
+          "timestamp": "2026-03-22T12:49:25.238Z",
+          "turnIndex": null
+        },
+        {
+          "role": "user",
+          "content": "Wie viel wurde im Stadtteil Connewitz gegossen?",
+          "timestamp": "2026-03-22T12:49:25.256Z",
+          "turnIndex": 0
+        },
+        {
+          "role": "assistant",
+          "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
+          "timestamp": "2026-03-22T12:49:26.633Z",
+          "turnIndex": 0
+        }
+      ],
+      "metadata": [
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:25.256Z"
+        },
+        {
+          "status": "REWRITING_QUESTION",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:25.259Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
+          "timestamp": "2026-03-22T12:49:25.448Z"
+        },
+        {
+          "status": "GATHERING_DATA",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:25.450Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
+          "timestamp": "2026-03-22T12:49:26.628Z"
+        },
+        {
+          "status": "GENERATING_RESPONSE",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:26.633Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:26.634Z"
+        }
+      ],
+      "turnTimings": [
+        {
+          "turnIndex": 0,
+          "userPrompt": "Wie viel wurde im Stadtteil Connewitz gegossen?",
+          "startedAt": "2026-03-22T12:49:25.256Z",
+          "firstAssistantResponseAt": "2026-03-22T12:49:26.633Z",
+          "latencyMs": 1377
+        }
+      ],
+      "totalDurationMs": 1397,
+      "evaluation": {
+        "status": "fail",
+        "score": 0.8235294117647058,
+        "failureReason": "Antwort bezieht sich auf den Stadtteil: Required signal missing: Connewitz",
+        "axes": [
+          {
+            "axis": "task_completion",
+            "passed": false,
+            "applicable": true,
+            "summary": "Antwort enthält eine Mengenangabe",
+            "checks": [
+              {
+                "label": "Antwort enthält eine Mengenangabe",
+                "axis": "task_completion",
+                "critical": false,
+                "passed": false,
+                "details": "Required signal missing: (Liter|l\\b)"
+              },
+              {
+                "label": "Keine generische Entschuldigung",
+                "axis": "task_completion",
+                "critical": true,
+                "passed": true,
+                "details": "Forbidden signal not present."
+              }
+            ]
+          },
+          {
+            "axis": "grounding",
+            "passed": false,
+            "applicable": true,
+            "summary": "Antwort bezieht sich auf den Stadtteil",
+            "checks": [
+              {
+                "label": "Antwort bezieht sich auf den Stadtteil",
+                "axis": "grounding",
+                "critical": true,
+                "passed": false,
+                "details": "Required signal missing: Connewitz"
+              }
+            ]
+          },
+          {
+            "axis": "flow_correctness",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Pflicht-Metadatenpfad wird eingehalten",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT"
+              },
+              {
+                "label": "Genug Assistentenantworten vorhanden",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "Observed 1 assistant messages for scripted turns."
+              },
+              {
+                "label": "Keine unnötige Klärungsfrage",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "No clarification metadata observed."
+              }
+            ]
+          },
+          {
+            "axis": "graceful_failure",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Keine spezielle Graceful-Failure-Erwartung",
+                "axis": "graceful_failure",
+                "critical": false,
+                "passed": true,
+                "details": "No graceful-failure-specific signals configured for this case."
+              }
+            ]
+          },
+          {
+            "axis": "presentation",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Antwort ist lesbar",
+                "axis": "presentation",
+                "critical": true,
+                "passed": true,
+                "details": "Last assistant message length: 151"
+              },
+              {
+                "label": "Antwort wirkt deutschsprachig",
+                "axis": "presentation",
+                "critical": true,
+                "passed": true,
+                "details": "Detected common German words."
+              },
+              {
+                "label": "Antwort ist nicht nur Roh-JSON",
+                "axis": "presentation",
+                "critical": false,
+                "passed": true,
+                "details": "Final assistant message looks human-readable."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fixture": {
+        "id": "Q2",
+        "title": "Wasserentnahmestellen in der Nähe einer Adresse",
+        "kind": "question",
+        "userTurns": [
+          "Welche Wasserentnahmestellen gibt es in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig?"
+        ],
+        "expectedFlow": {
+          "clarification": "forbidden",
+          "requiredMetadataStatuses": [
+            "WAITING_FOR_INPUT",
+            "REWRITING_QUESTION",
+            "GATHERING_DATA"
+          ],
+          "minAssistantMessages": 1
+        },
+        "requiredSignals": [
+          {
+            "label": "Antwort thematisiert Wasserentnahmestellen",
+            "value": "Wasser",
+            "axis": "task_completion",
+            "critical": true,
+            "target": "assistant_last"
+          },
+          {
+            "label": "Antwort bleibt in Leipzig-Kontext",
+            "value": "Leipzig|04277|Karl-Liebknecht",
+            "axis": "grounding",
+            "critical": false,
+            "target": "assistant_last",
+            "mode": "regex",
+            "flags": "i"
+          }
+        ],
+        "forbiddenSignals": [],
+        "notes": "Address-based lookup for nearby water sources."
+      },
+      "transcript": [
+        {
+          "role": "assistant",
+          "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
+          "timestamp": "2026-03-22T12:49:26.636Z",
+          "turnIndex": null
+        },
+        {
+          "role": "user",
+          "content": "Welche Wasserentnahmestellen gibt es in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig?",
+          "timestamp": "2026-03-22T12:49:26.638Z",
+          "turnIndex": 0
+        },
+        {
+          "role": "assistant",
+          "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
+          "timestamp": "2026-03-22T12:49:27.539Z",
+          "turnIndex": 0
+        }
+      ],
+      "metadata": [
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:26.638Z"
+        },
+        {
+          "status": "REWRITING_QUESTION",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:26.640Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
+          "timestamp": "2026-03-22T12:49:26.781Z"
+        },
+        {
+          "status": "GATHERING_DATA",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:26.785Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
+          "timestamp": "2026-03-22T12:49:27.533Z"
+        },
+        {
+          "status": "GENERATING_RESPONSE",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:27.539Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:27.541Z"
+        }
+      ],
+      "turnTimings": [
+        {
+          "turnIndex": 0,
+          "userPrompt": "Welche Wasserentnahmestellen gibt es in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig?",
+          "startedAt": "2026-03-22T12:49:26.638Z",
+          "firstAssistantResponseAt": "2026-03-22T12:49:27.539Z",
+          "latencyMs": 901
+        }
+      ],
+      "totalDurationMs": 906,
+      "evaluation": {
+        "status": "fail",
+        "score": 0.8,
+        "failureReason": "Antwort thematisiert Wasserentnahmestellen: Required signal missing: Wasser",
+        "axes": [
+          {
+            "axis": "task_completion",
+            "passed": false,
+            "applicable": true,
+            "summary": "Antwort thematisiert Wasserentnahmestellen",
+            "checks": [
+              {
+                "label": "Antwort thematisiert Wasserentnahmestellen",
+                "axis": "task_completion",
+                "critical": true,
+                "passed": false,
+                "details": "Required signal missing: Wasser"
+              }
+            ]
+          },
+          {
+            "axis": "grounding",
+            "passed": false,
+            "applicable": true,
+            "summary": "Antwort bleibt in Leipzig-Kontext",
+            "checks": [
+              {
+                "label": "Antwort bleibt in Leipzig-Kontext",
+                "axis": "grounding",
+                "critical": false,
+                "passed": false,
+                "details": "Required signal missing: Leipzig|04277|Karl-Liebknecht"
+              }
+            ]
+          },
+          {
+            "axis": "flow_correctness",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Pflicht-Metadatenpfad wird eingehalten",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT"
+              },
+              {
+                "label": "Genug Assistentenantworten vorhanden",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "Observed 1 assistant messages for scripted turns."
+              },
+              {
+                "label": "Keine unnötige Klärungsfrage",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "No clarification metadata observed."
+              }
+            ]
+          },
+          {
+            "axis": "graceful_failure",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Keine spezielle Graceful-Failure-Erwartung",
+                "axis": "graceful_failure",
+                "critical": false,
+                "passed": true,
+                "details": "No graceful-failure-specific signals configured for this case."
+              }
+            ]
+          },
+          {
+            "axis": "presentation",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Antwort ist lesbar",
+                "axis": "presentation",
+                "critical": true,
+                "passed": true,
+                "details": "Last assistant message length: 151"
+              },
+              {
+                "label": "Antwort wirkt deutschsprachig",
+                "axis": "presentation",
+                "critical": true,
+                "passed": true,
+                "details": "Detected common German words."
+              },
+              {
+                "label": "Antwort ist nicht nur Roh-JSON",
+                "axis": "presentation",
+                "critical": false,
+                "passed": true,
+                "details": "Final assistant message looks human-readable."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fixture": {
+        "id": "Q3",
+        "title": "Geeigneten Baum zum Gießen finden",
+        "kind": "question",
+        "userTurns": [
+          "Welchen Baum kann ich in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig heute gießen?"
+        ],
+        "expectedFlow": {
+          "clarification": "forbidden",
+          "requiredMetadataStatuses": [
+            "WAITING_FOR_INPUT",
+            "REWRITING_QUESTION",
+            "GATHERING_DATA"
+          ],
+          "minAssistantMessages": 1
+        },
+        "requiredSignals": [
+          {
+            "label": "Antwort empfiehlt einen Baum oder ein Gießziel",
+            "value": "Baum|gieß|Liter|Birke|Linde|Ahorn|Rhododendron",
+            "axis": "task_completion",
+            "critical": true,
+            "target": "assistant_last",
+            "mode": "regex",
+            "flags": "i"
+          },
+          {
+            "label": "Antwort bleibt ortsgebunden",
+            "value": "Karl-Liebknecht|04277|Leipzig",
+            "axis": "grounding",
+            "critical": false,
+            "target": "assistant_last",
+            "mode": "regex",
+            "flags": "i"
+          }
+        ],
+        "forbiddenSignals": [],
+        "notes": "Core demo query for finding a suitable tree to water nearby."
+      },
+      "transcript": [
+        {
+          "role": "assistant",
+          "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
+          "timestamp": "2026-03-22T12:49:27.542Z",
+          "turnIndex": null
+        },
+        {
+          "role": "user",
+          "content": "Welchen Baum kann ich in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig heute gießen?",
+          "timestamp": "2026-03-22T12:49:27.544Z",
+          "turnIndex": 0
+        },
+        {
+          "role": "assistant",
+          "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
+          "timestamp": "2026-03-22T12:49:28.375Z",
+          "turnIndex": 0
+        }
+      ],
+      "metadata": [
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:27.544Z"
+        },
+        {
+          "status": "REWRITING_QUESTION",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:27.547Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
+          "timestamp": "2026-03-22T12:49:27.577Z"
+        },
+        {
+          "status": "GATHERING_DATA",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:27.579Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
+          "timestamp": "2026-03-22T12:49:28.370Z"
+        },
+        {
+          "status": "GENERATING_RESPONSE",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:28.375Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:28.377Z"
+        }
+      ],
+      "turnTimings": [
+        {
+          "turnIndex": 0,
+          "userPrompt": "Welchen Baum kann ich in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig heute gießen?",
+          "startedAt": "2026-03-22T12:49:27.544Z",
+          "firstAssistantResponseAt": "2026-03-22T12:49:28.375Z",
+          "latencyMs": 831
+        }
+      ],
+      "totalDurationMs": 835,
+      "evaluation": {
+        "status": "fail",
+        "score": 0.8,
+        "failureReason": "Antwort empfiehlt einen Baum oder ein Gießziel: Required signal missing: Baum|gieß|Liter|Birke|Linde|Ahorn|Rhododendron",
+        "axes": [
+          {
+            "axis": "task_completion",
+            "passed": false,
+            "applicable": true,
+            "summary": "Antwort empfiehlt einen Baum oder ein Gießziel",
+            "checks": [
+              {
+                "label": "Antwort empfiehlt einen Baum oder ein Gießziel",
+                "axis": "task_completion",
+                "critical": true,
+                "passed": false,
+                "details": "Required signal missing: Baum|gieß|Liter|Birke|Linde|Ahorn|Rhododendron"
+              }
+            ]
+          },
+          {
+            "axis": "grounding",
+            "passed": false,
+            "applicable": true,
+            "summary": "Antwort bleibt ortsgebunden",
+            "checks": [
+              {
+                "label": "Antwort bleibt ortsgebunden",
+                "axis": "grounding",
+                "critical": false,
+                "passed": false,
+                "details": "Required signal missing: Karl-Liebknecht|04277|Leipzig"
+              }
+            ]
+          },
+          {
+            "axis": "flow_correctness",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Pflicht-Metadatenpfad wird eingehalten",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT"
+              },
+              {
+                "label": "Genug Assistentenantworten vorhanden",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "Observed 1 assistant messages for scripted turns."
+              },
+              {
+                "label": "Keine unnötige Klärungsfrage",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "No clarification metadata observed."
+              }
+            ]
+          },
+          {
+            "axis": "graceful_failure",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Keine spezielle Graceful-Failure-Erwartung",
+                "axis": "graceful_failure",
+                "critical": false,
+                "passed": true,
+                "details": "No graceful-failure-specific signals configured for this case."
+              }
+            ]
+          },
+          {
+            "axis": "presentation",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Antwort ist lesbar",
+                "axis": "presentation",
+                "critical": true,
+                "passed": true,
+                "details": "Last assistant message length: 151"
+              },
+              {
+                "label": "Antwort wirkt deutschsprachig",
+                "axis": "presentation",
+                "critical": true,
+                "passed": true,
+                "details": "Detected common German words."
+              },
+              {
+                "label": "Antwort ist nicht nur Roh-JSON",
+                "axis": "presentation",
+                "critical": false,
+                "passed": true,
+                "details": "Final assistant message looks human-readable."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fixture": {
+        "id": "Q4",
+        "title": "Baumarten in Leipzig",
+        "kind": "question",
+        "userTurns": [
+          "Welche Baumarten gibt es in Leipzig?"
+        ],
+        "expectedFlow": {
+          "clarification": "forbidden",
+          "requiredMetadataStatuses": [
+            "WAITING_FOR_INPUT",
+            "REWRITING_QUESTION",
+            "GATHERING_DATA"
+          ],
+          "minAssistantMessages": 1
+        },
+        "requiredSignals": [
+          {
+            "label": "Antwort nennt Baumarten oder Beispiele",
+            "value": "Baumarten|Birke|Linde|Ahorn|Eiche|Rhododendron",
+            "axis": "task_completion",
+            "critical": true,
+            "target": "assistant_last",
+            "mode": "regex",
+            "flags": "i"
+          },
+          {
+            "label": "Antwort erwähnt Leipzig",
+            "value": "Leipzig",
+            "axis": "grounding",
+            "critical": false,
+            "target": "assistant_last"
+          }
+        ],
+        "forbiddenSignals": [],
+        "notes": "Bread-and-butter taxonomy question for the city tree inventory."
+      },
+      "transcript": [
+        {
+          "role": "assistant",
+          "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
+          "timestamp": "2026-03-22T12:49:28.378Z",
+          "turnIndex": null
+        },
+        {
+          "role": "user",
+          "content": "Welche Baumarten gibt es in Leipzig?",
+          "timestamp": "2026-03-22T12:49:28.380Z",
+          "turnIndex": 0
+        },
+        {
+          "role": "assistant",
+          "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
+          "timestamp": "2026-03-22T12:49:29.150Z",
+          "turnIndex": 0
+        }
+      ],
+      "metadata": [
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:28.380Z"
+        },
+        {
+          "status": "REWRITING_QUESTION",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:28.384Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
+          "timestamp": "2026-03-22T12:49:28.411Z"
+        },
+        {
+          "status": "GATHERING_DATA",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:28.414Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
+          "timestamp": "2026-03-22T12:49:29.146Z"
+        },
+        {
+          "status": "GENERATING_RESPONSE",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:29.150Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:29.152Z"
+        }
+      ],
+      "turnTimings": [
+        {
+          "turnIndex": 0,
+          "userPrompt": "Welche Baumarten gibt es in Leipzig?",
+          "startedAt": "2026-03-22T12:49:28.380Z",
+          "firstAssistantResponseAt": "2026-03-22T12:49:29.150Z",
+          "latencyMs": 770
+        }
+      ],
+      "totalDurationMs": 774,
+      "evaluation": {
+        "status": "fail",
+        "score": 0.8,
+        "failureReason": "Antwort nennt Baumarten oder Beispiele: Required signal missing: Baumarten|Birke|Linde|Ahorn|Eiche|Rhododendron",
+        "axes": [
+          {
+            "axis": "task_completion",
+            "passed": false,
+            "applicable": true,
+            "summary": "Antwort nennt Baumarten oder Beispiele",
+            "checks": [
+              {
+                "label": "Antwort nennt Baumarten oder Beispiele",
+                "axis": "task_completion",
+                "critical": true,
+                "passed": false,
+                "details": "Required signal missing: Baumarten|Birke|Linde|Ahorn|Eiche|Rhododendron"
+              }
+            ]
+          },
+          {
+            "axis": "grounding",
+            "passed": false,
+            "applicable": true,
+            "summary": "Antwort erwähnt Leipzig",
+            "checks": [
+              {
+                "label": "Antwort erwähnt Leipzig",
+                "axis": "grounding",
+                "critical": false,
+                "passed": false,
+                "details": "Required signal missing: Leipzig"
+              }
+            ]
+          },
+          {
+            "axis": "flow_correctness",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Pflicht-Metadatenpfad wird eingehalten",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT"
+              },
+              {
+                "label": "Genug Assistentenantworten vorhanden",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "Observed 1 assistant messages for scripted turns."
+              },
+              {
+                "label": "Keine unnötige Klärungsfrage",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "No clarification metadata observed."
+              }
+            ]
+          },
+          {
+            "axis": "graceful_failure",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Keine spezielle Graceful-Failure-Erwartung",
+                "axis": "graceful_failure",
+                "critical": false,
+                "passed": true,
+                "details": "No graceful-failure-specific signals configured for this case."
+              }
+            ]
+          },
+          {
+            "axis": "presentation",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Antwort ist lesbar",
+                "axis": "presentation",
+                "critical": true,
+                "passed": true,
+                "details": "Last assistant message length: 151"
+              },
+              {
+                "label": "Antwort wirkt deutschsprachig",
+                "axis": "presentation",
+                "critical": true,
+                "passed": true,
+                "details": "Detected common German words."
+              },
+              {
+                "label": "Antwort ist nicht nur Roh-JSON",
+                "axis": "presentation",
+                "critical": false,
+                "passed": true,
+                "details": "Final assistant message looks human-readable."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fixture": {
+        "id": "Q5",
+        "title": "Stadtteil mit den meisten Bäumen",
+        "kind": "question",
+        "userTurns": [
+          "Welcher Stadtteil hat die meisten Bäume?"
+        ],
+        "expectedFlow": {
+          "clarification": "forbidden",
+          "requiredMetadataStatuses": [
+            "WAITING_FOR_INPUT",
+            "REWRITING_QUESTION",
+            "GATHERING_DATA"
+          ],
+          "minAssistantMessages": 1
+        },
+        "requiredSignals": [
+          {
+            "label": "Antwort nennt einen Stadtteil",
+            "value": "Stadtteil|Connewitz|Suedvorstadt|Anger-Crottendorf|Leipzig",
+            "axis": "task_completion",
+            "critical": true,
+            "target": "assistant_last",
+            "mode": "regex",
+            "flags": "i"
+          },
+          {
+            "label": "Antwort spricht über Bäume",
+            "value": "Bäume|Baum",
+            "axis": "grounding",
+            "critical": false,
+            "target": "assistant_last",
+            "mode": "regex",
+            "flags": "i"
+          }
+        ],
+        "forbiddenSignals": [],
+        "notes": "Relative ranking question on city districts."
+      },
+      "transcript": [
+        {
+          "role": "assistant",
+          "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
+          "timestamp": "2026-03-22T12:49:29.153Z",
+          "turnIndex": null
+        },
+        {
+          "role": "user",
+          "content": "Welcher Stadtteil hat die meisten Bäume?",
+          "timestamp": "2026-03-22T12:49:29.156Z",
+          "turnIndex": 0
+        },
+        {
+          "role": "assistant",
+          "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
+          "timestamp": "2026-03-22T12:49:29.893Z",
+          "turnIndex": 0
+        }
+      ],
+      "metadata": [
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:29.155Z"
+        },
+        {
+          "status": "REWRITING_QUESTION",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:29.159Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
+          "timestamp": "2026-03-22T12:49:29.186Z"
+        },
+        {
+          "status": "GATHERING_DATA",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:29.189Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
+          "timestamp": "2026-03-22T12:49:29.888Z"
+        },
+        {
+          "status": "GENERATING_RESPONSE",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:29.893Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:29.894Z"
+        }
+      ],
+      "turnTimings": [
+        {
+          "turnIndex": 0,
+          "userPrompt": "Welcher Stadtteil hat die meisten Bäume?",
+          "startedAt": "2026-03-22T12:49:29.156Z",
+          "firstAssistantResponseAt": "2026-03-22T12:49:29.893Z",
+          "latencyMs": 737
+        }
+      ],
+      "totalDurationMs": 742,
+      "evaluation": {
+        "status": "fail",
+        "score": 0.8,
+        "failureReason": "Antwort nennt einen Stadtteil: Required signal missing: Stadtteil|Connewitz|Suedvorstadt|Anger-Crottendorf|Leipzig",
+        "axes": [
+          {
+            "axis": "task_completion",
+            "passed": false,
+            "applicable": true,
+            "summary": "Antwort nennt einen Stadtteil",
+            "checks": [
+              {
+                "label": "Antwort nennt einen Stadtteil",
+                "axis": "task_completion",
+                "critical": true,
+                "passed": false,
+                "details": "Required signal missing: Stadtteil|Connewitz|Suedvorstadt|Anger-Crottendorf|Leipzig"
+              }
+            ]
+          },
+          {
+            "axis": "grounding",
+            "passed": false,
+            "applicable": true,
+            "summary": "Antwort spricht über Bäume",
+            "checks": [
+              {
+                "label": "Antwort spricht über Bäume",
+                "axis": "grounding",
+                "critical": false,
+                "passed": false,
+                "details": "Required signal missing: Bäume|Baum"
+              }
+            ]
+          },
+          {
+            "axis": "flow_correctness",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Pflicht-Metadatenpfad wird eingehalten",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT"
+              },
+              {
+                "label": "Genug Assistentenantworten vorhanden",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "Observed 1 assistant messages for scripted turns."
+              },
+              {
+                "label": "Keine unnötige Klärungsfrage",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "No clarification metadata observed."
+              }
+            ]
+          },
+          {
+            "axis": "graceful_failure",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Keine spezielle Graceful-Failure-Erwartung",
+                "axis": "graceful_failure",
+                "critical": false,
+                "passed": true,
+                "details": "No graceful-failure-specific signals configured for this case."
+              }
+            ]
+          },
+          {
+            "axis": "presentation",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Antwort ist lesbar",
+                "axis": "presentation",
+                "critical": true,
+                "passed": true,
+                "details": "Last assistant message length: 151"
+              },
+              {
+                "label": "Antwort wirkt deutschsprachig",
+                "axis": "presentation",
+                "critical": true,
+                "passed": true,
+                "details": "Detected common German words."
+              },
+              {
+                "label": "Antwort ist nicht nur Roh-JSON",
+                "axis": "presentation",
+                "critical": false,
+                "passed": true,
+                "details": "Final assistant message looks human-readable."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fixture": {
+        "id": "Q6",
+        "title": "Patenbäume in meiner Nähe",
+        "kind": "question",
+        "userTurns": [
+          "Gibt es Patenbäume in meiner Nähe?"
+        ],
+        "expectedFlow": {
+          "clarification": "allowed",
+          "requiredMetadataStatuses": [
+            "WAITING_FOR_INPUT",
+            "REWRITING_QUESTION"
+          ],
+          "minAssistantMessages": 1
+        },
+        "requiredSignals": [
+          {
+            "label": "Antwort bleibt im Themenfeld Gießpatenschaften",
+            "value": "Paten|Patenschaft|Gießpaten",
+            "axis": "task_completion",
+            "critical": true,
+            "target": "assistant_any",
+            "mode": "regex",
+            "flags": "i"
+          },
+          {
+            "label": "Antwort fragt optional nach Ortsangabe",
+            "value": "Adresse|Straße|PLZ|Stadtteil|Ortsteil|Nähe|wo",
+            "axis": "flow_correctness",
+            "critical": false,
+            "target": "assistant_any",
+            "mode": "regex",
+            "flags": "i"
+          }
+        ],
+        "forbiddenSignals": [],
+        "notes": "Allows clarification because the user did not provide a location."
+      },
+      "transcript": [
+        {
+          "role": "assistant",
+          "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
+          "timestamp": "2026-03-22T12:49:29.895Z",
+          "turnIndex": null
+        },
+        {
+          "role": "user",
+          "content": "Gibt es Patenbäume in meiner Nähe?",
+          "timestamp": "2026-03-22T12:49:29.898Z",
+          "turnIndex": 0
+        },
+        {
+          "role": "assistant",
+          "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
+          "timestamp": "2026-03-22T12:49:30.616Z",
+          "turnIndex": 0
+        }
+      ],
+      "metadata": [
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:29.898Z"
+        },
+        {
+          "status": "REWRITING_QUESTION",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:29.901Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
+          "timestamp": "2026-03-22T12:49:29.924Z"
+        },
+        {
+          "status": "GATHERING_DATA",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:29.926Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
+          "timestamp": "2026-03-22T12:49:30.612Z"
+        },
+        {
+          "status": "GENERATING_RESPONSE",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:30.616Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:30.617Z"
+        }
+      ],
+      "turnTimings": [
+        {
+          "turnIndex": 0,
+          "userPrompt": "Gibt es Patenbäume in meiner Nähe?",
+          "startedAt": "2026-03-22T12:49:29.898Z",
+          "firstAssistantResponseAt": "2026-03-22T12:49:30.616Z",
+          "latencyMs": 718
+        }
+      ],
+      "totalDurationMs": 723,
+      "evaluation": {
+        "status": "fail",
+        "score": 0.8571428571428571,
+        "failureReason": "Antwort bleibt im Themenfeld Gießpatenschaften: Required signal missing: Paten|Patenschaft|Gießpaten",
+        "axes": [
+          {
+            "axis": "task_completion",
+            "passed": false,
+            "applicable": true,
+            "summary": "Antwort bleibt im Themenfeld Gießpatenschaften",
+            "checks": [
+              {
+                "label": "Antwort bleibt im Themenfeld Gießpatenschaften",
+                "axis": "task_completion",
+                "critical": true,
+                "passed": false,
+                "details": "Required signal missing: Paten|Patenschaft|Gießpaten"
+              }
+            ]
+          },
+          {
+            "axis": "grounding",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Keine spezielle Grounding-Erwartung",
+                "axis": "grounding",
+                "critical": false,
+                "passed": true,
+                "details": "No grounding-specific signals configured for this case."
+              }
+            ]
+          },
+          {
+            "axis": "flow_correctness",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Antwort fragt optional nach Ortsangabe",
+                "axis": "flow_correctness",
+                "critical": false,
+                "passed": true,
+                "details": "Required signal matched."
+              },
+              {
+                "label": "Pflicht-Metadatenpfad wird eingehalten",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT"
+              },
+              {
+                "label": "Genug Assistentenantworten vorhanden",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "Observed 1 assistant messages for scripted turns."
+              }
+            ]
+          },
+          {
+            "axis": "graceful_failure",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Keine spezielle Graceful-Failure-Erwartung",
+                "axis": "graceful_failure",
+                "critical": false,
+                "passed": true,
+                "details": "No graceful-failure-specific signals configured for this case."
+              }
+            ]
+          },
+          {
+            "axis": "presentation",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Antwort ist lesbar",
+                "axis": "presentation",
+                "critical": true,
+                "passed": true,
+                "details": "Last assistant message length: 151"
+              },
+              {
+                "label": "Antwort wirkt deutschsprachig",
+                "axis": "presentation",
+                "critical": true,
+                "passed": true,
+                "details": "Detected common German words."
+              },
+              {
+                "label": "Antwort ist nicht nur Roh-JSON",
+                "axis": "presentation",
+                "critical": false,
+                "passed": true,
+                "details": "Final assistant message looks human-readable."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fixture": {
+        "id": "Q7",
+        "title": "Bäume mit Gießpaten",
+        "kind": "question",
+        "userTurns": [
+          "Welche Bäume haben Gießpaten?"
+        ],
+        "expectedFlow": {
+          "clarification": "forbidden",
+          "requiredMetadataStatuses": [
+            "WAITING_FOR_INPUT",
+            "REWRITING_QUESTION",
+            "GATHERING_DATA"
+          ],
+          "minAssistantMessages": 1
+        },
+        "requiredSignals": [
+          {
+            "label": "Antwort spricht über Gießpaten",
+            "value": "Paten|Patenschaft|Gießpaten",
+            "axis": "task_completion",
+            "critical": true,
+            "target": "assistant_last",
+            "mode": "regex",
+            "flags": "i"
+          },
+          {
+            "label": "Antwort bezieht sich auf Bäume",
+            "value": "Baum|Bäume",
+            "axis": "grounding",
+            "critical": false,
+            "target": "assistant_last",
+            "mode": "regex",
+            "flags": "i"
+          }
+        ],
+        "forbiddenSignals": [],
+        "notes": "Simple sponsor-tree lookup without additional dialogue."
+      },
+      "transcript": [
+        {
+          "role": "assistant",
+          "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
+          "timestamp": "2026-03-22T12:49:30.618Z",
+          "turnIndex": null
+        },
+        {
+          "role": "user",
+          "content": "Welche Bäume haben Gießpaten?",
+          "timestamp": "2026-03-22T12:49:30.620Z",
+          "turnIndex": 0
+        },
+        {
+          "role": "assistant",
+          "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
+          "timestamp": "2026-03-22T12:49:31.347Z",
+          "turnIndex": 0
+        }
+      ],
+      "metadata": [
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:30.620Z"
+        },
+        {
+          "status": "REWRITING_QUESTION",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:30.623Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
+          "timestamp": "2026-03-22T12:49:30.650Z"
+        },
+        {
+          "status": "GATHERING_DATA",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:30.652Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
+          "timestamp": "2026-03-22T12:49:31.342Z"
+        },
+        {
+          "status": "GENERATING_RESPONSE",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:31.347Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:31.348Z"
+        }
+      ],
+      "turnTimings": [
+        {
+          "turnIndex": 0,
+          "userPrompt": "Welche Bäume haben Gießpaten?",
+          "startedAt": "2026-03-22T12:49:30.620Z",
+          "firstAssistantResponseAt": "2026-03-22T12:49:31.347Z",
+          "latencyMs": 727
+        }
+      ],
+      "totalDurationMs": 731,
+      "evaluation": {
+        "status": "fail",
+        "score": 0.8,
+        "failureReason": "Antwort spricht über Gießpaten: Required signal missing: Paten|Patenschaft|Gießpaten",
+        "axes": [
+          {
+            "axis": "task_completion",
+            "passed": false,
+            "applicable": true,
+            "summary": "Antwort spricht über Gießpaten",
+            "checks": [
+              {
+                "label": "Antwort spricht über Gießpaten",
+                "axis": "task_completion",
+                "critical": true,
+                "passed": false,
+                "details": "Required signal missing: Paten|Patenschaft|Gießpaten"
+              }
+            ]
+          },
+          {
+            "axis": "grounding",
+            "passed": false,
+            "applicable": true,
+            "summary": "Antwort bezieht sich auf Bäume",
+            "checks": [
+              {
+                "label": "Antwort bezieht sich auf Bäume",
+                "axis": "grounding",
+                "critical": false,
+                "passed": false,
+                "details": "Required signal missing: Baum|Bäume"
+              }
+            ]
+          },
+          {
+            "axis": "flow_correctness",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Pflicht-Metadatenpfad wird eingehalten",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT"
+              },
+              {
+                "label": "Genug Assistentenantworten vorhanden",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "Observed 1 assistant messages for scripted turns."
+              },
+              {
+                "label": "Keine unnötige Klärungsfrage",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "No clarification metadata observed."
+              }
+            ]
+          },
+          {
+            "axis": "graceful_failure",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Keine spezielle Graceful-Failure-Erwartung",
+                "axis": "graceful_failure",
+                "critical": false,
+                "passed": true,
+                "details": "No graceful-failure-specific signals configured for this case."
+              }
+            ]
+          },
+          {
+            "axis": "presentation",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Antwort ist lesbar",
+                "axis": "presentation",
+                "critical": true,
+                "passed": true,
+                "details": "Last assistant message length: 151"
+              },
+              {
+                "label": "Antwort wirkt deutschsprachig",
+                "axis": "presentation",
+                "critical": true,
+                "passed": true,
+                "details": "Detected common German words."
+              },
+              {
+                "label": "Antwort ist nicht nur Roh-JSON",
+                "axis": "presentation",
+                "critical": false,
+                "passed": true,
+                "details": "Final assistant message looks human-readable."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fixture": {
+        "id": "Q8",
+        "title": "Bäume in der Umgebung einer Kita",
+        "kind": "question",
+        "userTurns": [
+          "Welche Bäume kann ich in der Umgebung meiner Kita gießen?"
+        ],
+        "expectedFlow": {
+          "clarification": "allowed",
+          "requiredMetadataStatuses": [
+            "WAITING_FOR_INPUT",
+            "REWRITING_QUESTION"
+          ],
+          "minAssistantMessages": 1
+        },
+        "requiredSignals": [
+          {
+            "label": "Antwort behandelt das Gießen von Bäumen",
+            "value": "Baum|gieß|Gießen",
+            "axis": "task_completion",
+            "critical": true,
+            "target": "assistant_any",
+            "mode": "regex",
+            "flags": "i"
+          },
+          {
+            "label": "Antwort fragt optional nach der Kita oder einem Ort",
+            "value": "Kita|Adresse|Straße|PLZ|Ortsteil|Stadtteil",
+            "axis": "flow_correctness",
+            "critical": false,
+            "target": "assistant_any",
+            "mode": "regex",
+            "flags": "i"
+          }
+        ],
+        "forbiddenSignals": [],
+        "notes": "May need clarification because no specific Kita is provided."
+      },
+      "transcript": [
+        {
+          "role": "assistant",
+          "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
+          "timestamp": "2026-03-22T12:49:31.349Z",
+          "turnIndex": null
+        },
+        {
+          "role": "user",
+          "content": "Welche Bäume kann ich in der Umgebung meiner Kita gießen?",
+          "timestamp": "2026-03-22T12:49:31.352Z",
+          "turnIndex": 0
+        },
+        {
+          "role": "assistant",
+          "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
+          "timestamp": "2026-03-22T12:49:32.047Z",
+          "turnIndex": 0
+        }
+      ],
+      "metadata": [
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:31.352Z"
+        },
+        {
+          "status": "REWRITING_QUESTION",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:31.356Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
+          "timestamp": "2026-03-22T12:49:31.384Z"
+        },
+        {
+          "status": "GATHERING_DATA",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:31.386Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
+          "timestamp": "2026-03-22T12:49:32.044Z"
+        },
+        {
+          "status": "GENERATING_RESPONSE",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:32.047Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:32.048Z"
+        }
+      ],
+      "turnTimings": [
+        {
+          "turnIndex": 0,
+          "userPrompt": "Welche Bäume kann ich in der Umgebung meiner Kita gießen?",
+          "startedAt": "2026-03-22T12:49:31.352Z",
+          "firstAssistantResponseAt": "2026-03-22T12:49:32.047Z",
+          "latencyMs": 695
+        }
+      ],
+      "totalDurationMs": 700,
+      "evaluation": {
+        "status": "soft-fail",
+        "score": 0.9285714285714286,
+        "failureReason": "Antwort fragt optional nach der Kita oder einem Ort: Required signal missing: Kita|Adresse|Straße|PLZ|Ortsteil|Stadtteil",
+        "axes": [
+          {
+            "axis": "task_completion",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Antwort behandelt das Gießen von Bäumen",
+                "axis": "task_completion",
+                "critical": true,
+                "passed": true,
+                "details": "Required signal matched."
+              }
+            ]
+          },
+          {
+            "axis": "grounding",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Keine spezielle Grounding-Erwartung",
+                "axis": "grounding",
+                "critical": false,
+                "passed": true,
+                "details": "No grounding-specific signals configured for this case."
+              }
+            ]
+          },
+          {
+            "axis": "flow_correctness",
+            "passed": false,
+            "applicable": true,
+            "summary": "Antwort fragt optional nach der Kita oder einem Ort",
+            "checks": [
+              {
+                "label": "Antwort fragt optional nach der Kita oder einem Ort",
+                "axis": "flow_correctness",
+                "critical": false,
+                "passed": false,
+                "details": "Required signal missing: Kita|Adresse|Straße|PLZ|Ortsteil|Stadtteil"
+              },
+              {
+                "label": "Pflicht-Metadatenpfad wird eingehalten",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT"
+              },
+              {
+                "label": "Genug Assistentenantworten vorhanden",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "Observed 1 assistant messages for scripted turns."
+              }
+            ]
+          },
+          {
+            "axis": "graceful_failure",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Keine spezielle Graceful-Failure-Erwartung",
+                "axis": "graceful_failure",
+                "critical": false,
+                "passed": true,
+                "details": "No graceful-failure-specific signals configured for this case."
+              }
+            ]
+          },
+          {
+            "axis": "presentation",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Antwort ist lesbar",
+                "axis": "presentation",
+                "critical": true,
+                "passed": true,
+                "details": "Last assistant message length: 151"
+              },
+              {
+                "label": "Antwort wirkt deutschsprachig",
+                "axis": "presentation",
+                "critical": true,
+                "passed": true,
+                "details": "Detected common German words."
+              },
+              {
+                "label": "Antwort ist nicht nur Roh-JSON",
+                "axis": "presentation",
+                "critical": false,
+                "passed": true,
+                "details": "Final assistant message looks human-readable."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fixture": {
+        "id": "Q9",
+        "title": "Verteilung der Baumarten",
+        "kind": "question",
+        "userTurns": [
+          "Wie sind die Baumarten in Leipzig verteilt?"
+        ],
+        "expectedFlow": {
+          "clarification": "forbidden",
+          "requiredMetadataStatuses": [
+            "WAITING_FOR_INPUT",
+            "REWRITING_QUESTION",
+            "GATHERING_DATA"
+          ],
+          "minAssistantMessages": 1
+        },
+        "requiredSignals": [
+          {
+            "label": "Antwort spricht über Verteilung oder Vergleich",
+            "value": "verteilt|Verteilung|häufig|Anteil|meisten",
+            "axis": "task_completion",
+            "critical": true,
+            "target": "assistant_last",
+            "mode": "regex",
+            "flags": "i"
+          },
+          {
+            "label": "Antwort nennt Baumarten oder Leipzig",
+            "value": "Baumarten|Birke|Linde|Ahorn|Eiche|Leipzig",
+            "axis": "grounding",
+            "critical": false,
+            "target": "assistant_last",
+            "mode": "regex",
+            "flags": "i"
+          }
+        ],
+        "forbiddenSignals": [],
+        "notes": "Distribution-oriented descriptive question."
+      },
+      "transcript": [
+        {
+          "role": "assistant",
+          "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
+          "timestamp": "2026-03-22T12:49:32.049Z",
+          "turnIndex": null
+        },
+        {
+          "role": "user",
+          "content": "Wie sind die Baumarten in Leipzig verteilt?",
+          "timestamp": "2026-03-22T12:49:32.051Z",
+          "turnIndex": 0
+        },
+        {
+          "role": "assistant",
+          "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
+          "timestamp": "2026-03-22T12:49:32.798Z",
+          "turnIndex": 0
+        }
+      ],
+      "metadata": [
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:32.051Z"
+        },
+        {
+          "status": "REWRITING_QUESTION",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:32.053Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
+          "timestamp": "2026-03-22T12:49:32.082Z"
+        },
+        {
+          "status": "GATHERING_DATA",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:32.084Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
+          "timestamp": "2026-03-22T12:49:32.794Z"
+        },
+        {
+          "status": "GENERATING_RESPONSE",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:32.798Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:32.799Z"
+        }
+      ],
+      "turnTimings": [
+        {
+          "turnIndex": 0,
+          "userPrompt": "Wie sind die Baumarten in Leipzig verteilt?",
+          "startedAt": "2026-03-22T12:49:32.051Z",
+          "firstAssistantResponseAt": "2026-03-22T12:49:32.798Z",
+          "latencyMs": 747
+        }
+      ],
+      "totalDurationMs": 750,
+      "evaluation": {
+        "status": "fail",
+        "score": 0.8,
+        "failureReason": "Antwort spricht über Verteilung oder Vergleich: Required signal missing: verteilt|Verteilung|häufig|Anteil|meisten",
+        "axes": [
+          {
+            "axis": "task_completion",
+            "passed": false,
+            "applicable": true,
+            "summary": "Antwort spricht über Verteilung oder Vergleich",
+            "checks": [
+              {
+                "label": "Antwort spricht über Verteilung oder Vergleich",
+                "axis": "task_completion",
+                "critical": true,
+                "passed": false,
+                "details": "Required signal missing: verteilt|Verteilung|häufig|Anteil|meisten"
+              }
+            ]
+          },
+          {
+            "axis": "grounding",
+            "passed": false,
+            "applicable": true,
+            "summary": "Antwort nennt Baumarten oder Leipzig",
+            "checks": [
+              {
+                "label": "Antwort nennt Baumarten oder Leipzig",
+                "axis": "grounding",
+                "critical": false,
+                "passed": false,
+                "details": "Required signal missing: Baumarten|Birke|Linde|Ahorn|Eiche|Leipzig"
+              }
+            ]
+          },
+          {
+            "axis": "flow_correctness",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Pflicht-Metadatenpfad wird eingehalten",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT"
+              },
+              {
+                "label": "Genug Assistentenantworten vorhanden",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "Observed 1 assistant messages for scripted turns."
+              },
+              {
+                "label": "Keine unnötige Klärungsfrage",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "No clarification metadata observed."
+              }
+            ]
+          },
+          {
+            "axis": "graceful_failure",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Keine spezielle Graceful-Failure-Erwartung",
+                "axis": "graceful_failure",
+                "critical": false,
+                "passed": true,
+                "details": "No graceful-failure-specific signals configured for this case."
+              }
+            ]
+          },
+          {
+            "axis": "presentation",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Antwort ist lesbar",
+                "axis": "presentation",
+                "critical": true,
+                "passed": true,
+                "details": "Last assistant message length: 151"
+              },
+              {
+                "label": "Antwort wirkt deutschsprachig",
+                "axis": "presentation",
+                "critical": true,
+                "passed": true,
+                "details": "Detected common German words."
+              },
+              {
+                "label": "Antwort ist nicht nur Roh-JSON",
+                "axis": "presentation",
+                "critical": false,
+                "passed": true,
+                "details": "Final assistant message looks human-readable."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fixture": {
+        "id": "Q10",
+        "title": "Bäume mit Trockenheitsstress",
+        "kind": "question",
+        "userTurns": [
+          "Welche Bäume in Leipzig leiden aktuell unter Trockenheit?"
+        ],
+        "expectedFlow": {
+          "clarification": "allowed",
+          "requiredMetadataStatuses": [
+            "WAITING_FOR_INPUT",
+            "REWRITING_QUESTION"
+          ],
+          "minAssistantMessages": 1
+        },
+        "requiredSignals": [
+          {
+            "label": "Antwort geht auf Trockenheit oder Bewässerungsbedarf ein",
+            "value": "Trocken|trocken|Gießen|Bewässerung|Wasser",
+            "axis": "task_completion",
+            "critical": true,
+            "target": "assistant_any",
+            "mode": "regex",
+            "flags": "i"
+          },
+          {
+            "label": "Antwort kann Grenzen der Datenlage benennen",
+            "value": "aktuell|keine Daten|nicht verfügbar|leider",
+            "axis": "graceful_failure",
+            "critical": false,
+            "target": "assistant_any",
+            "mode": "regex",
+            "flags": "i"
+          }
+        ],
+        "forbiddenSignals": [],
+        "notes": "This may surface a capability gap and should still respond gracefully."
+      },
+      "transcript": [
+        {
+          "role": "assistant",
+          "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
+          "timestamp": "2026-03-22T12:49:32.799Z",
+          "turnIndex": null
+        },
+        {
+          "role": "user",
+          "content": "Welche Bäume in Leipzig leiden aktuell unter Trockenheit?",
+          "timestamp": "2026-03-22T12:49:32.801Z",
+          "turnIndex": 0
+        },
+        {
+          "role": "assistant",
+          "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
+          "timestamp": "2026-03-22T12:49:33.524Z",
+          "turnIndex": 0
+        }
+      ],
+      "metadata": [
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:32.801Z"
+        },
+        {
+          "status": "REWRITING_QUESTION",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:32.804Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
+          "timestamp": "2026-03-22T12:49:32.834Z"
+        },
+        {
+          "status": "GATHERING_DATA",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:32.836Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
+          "timestamp": "2026-03-22T12:49:33.521Z"
+        },
+        {
+          "status": "GENERATING_RESPONSE",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:33.524Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:33.526Z"
+        }
+      ],
+      "turnTimings": [
+        {
+          "turnIndex": 0,
+          "userPrompt": "Welche Bäume in Leipzig leiden aktuell unter Trockenheit?",
+          "startedAt": "2026-03-22T12:49:32.801Z",
+          "firstAssistantResponseAt": "2026-03-22T12:49:33.524Z",
+          "latencyMs": 723
+        }
+      ],
+      "totalDurationMs": 727,
+      "evaluation": {
+        "status": "fail",
+        "score": 0.8461538461538461,
+        "failureReason": "Antwort geht auf Trockenheit oder Bewässerungsbedarf ein: Required signal missing: Trocken|trocken|Gießen|Bewässerung|Wasser",
+        "axes": [
+          {
+            "axis": "task_completion",
+            "passed": false,
+            "applicable": true,
+            "summary": "Antwort geht auf Trockenheit oder Bewässerungsbedarf ein",
+            "checks": [
+              {
+                "label": "Antwort geht auf Trockenheit oder Bewässerungsbedarf ein",
+                "axis": "task_completion",
+                "critical": true,
+                "passed": false,
+                "details": "Required signal missing: Trocken|trocken|Gießen|Bewässerung|Wasser"
+              }
+            ]
+          },
+          {
+            "axis": "grounding",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Keine spezielle Grounding-Erwartung",
+                "axis": "grounding",
+                "critical": false,
+                "passed": true,
+                "details": "No grounding-specific signals configured for this case."
+              }
+            ]
+          },
+          {
+            "axis": "flow_correctness",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Pflicht-Metadatenpfad wird eingehalten",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT"
+              },
+              {
+                "label": "Genug Assistentenantworten vorhanden",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "Observed 1 assistant messages for scripted turns."
+              }
+            ]
+          },
+          {
+            "axis": "graceful_failure",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Antwort kann Grenzen der Datenlage benennen",
+                "axis": "graceful_failure",
+                "critical": false,
+                "passed": true,
+                "details": "Required signal matched."
+              }
+            ]
+          },
+          {
+            "axis": "presentation",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Antwort ist lesbar",
+                "axis": "presentation",
+                "critical": true,
+                "passed": true,
+                "details": "Last assistant message length: 151"
+              },
+              {
+                "label": "Antwort wirkt deutschsprachig",
+                "axis": "presentation",
+                "critical": true,
+                "passed": true,
+                "details": "Detected common German words."
+              },
+              {
+                "label": "Antwort ist nicht nur Roh-JSON",
+                "axis": "presentation",
+                "critical": false,
+                "passed": true,
+                "details": "Final assistant message looks human-readable."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fixture": {
+        "id": "Q11",
+        "title": "Zukünftige Gießmenge ohne Datenbasis",
+        "kind": "question",
+        "userTurns": [
+          "Wie viel wurde im Stadtteil Connewitz im Jahr 2026 gegossen?"
+        ],
+        "expectedFlow": {
+          "clarification": "forbidden",
+          "requiredMetadataStatuses": [
+            "WAITING_FOR_INPUT",
+            "REWRITING_QUESTION",
+            "GATHERING_DATA"
+          ],
+          "minAssistantMessages": 1
+        },
+        "requiredSignals": [
+          {
+            "label": "Antwort greift das Jahr 2026 auf",
+            "value": "2026",
+            "axis": "grounding",
+            "critical": true,
+            "target": "assistant_last"
+          },
+          {
+            "label": "Antwort benennt fehlende oder zukünftige Daten",
+            "value": "(keine|nicht).*(Daten|verfügbar)|noch keine Daten|zukünft",
+            "axis": "graceful_failure",
+            "critical": true,
+            "target": "assistant_last",
+            "mode": "regex",
+            "flags": "i"
+          },
+          {
+            "label": "Antwort bietet eine sinnvolle Alternative an",
+            "value": "2025|aktuellsten Daten|Möchtest du diese",
+            "axis": "graceful_failure",
+            "critical": false,
+            "target": "assistant_last",
+            "mode": "regex",
+            "flags": "i"
+          }
+        ],
+        "forbiddenSignals": [
+          {
+            "label": "Keine erfundene harte Zahl für 2026",
+            "value": "\\b\\d+[,.]?\\d*\\s*(Liter|l)\\b",
+            "axis": "graceful_failure",
+            "critical": false,
+            "target": "assistant_last",
+            "mode": "regex",
+            "flags": "i"
+          }
+        ],
+        "notes": "Graceful-failure benchmark for unavailable future data."
+      },
+      "transcript": [
+        {
+          "role": "assistant",
+          "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
+          "timestamp": "2026-03-22T12:49:33.526Z",
+          "turnIndex": null
+        },
+        {
+          "role": "user",
+          "content": "Wie viel wurde im Stadtteil Connewitz im Jahr 2026 gegossen?",
+          "timestamp": "2026-03-22T12:49:33.528Z",
+          "turnIndex": 0
+        },
+        {
+          "role": "assistant",
+          "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
+          "timestamp": "2026-03-22T12:49:34.224Z",
+          "turnIndex": 0
+        }
+      ],
+      "metadata": [
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:33.528Z"
+        },
+        {
+          "status": "REWRITING_QUESTION",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:33.531Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
+          "timestamp": "2026-03-22T12:49:33.558Z"
+        },
+        {
+          "status": "GATHERING_DATA",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:33.560Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
+          "timestamp": "2026-03-22T12:49:34.221Z"
+        },
+        {
+          "status": "GENERATING_RESPONSE",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:34.224Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:34.225Z"
+        }
+      ],
+      "turnTimings": [
+        {
+          "turnIndex": 0,
+          "userPrompt": "Wie viel wurde im Stadtteil Connewitz im Jahr 2026 gegossen?",
+          "startedAt": "2026-03-22T12:49:33.528Z",
+          "firstAssistantResponseAt": "2026-03-22T12:49:34.224Z",
+          "latencyMs": 696
+        }
+      ],
+      "totalDurationMs": 699,
+      "evaluation": {
+        "status": "fail",
+        "score": 0.7368421052631579,
+        "failureReason": "Antwort greift das Jahr 2026 auf: Required signal missing: 2026",
+        "axes": [
+          {
+            "axis": "task_completion",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Mindestens eine Assistentenantwort vorhanden",
+                "axis": "task_completion",
+                "critical": true,
+                "passed": true,
+                "details": "Fallback task-completion check."
+              }
+            ]
+          },
+          {
+            "axis": "grounding",
+            "passed": false,
+            "applicable": true,
+            "summary": "Antwort greift das Jahr 2026 auf",
+            "checks": [
+              {
+                "label": "Antwort greift das Jahr 2026 auf",
+                "axis": "grounding",
+                "critical": true,
+                "passed": false,
+                "details": "Required signal missing: 2026"
+              }
+            ]
+          },
+          {
+            "axis": "flow_correctness",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Pflicht-Metadatenpfad wird eingehalten",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT"
+              },
+              {
+                "label": "Genug Assistentenantworten vorhanden",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "Observed 1 assistant messages for scripted turns."
+              },
+              {
+                "label": "Keine unnötige Klärungsfrage",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "No clarification metadata observed."
+              }
+            ]
+          },
+          {
+            "axis": "graceful_failure",
+            "passed": false,
+            "applicable": true,
+            "summary": "Antwort benennt fehlende oder zukünftige Daten; Antwort bietet eine sinnvolle Alternative an",
+            "checks": [
+              {
+                "label": "Antwort benennt fehlende oder zukünftige Daten",
+                "axis": "graceful_failure",
+                "critical": true,
+                "passed": false,
+                "details": "Required signal missing: (keine|nicht).*(Daten|verfügbar)|noch keine Daten|zukünft"
+              },
+              {
+                "label": "Antwort bietet eine sinnvolle Alternative an",
+                "axis": "graceful_failure",
+                "critical": false,
+                "passed": false,
+                "details": "Required signal missing: 2025|aktuellsten Daten|Möchtest du diese"
+              },
+              {
+                "label": "Keine erfundene harte Zahl für 2026",
+                "axis": "graceful_failure",
+                "critical": false,
+                "passed": true,
+                "details": "Forbidden signal not present."
+              }
+            ]
+          },
+          {
+            "axis": "presentation",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Antwort ist lesbar",
+                "axis": "presentation",
+                "critical": true,
+                "passed": true,
+                "details": "Last assistant message length: 151"
+              },
+              {
+                "label": "Antwort wirkt deutschsprachig",
+                "axis": "presentation",
+                "critical": true,
+                "passed": true,
+                "details": "Detected common German words."
+              },
+              {
+                "label": "Antwort ist nicht nur Roh-JSON",
+                "axis": "presentation",
+                "critical": false,
+                "passed": true,
+                "details": "Final assistant message looks human-readable."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fixture": {
+        "id": "Q12",
+        "title": "Themenüberblick",
+        "kind": "question",
+        "userTurns": [
+          "Was kannst du mir über die Bäume in Leipzig erklären?"
+        ],
+        "expectedFlow": {
+          "clarification": "forbidden",
+          "requiredMetadataStatuses": [
+            "WAITING_FOR_INPUT",
+            "REWRITING_QUESTION"
+          ],
+          "minAssistantMessages": 1
+        },
+        "requiredSignals": [
+          {
+            "label": "Antwort beschreibt Fähigkeiten oder Themen",
+            "value": "ich kann|Themen|Fragen|Informationen",
+            "axis": "task_completion",
+            "critical": true,
+            "target": "assistant_last",
+            "mode": "regex",
+            "flags": "i"
+          },
+          {
+            "label": "Antwort nennt Baumarten oder Wasserstellen",
+            "value": "Baumarten|Wasserentnahmestellen|Gieß|Baumstandorte",
+            "axis": "grounding",
+            "critical": false,
+            "target": "assistant_last",
+            "mode": "regex",
+            "flags": "i"
+          }
+        ],
+        "forbiddenSignals": [],
+        "notes": "Overview prompt for a stakeholder-friendly capability summary."
+      },
+      "transcript": [
+        {
+          "role": "assistant",
+          "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
+          "timestamp": "2026-03-22T12:49:34.226Z",
+          "turnIndex": null
+        },
+        {
+          "role": "user",
+          "content": "Was kannst du mir über die Bäume in Leipzig erklären?",
+          "timestamp": "2026-03-22T12:49:34.227Z",
+          "turnIndex": 0
+        },
+        {
+          "role": "assistant",
+          "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
+          "timestamp": "2026-03-22T12:49:34.911Z",
+          "turnIndex": 0
+        }
+      ],
+      "metadata": [
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:34.227Z"
+        },
+        {
+          "status": "REWRITING_QUESTION",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:34.230Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
+          "timestamp": "2026-03-22T12:49:34.257Z"
+        },
+        {
+          "status": "GATHERING_DATA",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:34.259Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
+          "timestamp": "2026-03-22T12:49:34.908Z"
+        },
+        {
+          "status": "GENERATING_RESPONSE",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:34.911Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:34.912Z"
+        }
+      ],
+      "turnTimings": [
+        {
+          "turnIndex": 0,
+          "userPrompt": "Was kannst du mir über die Bäume in Leipzig erklären?",
+          "startedAt": "2026-03-22T12:49:34.227Z",
+          "firstAssistantResponseAt": "2026-03-22T12:49:34.911Z",
+          "latencyMs": 684
+        }
+      ],
+      "totalDurationMs": 686,
+      "evaluation": {
+        "status": "fail",
+        "score": 0.8,
+        "failureReason": "Antwort beschreibt Fähigkeiten oder Themen: Required signal missing: ich kann|Themen|Fragen|Informationen",
+        "axes": [
+          {
+            "axis": "task_completion",
+            "passed": false,
+            "applicable": true,
+            "summary": "Antwort beschreibt Fähigkeiten oder Themen",
+            "checks": [
+              {
+                "label": "Antwort beschreibt Fähigkeiten oder Themen",
+                "axis": "task_completion",
+                "critical": true,
+                "passed": false,
+                "details": "Required signal missing: ich kann|Themen|Fragen|Informationen"
+              }
+            ]
+          },
+          {
+            "axis": "grounding",
+            "passed": false,
+            "applicable": true,
+            "summary": "Antwort nennt Baumarten oder Wasserstellen",
+            "checks": [
+              {
+                "label": "Antwort nennt Baumarten oder Wasserstellen",
+                "axis": "grounding",
+                "critical": false,
+                "passed": false,
+                "details": "Required signal missing: Baumarten|Wasserentnahmestellen|Gieß|Baumstandorte"
+              }
+            ]
+          },
+          {
+            "axis": "flow_correctness",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Pflicht-Metadatenpfad wird eingehalten",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT"
+              },
+              {
+                "label": "Genug Assistentenantworten vorhanden",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "Observed 1 assistant messages for scripted turns."
+              },
+              {
+                "label": "Keine unnötige Klärungsfrage",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "No clarification metadata observed."
+              }
+            ]
+          },
+          {
+            "axis": "graceful_failure",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Keine spezielle Graceful-Failure-Erwartung",
+                "axis": "graceful_failure",
+                "critical": false,
+                "passed": true,
+                "details": "No graceful-failure-specific signals configured for this case."
+              }
+            ]
+          },
+          {
+            "axis": "presentation",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Antwort ist lesbar",
+                "axis": "presentation",
+                "critical": true,
+                "passed": true,
+                "details": "Last assistant message length: 151"
+              },
+              {
+                "label": "Antwort wirkt deutschsprachig",
+                "axis": "presentation",
+                "critical": true,
+                "passed": true,
+                "details": "Detected common German words."
+              },
+              {
+                "label": "Antwort ist nicht nur Roh-JSON",
+                "axis": "presentation",
+                "critical": false,
+                "passed": true,
+                "details": "Final assistant message looks human-readable."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fixture": {
+        "id": "D1",
+        "title": "Dialog: Gießmenge nach Stadtteil und Jahr",
+        "kind": "dialogue",
+        "userTurns": [
+          "Wie viel wurde im Stadtteil Connewitz gegossen?",
+          "Wie viel in 2026?",
+          "Ja."
+        ],
+        "expectedFlow": {
+          "clarification": "forbidden",
+          "requiredMetadataStatuses": [
+            "WAITING_FOR_INPUT",
+            "REWRITING_QUESTION",
+            "GATHERING_DATA"
+          ],
+          "minAssistantMessages": 3
+        },
+        "requiredSignals": [
+          {
+            "label": "Dialog hält den Bezug zu Connewitz",
+            "value": "Connewitz",
+            "axis": "grounding",
+            "critical": true,
+            "target": "assistant_any"
+          },
+          {
+            "label": "Dialog thematisiert das Jahr 2026",
+            "value": "2026",
+            "axis": "grounding",
+            "critical": true,
+            "target": "assistant_any"
+          },
+          {
+            "label": "Dialog reagiert mit fehlender Datenlage oder Fallback",
+            "value": "keine Daten|nicht verfügbar|2025|aktuellsten Daten",
+            "axis": "graceful_failure",
+            "critical": true,
+            "target": "assistant_any",
+            "mode": "regex",
+            "flags": "i"
+          }
+        ],
+        "forbiddenSignals": [],
+        "notes": "Multi-turn variant of the future-year fallback case from the docs."
+      },
+      "transcript": [
+        {
+          "role": "assistant",
+          "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
+          "timestamp": "2026-03-22T12:49:34.913Z",
+          "turnIndex": null
+        },
+        {
+          "role": "user",
+          "content": "Wie viel wurde im Stadtteil Connewitz gegossen?",
+          "timestamp": "2026-03-22T12:49:34.915Z",
+          "turnIndex": 0
+        },
+        {
+          "role": "assistant",
+          "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
+          "timestamp": "2026-03-22T12:49:35.587Z",
+          "turnIndex": 0
+        },
+        {
+          "role": "user",
+          "content": "Wie viel in 2026?",
+          "timestamp": "2026-03-22T12:49:35.588Z",
+          "turnIndex": 1
+        },
+        {
+          "role": "assistant",
+          "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
+          "timestamp": "2026-03-22T12:49:36.275Z",
+          "turnIndex": 1
+        },
+        {
+          "role": "user",
+          "content": "Ja.",
+          "timestamp": "2026-03-22T12:49:36.276Z",
+          "turnIndex": 2
+        },
+        {
+          "role": "assistant",
+          "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
+          "timestamp": "2026-03-22T12:49:36.938Z",
+          "turnIndex": 2
+        }
+      ],
+      "metadata": [
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:34.915Z"
+        },
+        {
+          "status": "REWRITING_QUESTION",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:34.917Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
+          "timestamp": "2026-03-22T12:49:34.945Z"
+        },
+        {
+          "status": "GATHERING_DATA",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:34.947Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
+          "timestamp": "2026-03-22T12:49:35.584Z"
+        },
+        {
+          "status": "GENERATING_RESPONSE",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:35.587Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:35.588Z"
+        },
+        {
+          "status": "REWRITING_QUESTION",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:35.590Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
+          "timestamp": "2026-03-22T12:49:35.616Z"
+        },
+        {
+          "status": "GATHERING_DATA",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:35.618Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
+          "timestamp": "2026-03-22T12:49:36.271Z"
+        },
+        {
+          "status": "GENERATING_RESPONSE",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:36.275Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:36.276Z"
+        },
+        {
+          "status": "REWRITING_QUESTION",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:36.278Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
+          "timestamp": "2026-03-22T12:49:36.308Z"
+        },
+        {
+          "status": "GATHERING_DATA",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:36.310Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
+          "timestamp": "2026-03-22T12:49:36.934Z"
+        },
+        {
+          "status": "GENERATING_RESPONSE",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:36.937Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:36.939Z"
+        }
+      ],
+      "turnTimings": [
+        {
+          "turnIndex": 0,
+          "userPrompt": "Wie viel wurde im Stadtteil Connewitz gegossen?",
+          "startedAt": "2026-03-22T12:49:34.915Z",
+          "firstAssistantResponseAt": "2026-03-22T12:49:35.587Z",
+          "latencyMs": 672
+        },
+        {
+          "turnIndex": 1,
+          "userPrompt": "Wie viel in 2026?",
+          "startedAt": "2026-03-22T12:49:35.588Z",
+          "firstAssistantResponseAt": "2026-03-22T12:49:36.275Z",
+          "latencyMs": 687
+        },
+        {
+          "turnIndex": 2,
+          "userPrompt": "Ja.",
+          "startedAt": "2026-03-22T12:49:36.276Z",
+          "firstAssistantResponseAt": "2026-03-22T12:49:36.938Z",
+          "latencyMs": 662
+        }
+      ],
+      "totalDurationMs": 2026,
+      "evaluation": {
+        "status": "fail",
+        "score": 0.6842105263157895,
+        "failureReason": "Dialog hält den Bezug zu Connewitz: Required signal missing: Connewitz",
+        "axes": [
+          {
+            "axis": "task_completion",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Mindestens eine Assistentenantwort vorhanden",
+                "axis": "task_completion",
+                "critical": true,
+                "passed": true,
+                "details": "Fallback task-completion check."
+              }
+            ]
+          },
+          {
+            "axis": "grounding",
+            "passed": false,
+            "applicable": true,
+            "summary": "Dialog hält den Bezug zu Connewitz; Dialog thematisiert das Jahr 2026",
+            "checks": [
+              {
+                "label": "Dialog hält den Bezug zu Connewitz",
+                "axis": "grounding",
+                "critical": true,
+                "passed": false,
+                "details": "Required signal missing: Connewitz"
+              },
+              {
+                "label": "Dialog thematisiert das Jahr 2026",
+                "axis": "grounding",
+                "critical": true,
+                "passed": false,
+                "details": "Required signal missing: 2026"
+              }
+            ]
+          },
+          {
+            "axis": "flow_correctness",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Pflicht-Metadatenpfad wird eingehalten",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT"
+              },
+              {
+                "label": "Genug Assistentenantworten vorhanden",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "Observed 3 assistant messages for scripted turns."
+              },
+              {
+                "label": "Keine unnötige Klärungsfrage",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "No clarification metadata observed."
+              }
+            ]
+          },
+          {
+            "axis": "graceful_failure",
+            "passed": false,
+            "applicable": true,
+            "summary": "Dialog reagiert mit fehlender Datenlage oder Fallback",
+            "checks": [
+              {
+                "label": "Dialog reagiert mit fehlender Datenlage oder Fallback",
+                "axis": "graceful_failure",
+                "critical": true,
+                "passed": false,
+                "details": "Required signal missing: keine Daten|nicht verfügbar|2025|aktuellsten Daten"
+              }
+            ]
+          },
+          {
+            "axis": "presentation",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Antwort ist lesbar",
+                "axis": "presentation",
+                "critical": true,
+                "passed": true,
+                "details": "Last assistant message length: 151"
+              },
+              {
+                "label": "Antwort wirkt deutschsprachig",
+                "axis": "presentation",
+                "critical": true,
+                "passed": true,
+                "details": "Detected common German words."
+              },
+              {
+                "label": "Antwort ist nicht nur Roh-JSON",
+                "axis": "presentation",
+                "critical": false,
+                "passed": true,
+                "details": "Final assistant message looks human-readable."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fixture": {
+        "id": "D2",
+        "title": "Dialog: Wasserentnahmestellen in der Nähe",
+        "kind": "dialogue",
+        "userTurns": [
+          "Welche Wasserentnahmestellen gibt es in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig?",
+          "Nein."
+        ],
+        "expectedFlow": {
+          "clarification": "forbidden",
+          "requiredMetadataStatuses": [
+            "WAITING_FOR_INPUT",
+            "REWRITING_QUESTION",
+            "GATHERING_DATA"
+          ],
+          "minAssistantMessages": 2
+        },
+        "requiredSignals": [
+          {
+            "label": "Dialog bleibt beim Thema Wasserentnahmestellen",
+            "value": "Wasser",
+            "axis": "task_completion",
+            "critical": true,
+            "target": "assistant_any"
+          },
+          {
+            "label": "Dialog bleibt ortsbezogen",
+            "value": "Karl-Liebknecht|04277|Leipzig",
+            "axis": "grounding",
+            "critical": false,
+            "target": "assistant_any",
+            "mode": "regex",
+            "flags": "i"
+          }
+        ],
+        "forbiddenSignals": [],
+        "notes": "Checks whether a short follow-up still keeps the location context."
+      },
+      "transcript": [
+        {
+          "role": "assistant",
+          "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
+          "timestamp": "2026-03-22T12:49:36.939Z",
+          "turnIndex": null
+        },
+        {
+          "role": "user",
+          "content": "Welche Wasserentnahmestellen gibt es in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig?",
+          "timestamp": "2026-03-22T12:49:36.941Z",
+          "turnIndex": 0
+        },
+        {
+          "role": "assistant",
+          "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
+          "timestamp": "2026-03-22T12:49:37.602Z",
+          "turnIndex": 0
+        },
+        {
+          "role": "user",
+          "content": "Nein.",
+          "timestamp": "2026-03-22T12:49:37.603Z",
+          "turnIndex": 1
+        },
+        {
+          "role": "assistant",
+          "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
+          "timestamp": "2026-03-22T12:49:38.268Z",
+          "turnIndex": 1
+        }
+      ],
+      "metadata": [
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:36.941Z"
+        },
+        {
+          "status": "REWRITING_QUESTION",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:36.943Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
+          "timestamp": "2026-03-22T12:49:36.972Z"
+        },
+        {
+          "status": "GATHERING_DATA",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:36.974Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
+          "timestamp": "2026-03-22T12:49:37.600Z"
+        },
+        {
+          "status": "GENERATING_RESPONSE",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:37.602Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:37.603Z"
+        },
+        {
+          "status": "REWRITING_QUESTION",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:37.605Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
+          "timestamp": "2026-03-22T12:49:37.629Z"
+        },
+        {
+          "status": "GATHERING_DATA",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:37.631Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
+          "timestamp": "2026-03-22T12:49:38.265Z"
+        },
+        {
+          "status": "GENERATING_RESPONSE",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:38.268Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:38.269Z"
+        }
+      ],
+      "turnTimings": [
+        {
+          "turnIndex": 0,
+          "userPrompt": "Welche Wasserentnahmestellen gibt es in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig?",
+          "startedAt": "2026-03-22T12:49:36.941Z",
+          "firstAssistantResponseAt": "2026-03-22T12:49:37.602Z",
+          "latencyMs": 661
+        },
+        {
+          "turnIndex": 1,
+          "userPrompt": "Nein.",
+          "startedAt": "2026-03-22T12:49:37.603Z",
+          "firstAssistantResponseAt": "2026-03-22T12:49:38.268Z",
+          "latencyMs": 665
+        }
+      ],
+      "totalDurationMs": 1330,
+      "evaluation": {
+        "status": "fail",
+        "score": 0.8666666666666667,
+        "failureReason": "Dialog bleibt beim Thema Wasserentnahmestellen: Required signal missing: Wasser",
+        "axes": [
+          {
+            "axis": "task_completion",
+            "passed": false,
+            "applicable": true,
+            "summary": "Dialog bleibt beim Thema Wasserentnahmestellen",
+            "checks": [
+              {
+                "label": "Dialog bleibt beim Thema Wasserentnahmestellen",
+                "axis": "task_completion",
+                "critical": true,
+                "passed": false,
+                "details": "Required signal missing: Wasser"
+              }
+            ]
+          },
+          {
+            "axis": "grounding",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Dialog bleibt ortsbezogen",
+                "axis": "grounding",
+                "critical": false,
+                "passed": true,
+                "details": "Required signal matched."
+              }
+            ]
+          },
+          {
+            "axis": "flow_correctness",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Pflicht-Metadatenpfad wird eingehalten",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT"
+              },
+              {
+                "label": "Genug Assistentenantworten vorhanden",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "Observed 2 assistant messages for scripted turns."
+              },
+              {
+                "label": "Keine unnötige Klärungsfrage",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "No clarification metadata observed."
+              }
+            ]
+          },
+          {
+            "axis": "graceful_failure",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Keine spezielle Graceful-Failure-Erwartung",
+                "axis": "graceful_failure",
+                "critical": false,
+                "passed": true,
+                "details": "No graceful-failure-specific signals configured for this case."
+              }
+            ]
+          },
+          {
+            "axis": "presentation",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Antwort ist lesbar",
+                "axis": "presentation",
+                "critical": true,
+                "passed": true,
+                "details": "Last assistant message length: 151"
+              },
+              {
+                "label": "Antwort wirkt deutschsprachig",
+                "axis": "presentation",
+                "critical": true,
+                "passed": true,
+                "details": "Detected common German words."
+              },
+              {
+                "label": "Antwort ist nicht nur Roh-JSON",
+                "axis": "presentation",
+                "critical": false,
+                "passed": true,
+                "details": "Final assistant message looks human-readable."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fixture": {
+        "id": "D3",
+        "title": "Dialog: Geeigneten Baum zum Gießen finden",
+        "kind": "dialogue",
+        "userTurns": [
+          "Welchen Baum kann ich in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig heute gießen?",
+          "Nein, ich kann maximal 15 Liter gießen.",
+          "Ja, mache ich."
+        ],
+        "expectedFlow": {
+          "clarification": "forbidden",
+          "requiredMetadataStatuses": [
+            "WAITING_FOR_INPUT",
+            "REWRITING_QUESTION",
+            "GATHERING_DATA"
+          ],
+          "minAssistantMessages": 3
+        },
+        "requiredSignals": [
+          {
+            "label": "Dialog greift die 15-Liter-Grenze auf",
+            "value": "15",
+            "axis": "grounding",
+            "critical": true,
+            "target": "assistant_any"
+          },
+          {
+            "label": "Dialog endet mit einer verständlichen Empfehlung oder Bestätigung",
+            "value": "Baum|gieß|Danke|Beitrag|versorgt",
+            "axis": "task_completion",
+            "critical": true,
+            "target": "assistant_any",
+            "mode": "regex",
+            "flags": "i"
+          }
+        ],
+        "forbiddenSignals": [],
+        "notes": "Assesses whether the model can incorporate a follow-up constraint."
+      },
+      "transcript": [
+        {
+          "role": "assistant",
+          "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
+          "timestamp": "2026-03-22T12:49:38.270Z",
+          "turnIndex": null
+        },
+        {
+          "role": "user",
+          "content": "Welchen Baum kann ich in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig heute gießen?",
+          "timestamp": "2026-03-22T12:49:38.271Z",
+          "turnIndex": 0
+        },
+        {
+          "role": "assistant",
+          "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
+          "timestamp": "2026-03-22T12:49:39.271Z",
+          "turnIndex": 0
+        },
+        {
+          "role": "user",
+          "content": "Nein, ich kann maximal 15 Liter gießen.",
+          "timestamp": "2026-03-22T12:49:39.272Z",
+          "turnIndex": 1
+        },
+        {
+          "role": "assistant",
+          "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
+          "timestamp": "2026-03-22T12:49:39.935Z",
+          "turnIndex": 1
+        },
+        {
+          "role": "user",
+          "content": "Ja, mache ich.",
+          "timestamp": "2026-03-22T12:49:39.936Z",
+          "turnIndex": 2
+        },
+        {
+          "role": "assistant",
+          "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
+          "timestamp": "2026-03-22T12:49:40.578Z",
+          "turnIndex": 2
+        }
+      ],
+      "metadata": [
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:38.271Z"
+        },
+        {
+          "status": "REWRITING_QUESTION",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:38.273Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
+          "timestamp": "2026-03-22T12:49:38.615Z"
+        },
+        {
+          "status": "GATHERING_DATA",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:38.619Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
+          "timestamp": "2026-03-22T12:49:39.268Z"
+        },
+        {
+          "status": "GENERATING_RESPONSE",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:39.271Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:39.272Z"
+        },
+        {
+          "status": "REWRITING_QUESTION",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:39.274Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
+          "timestamp": "2026-03-22T12:49:39.298Z"
+        },
+        {
+          "status": "GATHERING_DATA",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:39.300Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
+          "timestamp": "2026-03-22T12:49:39.933Z"
+        },
+        {
+          "status": "GENERATING_RESPONSE",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:39.935Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:39.936Z"
+        },
+        {
+          "status": "REWRITING_QUESTION",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:39.938Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
+          "timestamp": "2026-03-22T12:49:39.961Z"
+        },
+        {
+          "status": "GATHERING_DATA",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:39.963Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
+          "timestamp": "2026-03-22T12:49:40.575Z"
+        },
+        {
+          "status": "GENERATING_RESPONSE",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:40.578Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:40.579Z"
+        }
+      ],
+      "turnTimings": [
+        {
+          "turnIndex": 0,
+          "userPrompt": "Welchen Baum kann ich in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig heute gießen?",
+          "startedAt": "2026-03-22T12:49:38.271Z",
+          "firstAssistantResponseAt": "2026-03-22T12:49:39.271Z",
+          "latencyMs": 1000
+        },
+        {
+          "turnIndex": 1,
+          "userPrompt": "Nein, ich kann maximal 15 Liter gießen.",
+          "startedAt": "2026-03-22T12:49:39.272Z",
+          "firstAssistantResponseAt": "2026-03-22T12:49:39.935Z",
+          "latencyMs": 663
+        },
+        {
+          "turnIndex": 2,
+          "userPrompt": "Ja, mache ich.",
+          "startedAt": "2026-03-22T12:49:39.936Z",
+          "firstAssistantResponseAt": "2026-03-22T12:49:40.578Z",
+          "latencyMs": 642
+        }
+      ],
+      "totalDurationMs": 2309,
+      "evaluation": {
+        "status": "fail",
+        "score": 0.875,
+        "failureReason": "Dialog greift die 15-Liter-Grenze auf: Required signal missing: 15",
+        "axes": [
+          {
+            "axis": "task_completion",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Dialog endet mit einer verständlichen Empfehlung oder Bestätigung",
+                "axis": "task_completion",
+                "critical": true,
+                "passed": true,
+                "details": "Required signal matched."
+              }
+            ]
+          },
+          {
+            "axis": "grounding",
+            "passed": false,
+            "applicable": true,
+            "summary": "Dialog greift die 15-Liter-Grenze auf",
+            "checks": [
+              {
+                "label": "Dialog greift die 15-Liter-Grenze auf",
+                "axis": "grounding",
+                "critical": true,
+                "passed": false,
+                "details": "Required signal missing: 15"
+              }
+            ]
+          },
+          {
+            "axis": "flow_correctness",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Pflicht-Metadatenpfad wird eingehalten",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT"
+              },
+              {
+                "label": "Genug Assistentenantworten vorhanden",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "Observed 3 assistant messages for scripted turns."
+              },
+              {
+                "label": "Keine unnötige Klärungsfrage",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "No clarification metadata observed."
+              }
+            ]
+          },
+          {
+            "axis": "graceful_failure",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Keine spezielle Graceful-Failure-Erwartung",
+                "axis": "graceful_failure",
+                "critical": false,
+                "passed": true,
+                "details": "No graceful-failure-specific signals configured for this case."
+              }
+            ]
+          },
+          {
+            "axis": "presentation",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Antwort ist lesbar",
+                "axis": "presentation",
+                "critical": true,
+                "passed": true,
+                "details": "Last assistant message length: 151"
+              },
+              {
+                "label": "Antwort wirkt deutschsprachig",
+                "axis": "presentation",
+                "critical": true,
+                "passed": true,
+                "details": "Detected common German words."
+              },
+              {
+                "label": "Antwort ist nicht nur Roh-JSON",
+                "axis": "presentation",
+                "critical": false,
+                "passed": true,
+                "details": "Final assistant message looks human-readable."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fixture": {
+        "id": "D4",
+        "title": "Dialog: Themenüberblick",
+        "kind": "dialogue",
+        "userTurns": [
+          "Was kannst du mir über die Bäume in Leipzig erklären?"
+        ],
+        "expectedFlow": {
+          "clarification": "forbidden",
+          "requiredMetadataStatuses": [
+            "WAITING_FOR_INPUT",
+            "REWRITING_QUESTION"
+          ],
+          "minAssistantMessages": 1
+        },
+        "requiredSignals": [
+          {
+            "label": "Antwort beschreibt mögliche Themen",
+            "value": "Baumarten|Wasserentnahmestellen|Gieß|Baumstandorte",
+            "axis": "task_completion",
+            "critical": true,
+            "target": "assistant_last",
+            "mode": "regex",
+            "flags": "i"
+          }
+        ],
+        "forbiddenSignals": [],
+        "notes": "Dialogue-form reporting case for the stakeholder capability overview."
+      },
+      "transcript": [
+        {
+          "role": "assistant",
+          "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
+          "timestamp": "2026-03-22T12:49:40.579Z",
+          "turnIndex": null
+        },
+        {
+          "role": "user",
+          "content": "Was kannst du mir über die Bäume in Leipzig erklären?",
+          "timestamp": "2026-03-22T12:49:40.581Z",
+          "turnIndex": 0
+        },
+        {
+          "role": "assistant",
+          "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
+          "timestamp": "2026-03-22T12:49:41.252Z",
+          "turnIndex": 0
+        }
+      ],
+      "metadata": [
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:40.581Z"
+        },
+        {
+          "status": "REWRITING_QUESTION",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:40.583Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
+          "timestamp": "2026-03-22T12:49:40.609Z"
+        },
+        {
+          "status": "GATHERING_DATA",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:40.610Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
+          "timestamp": "2026-03-22T12:49:41.249Z"
+        },
+        {
+          "status": "GENERATING_RESPONSE",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:41.252Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:41.253Z"
+        }
+      ],
+      "turnTimings": [
+        {
+          "turnIndex": 0,
+          "userPrompt": "Was kannst du mir über die Bäume in Leipzig erklären?",
+          "startedAt": "2026-03-22T12:49:40.581Z",
+          "firstAssistantResponseAt": "2026-03-22T12:49:41.252Z",
+          "latencyMs": 671
+        }
+      ],
+      "totalDurationMs": 675,
+      "evaluation": {
+        "status": "fail",
+        "score": 0.8666666666666667,
+        "failureReason": "Antwort beschreibt mögliche Themen: Required signal missing: Baumarten|Wasserentnahmestellen|Gieß|Baumstandorte",
+        "axes": [
+          {
+            "axis": "task_completion",
+            "passed": false,
+            "applicable": true,
+            "summary": "Antwort beschreibt mögliche Themen",
+            "checks": [
+              {
+                "label": "Antwort beschreibt mögliche Themen",
+                "axis": "task_completion",
+                "critical": true,
+                "passed": false,
+                "details": "Required signal missing: Baumarten|Wasserentnahmestellen|Gieß|Baumstandorte"
+              }
+            ]
+          },
+          {
+            "axis": "grounding",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Keine spezielle Grounding-Erwartung",
+                "axis": "grounding",
+                "critical": false,
+                "passed": true,
+                "details": "No grounding-specific signals configured for this case."
+              }
+            ]
+          },
+          {
+            "axis": "flow_correctness",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Pflicht-Metadatenpfad wird eingehalten",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT"
+              },
+              {
+                "label": "Genug Assistentenantworten vorhanden",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "Observed 1 assistant messages for scripted turns."
+              },
+              {
+                "label": "Keine unnötige Klärungsfrage",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "No clarification metadata observed."
+              }
+            ]
+          },
+          {
+            "axis": "graceful_failure",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Keine spezielle Graceful-Failure-Erwartung",
+                "axis": "graceful_failure",
+                "critical": false,
+                "passed": true,
+                "details": "No graceful-failure-specific signals configured for this case."
+              }
+            ]
+          },
+          {
+            "axis": "presentation",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Antwort ist lesbar",
+                "axis": "presentation",
+                "critical": true,
+                "passed": true,
+                "details": "Last assistant message length: 151"
+              },
+              {
+                "label": "Antwort wirkt deutschsprachig",
+                "axis": "presentation",
+                "critical": true,
+                "passed": true,
+                "details": "Detected common German words."
+              },
+              {
+                "label": "Antwort ist nicht nur Roh-JSON",
+                "axis": "presentation",
+                "critical": false,
+                "passed": true,
+                "details": "Final assistant message looks human-readable."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fixture": {
+        "id": "D5",
+        "title": "Dialog: Klärungsbedürftige Ortsanfrage",
+        "kind": "dialogue",
+        "userTurns": [
+          "Welchen Baum kann ich heute gießen?",
+          "In Connewitz."
+        ],
+        "expectedFlow": {
+          "clarification": "required",
+          "requiredMetadataStatuses": [
+            "WAITING_FOR_INPUT",
+            "REWRITING_QUESTION",
+            "GATHERING_DATA",
+            "GENERATING_CLARIFICATION"
+          ],
+          "minAssistantMessages": 2
+        },
+        "requiredSignals": [
+          {
+            "label": "Erste Systemreaktion ist eine Rückfrage zum fehlenden Ort",
+            "value": "Adresse|Straße|PLZ|Stadtteil|Ortsteil|wo|in der Nähe",
+            "axis": "flow_correctness",
+            "critical": true,
+            "target": "assistant_any",
+            "mode": "regex",
+            "flags": "i"
+          },
+          {
+            "label": "Antwort greift Connewitz nach der Klärung auf",
+            "value": "Connewitz",
+            "axis": "grounding",
+            "critical": true,
+            "target": "assistant_any"
+          }
+        ],
+        "forbiddenSignals": [],
+        "notes": "Required-clarification path for an underspecified watering question."
+      },
+      "transcript": [
+        {
+          "role": "assistant",
+          "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
+          "timestamp": "2026-03-22T12:49:41.254Z",
+          "turnIndex": null
+        },
+        {
+          "role": "user",
+          "content": "Welchen Baum kann ich heute gießen?",
+          "timestamp": "2026-03-22T12:49:41.256Z",
+          "turnIndex": 0
+        },
+        {
+          "role": "assistant",
+          "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
+          "timestamp": "2026-03-22T12:49:41.918Z",
+          "turnIndex": 0
+        },
+        {
+          "role": "user",
+          "content": "In Connewitz.",
+          "timestamp": "2026-03-22T12:49:41.919Z",
+          "turnIndex": 1
+        },
+        {
+          "role": "assistant",
+          "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
+          "timestamp": "2026-03-22T12:49:42.599Z",
+          "turnIndex": 1
+        }
+      ],
+      "metadata": [
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:41.256Z"
+        },
+        {
+          "status": "REWRITING_QUESTION",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:41.258Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
+          "timestamp": "2026-03-22T12:49:41.287Z"
+        },
+        {
+          "status": "GATHERING_DATA",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:41.289Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
+          "timestamp": "2026-03-22T12:49:41.916Z"
+        },
+        {
+          "status": "GENERATING_RESPONSE",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:41.918Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:41.919Z"
+        },
+        {
+          "status": "REWRITING_QUESTION",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:41.921Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
+          "timestamp": "2026-03-22T12:49:41.947Z"
+        },
+        {
+          "status": "GATHERING_DATA",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:41.948Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
+          "timestamp": "2026-03-22T12:49:42.597Z"
+        },
+        {
+          "status": "GENERATING_RESPONSE",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:42.599Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:42.600Z"
+        }
+      ],
+      "turnTimings": [
+        {
+          "turnIndex": 0,
+          "userPrompt": "Welchen Baum kann ich heute gießen?",
+          "startedAt": "2026-03-22T12:49:41.256Z",
+          "firstAssistantResponseAt": "2026-03-22T12:49:41.918Z",
+          "latencyMs": 662
+        },
+        {
+          "turnIndex": 1,
+          "userPrompt": "In Connewitz.",
+          "startedAt": "2026-03-22T12:49:41.919Z",
+          "firstAssistantResponseAt": "2026-03-22T12:49:42.599Z",
+          "latencyMs": 680
+        }
+      ],
+      "totalDurationMs": 1347,
+      "evaluation": {
+        "status": "fail",
+        "score": 0.6666666666666666,
+        "failureReason": "Antwort greift Connewitz nach der Klärung auf: Required signal missing: Connewitz",
+        "axes": [
+          {
+            "axis": "task_completion",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Mindestens eine Assistentenantwort vorhanden",
+                "axis": "task_completion",
+                "critical": true,
+                "passed": true,
+                "details": "Fallback task-completion check."
+              }
+            ]
+          },
+          {
+            "axis": "grounding",
+            "passed": false,
+            "applicable": true,
+            "summary": "Antwort greift Connewitz nach der Klärung auf",
+            "checks": [
+              {
+                "label": "Antwort greift Connewitz nach der Klärung auf",
+                "axis": "grounding",
+                "critical": true,
+                "passed": false,
+                "details": "Required signal missing: Connewitz"
+              }
+            ]
+          },
+          {
+            "axis": "flow_correctness",
+            "passed": false,
+            "applicable": true,
+            "summary": "Pflicht-Metadatenpfad wird eingehalten; Klärungsfrage wird erzeugt",
+            "checks": [
+              {
+                "label": "Erste Systemreaktion ist eine Rückfrage zum fehlenden Ort",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "Required signal matched."
+              },
+              {
+                "label": "Pflicht-Metadatenpfad wird eingehalten",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": false,
+                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT"
+              },
+              {
+                "label": "Genug Assistentenantworten vorhanden",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "Observed 2 assistant messages for scripted turns."
+              },
+              {
+                "label": "Klärungsfrage wird erzeugt",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": false,
+                "details": "No clarification metadata observed."
+              }
+            ]
+          },
+          {
+            "axis": "graceful_failure",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Keine spezielle Graceful-Failure-Erwartung",
+                "axis": "graceful_failure",
+                "critical": false,
+                "passed": true,
+                "details": "No graceful-failure-specific signals configured for this case."
+              }
+            ]
+          },
+          {
+            "axis": "presentation",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Antwort ist lesbar",
+                "axis": "presentation",
+                "critical": true,
+                "passed": true,
+                "details": "Last assistant message length: 151"
+              },
+              {
+                "label": "Antwort wirkt deutschsprachig",
+                "axis": "presentation",
+                "critical": true,
+                "passed": true,
+                "details": "Detected common German words."
+              },
+              {
+                "label": "Antwort ist nicht nur Roh-JSON",
+                "axis": "presentation",
+                "critical": false,
+                "passed": true,
+                "details": "Final assistant message looks human-readable."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fixture": {
+        "id": "D6",
+        "title": "Dialog: Graceful Failure mit Fallback",
+        "kind": "dialogue",
+        "userTurns": [
+          "Wie viel wurde im Stadtteil Connewitz im Jahr 2030 gegossen?",
+          "Dann gib mir bitte die aktuellsten Daten."
+        ],
+        "expectedFlow": {
+          "clarification": "forbidden",
+          "requiredMetadataStatuses": [
+            "WAITING_FOR_INPUT",
+            "REWRITING_QUESTION",
+            "GATHERING_DATA"
+          ],
+          "minAssistantMessages": 2
+        },
+        "requiredSignals": [
+          {
+            "label": "Dialog benennt die fehlende Datenlage",
+            "value": "2030|keine Daten|nicht verfügbar|zukünftig",
+            "axis": "graceful_failure",
+            "critical": true,
+            "target": "assistant_any",
+            "mode": "regex",
+            "flags": "i"
+          },
+          {
+            "label": "Dialog bietet oder liefert einen Fallback",
+            "value": "aktuell|2025|letzten Daten|aktuellsten Daten",
+            "axis": "graceful_failure",
+            "critical": true,
+            "target": "assistant_any",
+            "mode": "regex",
+            "flags": "i"
+          }
+        ],
+        "forbiddenSignals": [],
+        "notes": "Dialogue-level fallback behavior for unavailable future data."
+      },
+      "transcript": [
+        {
+          "role": "assistant",
+          "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
+          "timestamp": "2026-03-22T12:49:42.601Z",
+          "turnIndex": null
+        },
+        {
+          "role": "user",
+          "content": "Wie viel wurde im Stadtteil Connewitz im Jahr 2030 gegossen?",
+          "timestamp": "2026-03-22T12:49:42.603Z",
+          "turnIndex": 0
+        },
+        {
+          "role": "assistant",
+          "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
+          "timestamp": "2026-03-22T12:49:43.288Z",
+          "turnIndex": 0
+        },
+        {
+          "role": "user",
+          "content": "Dann gib mir bitte die aktuellsten Daten.",
+          "timestamp": "2026-03-22T12:49:43.289Z",
+          "turnIndex": 1
+        },
+        {
+          "role": "assistant",
+          "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
+          "timestamp": "2026-03-22T12:49:43.985Z",
+          "turnIndex": 1
+        }
+      ],
+      "metadata": [
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:42.603Z"
+        },
+        {
+          "status": "REWRITING_QUESTION",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:42.605Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
+          "timestamp": "2026-03-22T12:49:42.638Z"
+        },
+        {
+          "status": "GATHERING_DATA",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:42.640Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
+          "timestamp": "2026-03-22T12:49:43.286Z"
+        },
+        {
+          "status": "GENERATING_RESPONSE",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:43.288Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:43.289Z"
+        },
+        {
+          "status": "REWRITING_QUESTION",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:43.291Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
+          "timestamp": "2026-03-22T12:49:43.324Z"
+        },
+        {
+          "status": "GATHERING_DATA",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:43.326Z"
+        },
+        {
+          "status": "ERROR",
+          "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
+          "timestamp": "2026-03-22T12:49:43.982Z"
+        },
+        {
+          "status": "GENERATING_RESPONSE",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:43.985Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T12:49:43.986Z"
+        }
+      ],
+      "turnTimings": [
+        {
+          "turnIndex": 0,
+          "userPrompt": "Wie viel wurde im Stadtteil Connewitz im Jahr 2030 gegossen?",
+          "startedAt": "2026-03-22T12:49:42.603Z",
+          "firstAssistantResponseAt": "2026-03-22T12:49:43.288Z",
+          "latencyMs": 685
+        },
+        {
+          "turnIndex": 1,
+          "userPrompt": "Dann gib mir bitte die aktuellsten Daten.",
+          "startedAt": "2026-03-22T12:49:43.289Z",
+          "firstAssistantResponseAt": "2026-03-22T12:49:43.985Z",
+          "latencyMs": 696
+        }
+      ],
+      "totalDurationMs": 1385,
+      "evaluation": {
+        "status": "fail",
+        "score": 0.7777777777777778,
+        "failureReason": "Dialog benennt die fehlende Datenlage: Required signal missing: 2030|keine Daten|nicht verfügbar|zukünftig",
+        "axes": [
+          {
+            "axis": "task_completion",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Mindestens eine Assistentenantwort vorhanden",
+                "axis": "task_completion",
+                "critical": true,
+                "passed": true,
+                "details": "Fallback task-completion check."
+              }
+            ]
+          },
+          {
+            "axis": "grounding",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Keine spezielle Grounding-Erwartung",
+                "axis": "grounding",
+                "critical": false,
+                "passed": true,
+                "details": "No grounding-specific signals configured for this case."
+              }
+            ]
+          },
+          {
+            "axis": "flow_correctness",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Pflicht-Metadatenpfad wird eingehalten",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT"
+              },
+              {
+                "label": "Genug Assistentenantworten vorhanden",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "Observed 2 assistant messages for scripted turns."
+              },
+              {
+                "label": "Keine unnötige Klärungsfrage",
+                "axis": "flow_correctness",
+                "critical": true,
+                "passed": true,
+                "details": "No clarification metadata observed."
+              }
+            ]
+          },
+          {
+            "axis": "graceful_failure",
+            "passed": false,
+            "applicable": true,
+            "summary": "Dialog benennt die fehlende Datenlage; Dialog bietet oder liefert einen Fallback",
+            "checks": [
+              {
+                "label": "Dialog benennt die fehlende Datenlage",
+                "axis": "graceful_failure",
+                "critical": true,
+                "passed": false,
+                "details": "Required signal missing: 2030|keine Daten|nicht verfügbar|zukünftig"
+              },
+              {
+                "label": "Dialog bietet oder liefert einen Fallback",
+                "axis": "graceful_failure",
+                "critical": true,
+                "passed": false,
+                "details": "Required signal missing: aktuell|2025|letzten Daten|aktuellsten Daten"
+              }
+            ]
+          },
+          {
+            "axis": "presentation",
+            "passed": true,
+            "applicable": true,
+            "summary": "All checks passed.",
+            "checks": [
+              {
+                "label": "Antwort ist lesbar",
+                "axis": "presentation",
+                "critical": true,
+                "passed": true,
+                "details": "Last assistant message length: 151"
+              },
+              {
+                "label": "Antwort wirkt deutschsprachig",
+                "axis": "presentation",
+                "critical": true,
+                "passed": true,
+                "details": "Detected common German words."
+              },
+              {
+                "label": "Antwort ist nicht nur Roh-JSON",
+                "axis": "presentation",
+                "critical": false,
+                "passed": true,
+                "details": "Final assistant message looks human-readable."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

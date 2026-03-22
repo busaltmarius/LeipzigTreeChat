@@ -141,6 +141,18 @@ If you want to verify the chatbot outside the browser, you can also run the CLI:
 bun run dev --filter=chatcli
 ```
 
+## 10. Run the demo benchmark
+
+If you want to benchmark the live chatbot with the curated demo question set,
+run:
+
+```sh
+bun run benchmark:demo
+```
+
+For the benchmark-specific workflow and report format, see
+[Running the Demo Benchmark](/docs/guides/running-the-demo-benchmark).
+
 ## Troubleshooting
 
 - Missing `OPENROUTER_API_KEY`: the chat UI or one of the LLM-backed components
