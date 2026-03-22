@@ -6,7 +6,7 @@ import {
   getQuestion,
   getQuestionUri,
 } from "@leipzigtreechat/qanary-component-helpers";
-import { FUZZY_THRESHOLDS, disambiguate, fetchNerAnnotations, writeDisambiguationAnnotation } from "./implementation";
+import { disambiguate, FUZZY_THRESHOLDS, fetchNerAnnotations, writeDisambiguationAnnotation } from "./implementation";
 import type { DisambiguationOutcome, DisambiguationResult, NerAnnotation } from "./types";
 
 async function disambiguateNERResults(message: IQanaryMessage): Promise<void> {
@@ -54,12 +54,12 @@ async function disambiguateNERResults(message: IQanaryMessage): Promise<void> {
   // Lower score than threshold
   const belowThresholdResults = outcomes.filter(({ annotation, outcome }) => {
     console.log("[belowThreshold] Checking:", {
-    exactQuote: annotation.exactQuote,
-    entityType: annotation.entityType,
-    score: outcome.result?.score,
-    threshold: FUZZY_THRESHOLDS[annotation.entityType as keyof typeof FUZZY_THRESHOLDS] ?? 0.75,
-    hasResult: outcome.result !== null,
-  });
+      exactQuote: annotation.exactQuote,
+      entityType: annotation.entityType,
+      score: outcome.result?.score,
+      threshold: FUZZY_THRESHOLDS[annotation.entityType as keyof typeof FUZZY_THRESHOLDS] ?? 0.75,
+      hasResult: outcome.result !== null,
+    });
     if (!outcome.result) return true;
     const entityType = annotation.entityType as keyof typeof FUZZY_THRESHOLDS;
     const threshold = FUZZY_THRESHOLDS[entityType] ?? 0.75;
@@ -72,16 +72,16 @@ async function disambiguateNERResults(message: IQanaryMessage): Promise<void> {
     try {
       const question = await getQuestion(message);
       if (question) {
-            const ambiguousEntities = [
-              ...ambiguousResults.map(({ annotation, outcome }) => {
-                const candidateLabels = outcome.candidates.map((c) => `"${c.label}"`).join(", ");
-                return `"${annotation.exactQuote}" (Typ: ${annotation.entityType}, mögliche Treffer: ${candidateLabels})`;
-              }),
-              ...belowThresholdResults.map(({ annotation, outcome }) => {
-                const isMatchStr = outcome.result ? outcome.result.score.toFixed(2) : "kein Match";
-                return `"${annotation.exactQuote}" (Score: ${isMatchStr} unter threshold)`;
-              }),
-            ].join("; ");
+        const ambiguousEntities = [
+          ...ambiguousResults.map(({ annotation, outcome }) => {
+            const candidateLabels = outcome.candidates.map((c) => `"${c.label}"`).join(", ");
+            return `"${annotation.exactQuote}" (Typ: ${annotation.entityType}, mögliche Treffer: ${candidateLabels})`;
+          }),
+          ...belowThresholdResults.map(({ annotation, outcome }) => {
+            const isMatchStr = outcome.result ? outcome.result.score.toFixed(2) : "kein Match";
+            return `"${annotation.exactQuote}" (Score: ${isMatchStr} unter threshold)`;
+          }),
+        ].join("; ");
 
         const clarificationText = await generateClarificationQuestion({
           question,

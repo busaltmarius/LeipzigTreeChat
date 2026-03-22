@@ -149,7 +149,7 @@ const PREDEFINED_SPARQL_BY_RELATION_TYPE: Partial<Record<KnownRelationType, stri
     }`,
   UNKNOWN: ``,
   // --- New Watering & Tree Combinations ---
-  
+
   AMOUNT_WATERED_BY_SPECIES: `
     PREFIX lg_vocab: <urn:de:leipzig:trees:vocab:leipziggiesst:>
 
@@ -360,7 +360,7 @@ const PREDEFINED_SPARQL_BY_RELATION_TYPE: Partial<Record<KnownRelationType, stri
       ?road a str_vocab:RoadSegment ;
             str_vocab:str ?streetName ;
             str_vocab:wintkat {{winterCategory}} .
-    }`
+    }`,
 };
 
 const REQUIRED_PLACEHOLDERS_BY_RELATION_TYPE: Partial<Record<KnownRelationType, SparqlPlaceholderName[]>> = {

@@ -34,7 +34,7 @@ const RelationClassificationSchema = z.object({
     .string()
     .describe(
       "A brief 1-2 sentence explanation of why this relation type fits the German question. " +
-      "Analyze the intent and the specific constraints of the question before choosing."
+        "Analyze the intent and the specific constraints of the question before choosing."
     ),
   relationType: z
     .enum(KNOWN_RELATION_TYPES)
@@ -79,7 +79,7 @@ Output: {"reasoning": "The user is asking for restaurant recommendations, which 
 2. Select the single best-fitting relationType.
 3. Strict adherence: If the question does not perfectly fit one of the core relation types, you MUST return UNKNOWN. Do not guess or force a fit.
 4. Assign a realistic confidence score between 0.0 and 1.0. If the question is highly ambiguous, lower the confidence score.
-`
+`;
 
 export const classifyRelationType = async (
   question: string,

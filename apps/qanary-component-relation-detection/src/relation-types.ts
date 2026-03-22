@@ -33,12 +33,15 @@ const RELATION_TYPE_EXPLANATIONS: Record<KnownRelationType, string> = {
   // --- New Watering & Tree Combinations ---
   AMOUNT_WATERED_BY_SPECIES: "Asks for the total amount or volume of water applied to a specific tree species.",
   AMOUNT_WATERED_BY_STREET: "Asks for the cumulative water applied to trees along a specific street.",
-  WATERING_FREQUENCY_BY_SPECIES: "Asks for the total number of watering events (count, not volume) for a specific species.",
-  NEWLY_PLANTED_TREES_WATERED: "Asks for watering records of recently planted or young trees based on their planting year.",
+  WATERING_FREQUENCY_BY_SPECIES:
+    "Asks for the total number of watering events (count, not volume) for a specific species.",
+  NEWLY_PLANTED_TREES_WATERED:
+    "Asks for watering records of recently planted or young trees based on their planting year.",
 
   // --- New Tree Characteristics ---
   AMOUNT_SPONSORED_TREES_DISTRICT: "Asks for the amount of sponsored/adopted trees within a specific district.",
-  TREES_PLANNED_REPLANTING_DISTRICT: "Asks for trees marked for planned replanting within a specific district or street.",
+  TREES_PLANNED_REPLANTING_DISTRICT:
+    "Asks for trees marked for planned replanting within a specific district or street.",
   LARGEST_TREES_BY_DISTRICT: "Asks to find the largest trees by stem diameter or circumference in a specific area.",
 
   // --- New Kita & Infrastructure Types ---
@@ -46,7 +49,7 @@ const RELATION_TYPE_EXPLANATIONS: Record<KnownRelationType, string> = {
   TREES_BY_SPECIES_AT_KITA: "Asks to identify the species of trees located near a specific kindergarten.",
   WATERABLE_TREES_BY_KITA_PROVIDER: "Asks for trees needing water near kindergartens run by a specific provider.",
   TREES_BY_STREET_MAINTENANCE: "Asks about trees located on streets maintained by a specific authority (Baulast).",
-  TREES_ON_WINTER_SERVICE_ROUTES: "Asks about trees on streets classified under a specific winter service category."
+  TREES_ON_WINTER_SERVICE_ROUTES: "Asks about trees on streets classified under a specific winter service category.",
 };
 
 export const getRelationTypeExplanation = (relationType: KnownRelationType): string => {
