@@ -35,7 +35,28 @@ bun install
 
 ## 2. Create environment files
 
-Create local `.env` files from the checked-in examples:
+The fastest path is the helper script from the repository root. It copies any
+missing `.env` files, writes the shared local defaults, and switches the Qanary
+components to `host.docker.internal` so the Docker pipeline can reach the
+locally running component processes:
+
+```sh
+read -rsp "OpenRouter API key: " OPENROUTER_API_KEY && echo && export OPENROUTER_API_KEY && bun run env:setup:docker
+```
+
+This command keeps the key out of your shell history. The helper also writes the
+root `.env` used by Docker Compose and the benchmark command, and it rejects
+keys that do not look like OpenRouter keys. If `VIRTUOSO_DBA_PASSWORD` is not
+already set, it generates one for you.
+
+If you want to keep the component `.env` files in host-local mode instead, run:
+
+```sh
+read -rsp "OpenRouter API key: " OPENROUTER_API_KEY && echo && export OPENROUTER_API_KEY && bun run env:setup
+```
+
+If you prefer to do the setup manually, create local `.env` files from the
+checked-in examples:
 
 ```sh
 cp apps/chatui/.env.example apps/chatui/.env
@@ -47,10 +68,15 @@ cp apps/qanary-component-relation-detection/.env.example apps/qanary-component-r
 cp apps/qanary-component-sparql-generation/.env.example apps/qanary-component-sparql-generation/.env
 ```
 
-You also need a root-level `.env` file for Docker Compose:
+You also need a root-level `.env` file:
 
 ```sh
-printf 'VIRTUOSO_DBA_PASSWORD=your-secure-password\n' > .env
+cat > .env <<'EOF'
+VIRTUOSO_DBA_PASSWORD=your-secure-password
+OPENROUTER_API_KEY=sk-or-v1-...
+QANARY_API_BASE_URL=http://localhost:8080
+TRIPLESTORE_URL=http://localhost:8890/sparql
+EOF
 ```
 
 ## 3. Fill in the required variables
@@ -67,6 +93,9 @@ Update the new `.env` files with real values:
     - `OPENROUTER_API_KEY` must be filled in for the LLM-backed components
 - In the root `.env`:
     - `VIRTUOSO_DBA_PASSWORD` is required by `docker compose`
+    - `OPENROUTER_API_KEY` is reused by the benchmark command
+    - `QANARY_API_BASE_URL` should stay `http://localhost:8080`
+    - `TRIPLESTORE_URL` should stay `http://localhost:8890/sparql`
 
 ## 4. Important Docker networking note
 
@@ -80,6 +109,9 @@ QANARY_HOST=host.docker.internal
 
 If `QANARY_HOST` is left as `localhost`, the pipeline container will try to call
 itself instead of your locally running component.
+
+The helper command `bun run env:setup:docker` performs this change
+automatically.
 
 ## 5. Start the infrastructure
 

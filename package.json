@@ -13,6 +13,8 @@
     "build": "turbo run build",
     "clean": "turbo run clean",
     "dev": "turbo run dev",
+    "env:setup": "./scripts/setup-env.sh",
+    "env:setup:docker": "./scripts/setup-env.sh --docker-stack",
     "docs:build": "bun run docs:reference && cd docs && bun run build",
     "docs:reference": "turbo run tsdoc --output-logs errors-only --ui stream && bun run scripts/generate-source-reference.mjs",
     "format-and-lint": "biome check .",
