@@ -8,6 +8,7 @@
     "dev": "tsc --watch",
     "build": "tsc",
     "clean": "rimraf .turbo dist node_modules",
+    "tsdoc": "bun ../../scripts/generate-package-tsdoc.mjs",
     "generate-sources:action-server": "openapi-generator-cli generate -g typescript-axios -i specs/action-server.yml -o ./src/action-server --skip-validate-spec",
     "generate-sources:lupo-cloud": "openapi-generator-cli generate -g typescript-axios -i specs/lupo-cloud.yml -o ./src/lupo-cloud",
     "generate-sources:qanary-component": "openapi-generator-cli generate -g typescript-axios -i specs/qanary-component.yml -o ./src/qanary-component",

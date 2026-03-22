@@ -2,6 +2,7 @@
   "name": "leipzigtreechat",
   "devDependencies": {
     "@biomejs/biome": "2.3.11",
+    "@microsoft/tsdoc": "^0.15.1",
     "turbo": "^2.8.20",
     "typescript": "5.9.2"
   },
@@ -11,9 +12,12 @@
     "build": "turbo run build",
     "clean": "turbo run clean",
     "dev": "turbo run dev",
+    "docs:build": "bun run docs:reference && cd docs && bun run build",
+    "docs:reference": "turbo run tsdoc --output-logs errors-only --ui stream && bun run scripts/generate-source-reference.mjs",
     "format-and-lint": "biome check .",
     "format-and-lint:fix": "biome check . --write",
-    "check-types": "turbo run check-types"
+    "check-types": "turbo run check-types",
+    "tsdoc": "turbo run tsdoc --output-logs errors-only --ui stream"
   },
   "workspaces": [
     "apps/*",

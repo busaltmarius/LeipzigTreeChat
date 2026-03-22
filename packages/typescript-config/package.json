@@ -2,6 +2,9 @@
   "name": "@leipzigtreechat/typescript-config",
   "version": "0.0.0",
   "private": true,
+  "scripts": {
+    "tsdoc": "bun ../../scripts/generate-package-tsdoc.mjs"
+  },
   "license": "MIT",
   "publishConfig": {
     "access": "public"

@@ -9,6 +9,7 @@
     "dev": "bun --env-file=.env --watch src/index.ts",
     "format": "prettier --check src",
     "format:fix": "prettier --write src",
+    "tsdoc": "bun ../../scripts/generate-package-tsdoc.mjs",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "test": "bun run build --workspace=@leipzigtreechat/qanary-api && bun run build --workspace=@leipzigtreechat/shared && bun run build --workspace=@leipzigtreechat/qanary-component-core && bun test --coverage"

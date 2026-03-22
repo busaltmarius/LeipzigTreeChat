@@ -4,7 +4,13 @@ on:
   push:
     branches: [main]
     paths:
+      - "apps/**"
+      - "packages/**"
       - "docs/**"
+      - "scripts/**"
+      - "bun.lock"
+      - "package.json"
+      - "turbo.json"
       - ".github/workflows/deploy-docs.yml"
   workflow_dispatch:
 
@@ -20,9 +26,6 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: docs
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -35,13 +38,19 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
-      - name: Install dependencies
+      - name: Install root dependencies
         run: bun install --frozen-lockfile
+
+      - name: Install docs dependencies
+        run: cd docs && bun install --frozen-lockfile
+
+      - name: Generate source code reference
+        run: bun run docs:reference
 
       - name: Build docs
         env:
           GITHUB_PAGES: "true"
-        run: bun run build
+        run: cd docs && bun run build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

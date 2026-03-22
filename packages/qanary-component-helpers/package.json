@@ -17,7 +17,8 @@
   "scripts": {
     "dev": "tsc --watch",
     "build": "tsc",
-    "clean": "rimraf .turbo dist node_modules"
+    "clean": "rimraf .turbo dist node_modules",
+    "tsdoc": "bun ../../scripts/generate-package-tsdoc.mjs"
   },
   "dependencies": {
     "@leipzigtreechat/qanary-component-core": "workspace: *",

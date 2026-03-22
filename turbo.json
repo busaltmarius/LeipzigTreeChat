@@ -18,6 +18,10 @@
     "check-types": {
       "dependsOn": ["^check-types"]
     },
+    "tsdoc": {
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": [".tsdoc/**"]
+    },
     "dev": {
       "dependsOn": ["^build"],
       "cache": false,

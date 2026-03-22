@@ -3,7 +3,8 @@
   "scripts": {
     "build": "bun --bun build --compile --outfile dist/baumbart-cli src/index.ts",
     "clean": "rimraf .turbo dist node_modules",
-    "dev": "bun --bun run --target bun src/index.ts"
+    "dev": "bun --bun run --target bun src/index.ts",
+    "tsdoc": "bun ../../scripts/generate-package-tsdoc.mjs"
   },
   "devDependencies": {
     "typescript": "latest",

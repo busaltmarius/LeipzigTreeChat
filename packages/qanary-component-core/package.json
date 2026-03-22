@@ -16,7 +16,8 @@
   "scripts": {
     "dev": "bun --watch src/index.ts",
     "build": "tsc",
-    "clean": "rimraf .turbo dist node_modules"
+    "clean": "rimraf .turbo dist node_modules",
+    "tsdoc": "bun ../../scripts/generate-package-tsdoc.mjs"
   },
   "dependencies": {
     "@leipzigtreechat/qanary-api": "workspace: *",

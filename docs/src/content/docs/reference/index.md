@@ -9,3 +9,4 @@ order: 1
 - [Architecture](/docs/reference/architecture)
 - [Qanary Annotations](/docs/reference/annotations)
 - [Example dialogues](/docs/reference/dialogues)
+- [Source Code Reference](/docs/reference/source-code)
