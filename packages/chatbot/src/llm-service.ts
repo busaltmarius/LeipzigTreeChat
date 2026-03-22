@@ -200,16 +200,23 @@ export class LLMService extends Context.Tag("LLMService")<LLMService, LLMService
               {
                 role: "user",
                 content: [
-                  "## Gesprächshistorie:",
-                  "\n",
-                  conversationHistory || "(Keine vorherige Gesprächshistorie)",
-                  "\n\n",
-                  "## Neue Eingabe:",
-                  "\n",
-                  newInput,
-                  "\n\n",
-                  "Kombiniere diese zu EINER umfassenden Frage:",
-                ].join(""),
+                  `Here is the conversation history so far:
+
+<conversation_history>
+${conversationHistory}
+</conversation_history>
+
+The user's most recent message is:
+"${newInput}"
+
+Rewrite this message into a single, clear, self-contained question that reflects the user's true intent based on the conversation context. 
+
+If the user is making a clarification or correction, merge it with the previous question.
+If the user is asking a follow-up question, incorporate relevant context from the previous question to make it self-contained.
+If the user is asking a new unrelated question, return it with minimal changes.
+
+Return ONLY the rewritten question.`
+                  ].join(""),
               },
             ]);
 

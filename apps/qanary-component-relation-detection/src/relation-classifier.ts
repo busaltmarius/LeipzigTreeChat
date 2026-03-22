@@ -30,6 +30,12 @@ export interface RelationClassification {
 }
 
 const RelationClassificationSchema = z.object({
+  reasoning: z
+    .string()
+    .describe(
+      "A brief 1-2 sentence explanation of why this relation type fits the German question. " +
+      "Analyze the intent and the specific constraints of the question before choosing."
+    ),
   relationType: z
     .enum(KNOWN_RELATION_TYPES)
     .describe(
@@ -47,19 +53,33 @@ const RELATION_TYPE_PROMPT_LIST = KNOWN_RELATION_TYPES.map(
   (relationType) => `- ${relationType}: ${getRelationTypeExplanation(relationType)}`
 ).join("\n");
 
-const SYSTEM_PROMPT = `You are a relation detection component in a Qanary question-answering pipeline about urban trees in Leipzig, Germany.
+const SYSTEM_PROMPT = `
+You are a relation detection component in a Qanary question-answering pipeline about urban trees in Leipzig, Germany.
 
-Your task:
-- Read the question and classify it into one RELATION_TYPE.
+Your task is to read a user question (typically in German) and classify it into one of the predefined relation types.
 
-Preferred RELATION_TYPE values:
+### CATEGORIES:
 ${RELATION_TYPE_PROMPT_LIST}
 
-Rules:
-1. Return exactly one relationType.
-2. relationType must be SCREAMING_SNAKE_CASE.
-3. If none of the preferred values fit perfectly, return a UNKNOWN relation label.
-4. confidence must be in [0,1].`;
+### EXAMPLES:
+Question: "Wie viel wurde im Stadtteil Connewitz gegossen?"
+Output: {"reasoning": "The user is asking for the amount of watering ('Wie viel wurde... gegossen') located in a specific district ('Connewitz').", "relationType": "AMOUNT_WATERED_DISTRICT", "confidence": 0.95}
+
+Question: "Gibt es Eichen in Plagwitz?"
+Output: {"reasoning": "The user is asking about a specific tree species ('Eichen') in a specific district ('Plagwitz').", "relationType": "TREES_BY_SPECIES_DISTRICT", "confidence": 0.90}
+
+Question: "Welche Bäume am Kindergarten 'Sonnenschein' brauchen Wasser?"
+Output: {"reasoning": "The user is asking for waterable trees ('brauchen Wasser') near a specific kindergarten ('Kindergarten Sonnenschein').", "relationType": "WATERABLE_TREES_AT_KITA", "confidence": 0.98}
+
+Question: "Wo kann ich gut essen gehen?"
+Output: {"reasoning": "The user is asking for restaurant recommendations, which is unrelated to urban trees or watering.", "relationType": "UNKNOWN", "confidence": 0.99}
+
+### RULES:
+1. First, provide a brief reasoning for your choice.
+2. Select the single best-fitting relationType.
+3. Strict adherence: If the question does not perfectly fit one of the core relation types, you MUST return UNKNOWN. Do not guess or force a fit.
+4. Assign a realistic confidence score between 0.0 and 1.0. If the question is highly ambiguous, lower the confidence score.
+`
 
 export const classifyRelationType = async (
   question: string,

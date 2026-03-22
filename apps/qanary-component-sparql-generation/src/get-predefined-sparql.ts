@@ -24,15 +24,14 @@ const PREDEFINED_SPARQL_BY_RELATION_TYPE: Partial<Record<KnownRelationType, stri
   SPONSORED_TREES: `
     PREFIX bk_vocab: <urn:de:leipzig:trees:vocab:baumkataster:>
 
-    SELECT ?tree ?treeName ?street
+    SELECT DISTINCT ?gattung ?street
     WHERE {
     ?tree a bk_vocab:Tree ;
-            bk_vocab:ga_lang_deutsch ?treeName ;
             bk_vocab:strasse ?street ;
+            bk_vocab:gattung ?gattung ;
             bk_vocab:status_patenbaum ?patenStatus .
     
-    # Assuming sponsored trees have a non-empty status string
-        FILTER(?patenStatus = "vergeben") 
+      FILTER(?patenStatus = "vergeben") 
     }`,
   WATERABLE_TREES_AT_ADDRESS: `
     PREFIX geo1: <http://www.w3.org/2003/01/geo/wgs84_pos#>
@@ -122,8 +121,7 @@ const PREDEFINED_SPARQL_BY_RELATION_TYPE: Partial<Record<KnownRelationType, stri
 
     FILTER(?dist2 <= (?r * ?r))
     }`,
-  UNKNOWN: `
-  `,
+  UNKNOWN: ``,
 };
 
 const REQUIRED_PLACEHOLDERS_BY_RELATION_TYPE: Partial<Record<KnownRelationType, SparqlPlaceholderName[]>> = {

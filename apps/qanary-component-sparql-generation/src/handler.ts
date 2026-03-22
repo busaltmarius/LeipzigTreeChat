@@ -121,7 +121,7 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
   // 3. Load predefined SPARQL request depending on the relation
   const sparqlTemplate = getSparqlTemplate(relationType);
 
-  if (!sparqlTemplate) {
+  if (!sparqlTemplate || sparqlTemplate.trim() === "") {
     console.warn("No predefined SPARQL query for relation:", relationType);
     return message;
   }
