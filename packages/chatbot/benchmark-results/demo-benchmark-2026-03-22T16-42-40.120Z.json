@@ -8,16 +8,10 @@
         "id": "Q1",
         "title": "Gießmenge nach Stadtteil",
         "kind": "question",
-        "userTurns": [
-          "Wie viel wurde im Stadtteil Connewitz gegossen?"
-        ],
+        "userTurns": ["Wie viel wurde im Stadtteil Connewitz gegossen?"],
         "expectedFlow": {
           "clarification": "forbidden",
-          "requiredMetadataStatuses": [
-            "WAITING_FOR_INPUT",
-            "REWRITING_QUESTION",
-            "GATHERING_DATA"
-          ],
+          "requiredMetadataStatuses": ["WAITING_FOR_INPUT", "REWRITING_QUESTION", "GATHERING_DATA"],
           "minAssistantMessages": 1
         },
         "requiredSignals": [
@@ -228,11 +222,7 @@
         ],
         "expectedFlow": {
           "clarification": "forbidden",
-          "requiredMetadataStatuses": [
-            "WAITING_FOR_INPUT",
-            "REWRITING_QUESTION",
-            "GATHERING_DATA"
-          ],
+          "requiredMetadataStatuses": ["WAITING_FOR_INPUT", "REWRITING_QUESTION", "GATHERING_DATA"],
           "minAssistantMessages": 1
         },
         "requiredSignals": [
@@ -434,11 +424,7 @@
         ],
         "expectedFlow": {
           "clarification": "forbidden",
-          "requiredMetadataStatuses": [
-            "WAITING_FOR_INPUT",
-            "REWRITING_QUESTION",
-            "GATHERING_DATA"
-          ],
+          "requiredMetadataStatuses": ["WAITING_FOR_INPUT", "REWRITING_QUESTION", "GATHERING_DATA"],
           "minAssistantMessages": 1
         },
         "requiredSignals": [
@@ -637,16 +623,10 @@
         "id": "Q4",
         "title": "Baumarten in Leipzig",
         "kind": "question",
-        "userTurns": [
-          "Welche Baumarten gibt es in Leipzig?"
-        ],
+        "userTurns": ["Welche Baumarten gibt es in Leipzig?"],
         "expectedFlow": {
           "clarification": "forbidden",
-          "requiredMetadataStatuses": [
-            "WAITING_FOR_INPUT",
-            "REWRITING_QUESTION",
-            "GATHERING_DATA"
-          ],
+          "requiredMetadataStatuses": ["WAITING_FOR_INPUT", "REWRITING_QUESTION", "GATHERING_DATA"],
           "minAssistantMessages": 1
         },
         "requiredSignals": [
@@ -843,16 +823,10 @@
         "id": "Q5",
         "title": "Stadtteil mit den meisten Bäumen",
         "kind": "question",
-        "userTurns": [
-          "Welcher Stadtteil hat die meisten Bäume?"
-        ],
+        "userTurns": ["Welcher Stadtteil hat die meisten Bäume?"],
         "expectedFlow": {
           "clarification": "forbidden",
-          "requiredMetadataStatuses": [
-            "WAITING_FOR_INPUT",
-            "REWRITING_QUESTION",
-            "GATHERING_DATA"
-          ],
+          "requiredMetadataStatuses": ["WAITING_FOR_INPUT", "REWRITING_QUESTION", "GATHERING_DATA"],
           "minAssistantMessages": 1
         },
         "requiredSignals": [
@@ -1051,15 +1025,10 @@
         "id": "Q6",
         "title": "Patenbäume in meiner Nähe",
         "kind": "question",
-        "userTurns": [
-          "Gibt es Patenbäume in meiner Nähe?"
-        ],
+        "userTurns": ["Gibt es Patenbäume in meiner Nähe?"],
         "expectedFlow": {
           "clarification": "allowed",
-          "requiredMetadataStatuses": [
-            "WAITING_FOR_INPUT",
-            "REWRITING_QUESTION"
-          ],
+          "requiredMetadataStatuses": ["WAITING_FOR_INPUT", "REWRITING_QUESTION"],
           "minAssistantMessages": 1
         },
         "requiredSignals": [
@@ -1252,16 +1221,10 @@
         "id": "Q7",
         "title": "Bäume mit Gießpaten",
         "kind": "question",
-        "userTurns": [
-          "Welche Bäume haben Gießpaten?"
-        ],
+        "userTurns": ["Welche Bäume haben Gießpaten?"],
         "expectedFlow": {
           "clarification": "forbidden",
-          "requiredMetadataStatuses": [
-            "WAITING_FOR_INPUT",
-            "REWRITING_QUESTION",
-            "GATHERING_DATA"
-          ],
+          "requiredMetadataStatuses": ["WAITING_FOR_INPUT", "REWRITING_QUESTION", "GATHERING_DATA"],
           "minAssistantMessages": 1
         },
         "requiredSignals": [
@@ -1454,15 +1417,10 @@
         "id": "Q8",
         "title": "Bäume in der Umgebung einer Kita",
         "kind": "question",
-        "userTurns": [
-          "Welche Bäume kann ich in der Umgebung meiner Kita gießen?"
-        ],
+        "userTurns": ["Welche Bäume kann ich in der Umgebung meiner Kita gießen?"],
         "expectedFlow": {
           "clarification": "allowed",
-          "requiredMetadataStatuses": [
-            "WAITING_FOR_INPUT",
-            "REWRITING_QUESTION"
-          ],
+          "requiredMetadataStatuses": ["WAITING_FOR_INPUT", "REWRITING_QUESTION"],
           "minAssistantMessages": 1
         },
         "requiredSignals": [
@@ -1661,16 +1619,10 @@
         "id": "Q9",
         "title": "Verteilung der Baumarten",
         "kind": "question",
-        "userTurns": [
-          "Wie sind die Baumarten in Leipzig verteilt?"
-        ],
+        "userTurns": ["Wie sind die Baumarten in Leipzig verteilt?"],
         "expectedFlow": {
           "clarification": "forbidden",
-          "requiredMetadataStatuses": [
-            "WAITING_FOR_INPUT",
-            "REWRITING_QUESTION",
-            "GATHERING_DATA"
-          ],
+          "requiredMetadataStatuses": ["WAITING_FOR_INPUT", "REWRITING_QUESTION", "GATHERING_DATA"],
           "minAssistantMessages": 1
         },
         "requiredSignals": [
@@ -1869,15 +1821,10 @@
         "id": "Q10",
         "title": "Bäume mit Trockenheitsstress",
         "kind": "question",
-        "userTurns": [
-          "Welche Bäume in Leipzig leiden aktuell unter Trockenheit?"
-        ],
+        "userTurns": ["Welche Bäume in Leipzig leiden aktuell unter Trockenheit?"],
         "expectedFlow": {
           "clarification": "allowed",
-          "requiredMetadataStatuses": [
-            "WAITING_FOR_INPUT",
-            "REWRITING_QUESTION"
-          ],
+          "requiredMetadataStatuses": ["WAITING_FOR_INPUT", "REWRITING_QUESTION"],
           "minAssistantMessages": 1
         },
         "requiredSignals": [
@@ -2069,16 +2016,10 @@
         "id": "Q11",
         "title": "Zukünftige Gießmenge ohne Datenbasis",
         "kind": "question",
-        "userTurns": [
-          "Wie viel wurde im Stadtteil Connewitz im Jahr 2026 gegossen?"
-        ],
+        "userTurns": ["Wie viel wurde im Stadtteil Connewitz im Jahr 2026 gegossen?"],
         "expectedFlow": {
           "clarification": "forbidden",
-          "requiredMetadataStatuses": [
-            "WAITING_FOR_INPUT",
-            "REWRITING_QUESTION",
-            "GATHERING_DATA"
-          ],
+          "requiredMetadataStatuses": ["WAITING_FOR_INPUT", "REWRITING_QUESTION", "GATHERING_DATA"],
           "minAssistantMessages": 1
         },
         "requiredSignals": [
@@ -2303,15 +2244,10 @@
         "id": "Q12",
         "title": "Themenüberblick",
         "kind": "question",
-        "userTurns": [
-          "Was kannst du mir über die Bäume in Leipzig erklären?"
-        ],
+        "userTurns": ["Was kannst du mir über die Bäume in Leipzig erklären?"],
         "expectedFlow": {
           "clarification": "forbidden",
-          "requiredMetadataStatuses": [
-            "WAITING_FOR_INPUT",
-            "REWRITING_QUESTION"
-          ],
+          "requiredMetadataStatuses": ["WAITING_FOR_INPUT", "REWRITING_QUESTION"],
           "minAssistantMessages": 1
         },
         "requiredSignals": [
@@ -2510,18 +2446,10 @@
         "id": "D1",
         "title": "Dialog: Gießmenge nach Stadtteil und Jahr",
         "kind": "dialogue",
-        "userTurns": [
-          "Wie viel wurde im Stadtteil Connewitz gegossen?",
-          "Wie viel in 2026?",
-          "Ja."
-        ],
+        "userTurns": ["Wie viel wurde im Stadtteil Connewitz gegossen?", "Wie viel in 2026?", "Ja."],
         "expectedFlow": {
           "clarification": "forbidden",
-          "requiredMetadataStatuses": [
-            "WAITING_FOR_INPUT",
-            "REWRITING_QUESTION",
-            "GATHERING_DATA"
-          ],
+          "requiredMetadataStatuses": ["WAITING_FOR_INPUT", "REWRITING_QUESTION", "GATHERING_DATA"],
           "minAssistantMessages": 3
         },
         "requiredSignals": [
@@ -2810,11 +2738,7 @@
         ],
         "expectedFlow": {
           "clarification": "forbidden",
-          "requiredMetadataStatuses": [
-            "WAITING_FOR_INPUT",
-            "REWRITING_QUESTION",
-            "GATHERING_DATA"
-          ],
+          "requiredMetadataStatuses": ["WAITING_FOR_INPUT", "REWRITING_QUESTION", "GATHERING_DATA"],
           "minAssistantMessages": 2
         },
         "requiredSignals": [
@@ -3062,11 +2986,7 @@
         ],
         "expectedFlow": {
           "clarification": "forbidden",
-          "requiredMetadataStatuses": [
-            "WAITING_FOR_INPUT",
-            "REWRITING_QUESTION",
-            "GATHERING_DATA"
-          ],
+          "requiredMetadataStatuses": ["WAITING_FOR_INPUT", "REWRITING_QUESTION", "GATHERING_DATA"],
           "minAssistantMessages": 3
         },
         "requiredSignals": [
@@ -3351,15 +3271,10 @@
         "id": "D4",
         "title": "Dialog: Themenüberblick",
         "kind": "dialogue",
-        "userTurns": [
-          "Was kannst du mir über die Bäume in Leipzig erklären?"
-        ],
+        "userTurns": ["Was kannst du mir über die Bäume in Leipzig erklären?"],
         "expectedFlow": {
           "clarification": "forbidden",
-          "requiredMetadataStatuses": [
-            "WAITING_FOR_INPUT",
-            "REWRITING_QUESTION"
-          ],
+          "requiredMetadataStatuses": ["WAITING_FOR_INPUT", "REWRITING_QUESTION"],
           "minAssistantMessages": 1
         },
         "requiredSignals": [
@@ -3549,10 +3464,7 @@
         "id": "D5",
         "title": "Dialog: Klärungsbedürftige Ortsanfrage",
         "kind": "dialogue",
-        "userTurns": [
-          "Welchen Baum kann ich heute gießen?",
-          "In Connewitz."
-        ],
+        "userTurns": ["Welchen Baum kann ich heute gießen?", "In Connewitz."],
         "expectedFlow": {
           "clarification": "required",
           "requiredMetadataStatuses": [
@@ -3814,11 +3726,7 @@
         ],
         "expectedFlow": {
           "clarification": "forbidden",
-          "requiredMetadataStatuses": [
-            "WAITING_FOR_INPUT",
-            "REWRITING_QUESTION",
-            "GATHERING_DATA"
-          ],
+          "requiredMetadataStatuses": ["WAITING_FOR_INPUT", "REWRITING_QUESTION", "GATHERING_DATA"],
           "minAssistantMessages": 2
         },
         "requiredSignals": [

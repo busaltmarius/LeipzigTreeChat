@@ -226,11 +226,10 @@ export const Nodes = <const N extends string[]>(
         const clarifications = yield* triplestore.queryClarifications(graph_uri);
         const clarification = new ClarificationConversation(new ConversationURI(graph_uri));
         for (const item of clarifications) {
-            clarification.addQuestion(new QanaryClarificationQuestion(item.uri, item.content));
+          clarification.addQuestion(new QanaryClarificationQuestion(item.uri, item.content));
         }
 
         const qanary_answer = yield* Effect.either(triplestore.queryFinalAnswer(graph_uri));
-
 
         if (Either.isLeft(qanary_answer)) {
           const error = qanary_answer.left;
