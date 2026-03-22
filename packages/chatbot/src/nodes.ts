@@ -223,7 +223,14 @@ export const Nodes = <const N extends string[]>(
 
         const triplestore = yield* TriplestoreService;
 
+        const clarifications = yield* triplestore.queryClarifications(graph_uri);
+        const clarification = new ClarificationConversation(new ConversationURI(graph_uri));
+        for (const item of clarifications) {
+            clarification.addQuestion(new QanaryClarificationQuestion(item.uri, item.content));
+        }
+
         const qanary_answer = yield* Effect.either(triplestore.queryFinalAnswer(graph_uri));
+
 
         if (Either.isLeft(qanary_answer)) {
           const error = qanary_answer.left;
@@ -240,16 +247,10 @@ export const Nodes = <const N extends string[]>(
             update: {
               qanary_answer: undefined,
               messages: state.messages,
-              clarification: undefined,
+              clarification,
             },
             goto: routerNode,
           });
-        }
-
-        const clarifications = yield* triplestore.queryClarifications(graph_uri);
-        const clarification = new ClarificationConversation(new ConversationURI(graph_uri));
-        for (const item of clarifications) {
-          clarification.addQuestion(new QanaryClarificationQuestion(item.uri, item.content));
         }
 
         return command({
