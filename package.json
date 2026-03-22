@@ -9,7 +9,7 @@
   "packageManager": "bun@1.3.2",
   "private": true,
   "scripts": {
-    "benchmark:demo": "bun --env-file=.env run --filter @leipzigtreechat/chatbot benchmark:demo",
+    "benchmark:demo": "bun --env-file=.env scripts/run-demo-benchmark.mjs",
     "build": "turbo run build",
     "clean": "turbo run clean",
     "dev": "turbo run dev",

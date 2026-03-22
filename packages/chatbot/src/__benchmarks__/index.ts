@@ -17,9 +17,44 @@ const parseOutputDir = (): string => {
   return resolve(import.meta.dir, "../../benchmark-results");
 };
 
+const printPartialResult = (
+  completedCases: number,
+  totalCases: number,
+  cases: Array<{ evaluation: { status: string }; fixture: { id: string; title: string }; totalDurationMs: number }>
+) => {
+  const latestCase = cases[completedCases - 1];
+
+  if (!latestCase) {
+    return;
+  }
+
+  const passCount = cases.filter((result) => result.evaluation.status === "pass").length;
+  const softFailCount = cases.filter((result) => result.evaluation.status === "soft-fail").length;
+  const failCount = cases.filter((result) => result.evaluation.status === "fail").length;
+
+  console.info(
+    [
+      `[${completedCases}/${totalCases}]`,
+      latestCase.fixture.id,
+      latestCase.fixture.title,
+      `-> ${latestCase.evaluation.status}`,
+      `(${latestCase.totalDurationMs} ms)`,
+      `running totals: pass=${passCount}, soft-fail=${softFailCount}, fail=${failCount}`,
+    ].join(" ")
+  );
+};
+
 const main = async () => {
   const outputDir = parseOutputDir();
-  const runResult = await runBenchmarkSuite(DEMO_BENCHMARK_FIXTURES);
+  const observedCases: Array<{
+    evaluation: { status: string };
+    fixture: { id: string; title: string };
+    totalDurationMs: number;
+  }> = [];
+  const runResult = await runBenchmarkSuite(DEMO_BENCHMARK_FIXTURES, async (event) => {
+    observedCases.push(event.result);
+    printPartialResult(event.completedCases, event.totalCases, observedCases);
+  });
   const paths = await writeBenchmarkArtifacts(runResult, outputDir);
   const passedCases = runResult.cases.filter((result) => result.evaluation.status === "pass").length;
 

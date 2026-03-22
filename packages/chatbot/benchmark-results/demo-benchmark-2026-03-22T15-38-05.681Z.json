@@ -1,23 +1,17 @@
 {
-  "startedAt": "2026-03-22T15:46:06.511Z",
-  "finishedAt": "2026-03-22T15:55:46.075Z",
-  "totalDurationMs": 579564,
+  "startedAt": "2026-03-22T15:28:53.629Z",
+  "finishedAt": "2026-03-22T15:38:05.681Z",
+  "totalDurationMs": 552052,
   "cases": [
     {
       "fixture": {
         "id": "Q1",
         "title": "Gießmenge nach Stadtteil",
         "kind": "question",
-        "userTurns": [
-          "Wie viel wurde im Stadtteil Connewitz gegossen?"
-        ],
+        "userTurns": ["Wie viel wurde im Stadtteil Connewitz gegossen?"],
         "expectedFlow": {
           "clarification": "forbidden",
-          "requiredMetadataStatuses": [
-            "WAITING_FOR_INPUT",
-            "REWRITING_QUESTION",
-            "GATHERING_DATA"
-          ],
+          "requiredMetadataStatuses": ["WAITING_FOR_INPUT", "REWRITING_QUESTION", "GATHERING_DATA"],
           "minAssistantMessages": 1
         },
         "requiredSignals": [
@@ -53,19 +47,19 @@
         {
           "role": "assistant",
           "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
-          "timestamp": "2026-03-22T15:46:06.512Z",
+          "timestamp": "2026-03-22T15:28:53.629Z",
           "turnIndex": null
         },
         {
           "role": "user",
           "content": "Wie viel wurde im Stadtteil Connewitz gegossen?",
-          "timestamp": "2026-03-22T15:46:06.525Z",
+          "timestamp": "2026-03-22T15:28:53.656Z",
           "turnIndex": 0
         },
         {
           "role": "assistant",
           "content": "Entschuldigung, ich konnte gerade keine Antwort formulieren. Bitte versuche es erneut.",
-          "timestamp": "2026-03-22T15:46:41.528Z",
+          "timestamp": "2026-03-22T15:29:12.289Z",
           "turnIndex": 0
         }
       ],
@@ -73,44 +67,49 @@
         {
           "status": "WAITING_FOR_INPUT",
           "message": "",
-          "timestamp": "2026-03-22T15:46:06.524Z"
+          "timestamp": "2026-03-22T15:28:53.656Z"
         },
         {
           "status": "REWRITING_QUESTION",
           "message": "",
-          "timestamp": "2026-03-22T15:46:06.528Z"
+          "timestamp": "2026-03-22T15:28:53.661Z"
         },
         {
           "status": "ERROR",
           "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
-          "timestamp": "2026-03-22T15:46:06.612Z"
+          "timestamp": "2026-03-22T15:28:54.821Z"
         },
         {
           "status": "GATHERING_DATA",
           "message": "",
-          "timestamp": "2026-03-22T15:46:06.615Z"
+          "timestamp": "2026-03-22T15:28:54.828Z"
         },
         {
           "status": "GENERATING_RESPONSE",
           "message": "",
-          "timestamp": "2026-03-22T15:46:41.506Z"
+          "timestamp": "2026-03-22T15:29:12.268Z"
         },
         {
           "status": "ERROR",
           "message": "Entschuldigung, ich konnte gerade keine Antwort formulieren. Bitte versuche es erneut.",
-          "timestamp": "2026-03-22T15:46:41.528Z"
+          "timestamp": "2026-03-22T15:29:12.289Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T15:29:12.292Z"
         }
       ],
       "turnTimings": [
         {
           "turnIndex": 0,
           "userPrompt": "Wie viel wurde im Stadtteil Connewitz gegossen?",
-          "startedAt": "2026-03-22T15:46:06.525Z",
-          "firstAssistantResponseAt": "2026-03-22T15:46:41.528Z",
-          "latencyMs": 35003
+          "startedAt": "2026-03-22T15:28:53.656Z",
+          "firstAssistantResponseAt": "2026-03-22T15:29:12.289Z",
+          "latencyMs": 18633
         }
       ],
-      "totalDurationMs": 35017,
+      "totalDurationMs": 18665,
       "evaluation": {
         "status": "fail",
         "score": 0.7058823529411765,
@@ -164,7 +163,7 @@
                 "axis": "flow_correctness",
                 "critical": true,
                 "passed": true,
-                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> GENERATING_RESPONSE -> ERROR"
+                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> GENERATING_RESPONSE -> ERROR -> WAITING_FOR_INPUT"
               },
               {
                 "label": "Genug Assistentenantworten vorhanden",
@@ -239,11 +238,7 @@
         ],
         "expectedFlow": {
           "clarification": "forbidden",
-          "requiredMetadataStatuses": [
-            "WAITING_FOR_INPUT",
-            "REWRITING_QUESTION",
-            "GATHERING_DATA"
-          ],
+          "requiredMetadataStatuses": ["WAITING_FOR_INPUT", "REWRITING_QUESTION", "GATHERING_DATA"],
           "minAssistantMessages": 1
         },
         "requiredSignals": [
@@ -271,19 +266,19 @@
         {
           "role": "assistant",
           "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
-          "timestamp": "2026-03-22T15:46:41.531Z",
+          "timestamp": "2026-03-22T15:29:12.295Z",
           "turnIndex": null
         },
         {
           "role": "user",
           "content": "Welche Wasserentnahmestellen gibt es in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig?",
-          "timestamp": "2026-03-22T15:46:41.532Z",
+          "timestamp": "2026-03-22T15:29:12.298Z",
           "turnIndex": 0
         },
         {
           "role": "assistant",
           "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
-          "timestamp": "2026-03-22T15:47:23.598Z",
+          "timestamp": "2026-03-22T15:30:12.344Z",
           "turnIndex": 0
         }
       ],
@@ -291,44 +286,49 @@
         {
           "status": "WAITING_FOR_INPUT",
           "message": "",
-          "timestamp": "2026-03-22T15:46:41.532Z"
+          "timestamp": "2026-03-22T15:29:12.298Z"
         },
         {
           "status": "REWRITING_QUESTION",
           "message": "",
-          "timestamp": "2026-03-22T15:46:41.533Z"
+          "timestamp": "2026-03-22T15:29:12.302Z"
         },
         {
           "status": "ERROR",
           "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
-          "timestamp": "2026-03-22T15:46:41.551Z"
+          "timestamp": "2026-03-22T15:29:12.320Z"
         },
         {
           "status": "GATHERING_DATA",
           "message": "",
-          "timestamp": "2026-03-22T15:46:41.553Z"
+          "timestamp": "2026-03-22T15:29:12.322Z"
         },
         {
           "status": "ERROR",
-          "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
-          "timestamp": "2026-03-22T15:47:23.595Z"
+          "message": "Entschuldigung, es gab ein Problem bei der Verarbeitung deiner Anfrage durch Qanary.",
+          "timestamp": "2026-03-22T15:30:12.331Z"
         },
         {
           "status": "GENERATING_RESPONSE",
           "message": "",
-          "timestamp": "2026-03-22T15:47:23.598Z"
+          "timestamp": "2026-03-22T15:30:12.344Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T15:30:12.349Z"
         }
       ],
       "turnTimings": [
         {
           "turnIndex": 0,
           "userPrompt": "Welche Wasserentnahmestellen gibt es in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig?",
-          "startedAt": "2026-03-22T15:46:41.532Z",
-          "firstAssistantResponseAt": "2026-03-22T15:47:23.598Z",
-          "latencyMs": 42066
+          "startedAt": "2026-03-22T15:29:12.298Z",
+          "firstAssistantResponseAt": "2026-03-22T15:30:12.344Z",
+          "latencyMs": 60046
         }
       ],
-      "totalDurationMs": 42068,
+      "totalDurationMs": 60056,
       "evaluation": {
         "status": "fail",
         "score": 0.8,
@@ -375,7 +375,7 @@
                 "axis": "flow_correctness",
                 "critical": true,
                 "passed": true,
-                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE"
+                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT"
               },
               {
                 "label": "Genug Assistentenantworten vorhanden",
@@ -450,11 +450,7 @@
         ],
         "expectedFlow": {
           "clarification": "forbidden",
-          "requiredMetadataStatuses": [
-            "WAITING_FOR_INPUT",
-            "REWRITING_QUESTION",
-            "GATHERING_DATA"
-          ],
+          "requiredMetadataStatuses": ["WAITING_FOR_INPUT", "REWRITING_QUESTION", "GATHERING_DATA"],
           "minAssistantMessages": 1
         },
         "requiredSignals": [
@@ -484,19 +480,19 @@
         {
           "role": "assistant",
           "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
-          "timestamp": "2026-03-22T15:47:23.599Z",
+          "timestamp": "2026-03-22T15:30:12.351Z",
           "turnIndex": null
         },
         {
           "role": "user",
           "content": "Welchen Baum kann ich in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig heute gießen?",
-          "timestamp": "2026-03-22T15:47:23.599Z",
+          "timestamp": "2026-03-22T15:30:12.354Z",
           "turnIndex": 0
         },
         {
           "role": "assistant",
           "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
-          "timestamp": "2026-03-22T15:47:44.236Z",
+          "timestamp": "2026-03-22T15:30:28.398Z",
           "turnIndex": 0
         }
       ],
@@ -504,44 +500,49 @@
         {
           "status": "WAITING_FOR_INPUT",
           "message": "",
-          "timestamp": "2026-03-22T15:47:23.599Z"
+          "timestamp": "2026-03-22T15:30:12.354Z"
         },
         {
           "status": "REWRITING_QUESTION",
           "message": "",
-          "timestamp": "2026-03-22T15:47:23.601Z"
+          "timestamp": "2026-03-22T15:30:12.357Z"
         },
         {
           "status": "ERROR",
           "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
-          "timestamp": "2026-03-22T15:47:23.621Z"
+          "timestamp": "2026-03-22T15:30:12.380Z"
         },
         {
           "status": "GATHERING_DATA",
           "message": "",
-          "timestamp": "2026-03-22T15:47:23.622Z"
+          "timestamp": "2026-03-22T15:30:12.382Z"
         },
         {
           "status": "ERROR",
-          "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
-          "timestamp": "2026-03-22T15:47:44.226Z"
+          "message": "Entschuldigung, es gab ein Problem bei der Verarbeitung deiner Anfrage durch Qanary.",
+          "timestamp": "2026-03-22T15:30:28.391Z"
         },
         {
           "status": "GENERATING_RESPONSE",
           "message": "",
-          "timestamp": "2026-03-22T15:47:44.236Z"
+          "timestamp": "2026-03-22T15:30:28.398Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T15:30:28.401Z"
         }
       ],
       "turnTimings": [
         {
           "turnIndex": 0,
           "userPrompt": "Welchen Baum kann ich in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig heute gießen?",
-          "startedAt": "2026-03-22T15:47:23.599Z",
-          "firstAssistantResponseAt": "2026-03-22T15:47:44.236Z",
-          "latencyMs": 20637
+          "startedAt": "2026-03-22T15:30:12.354Z",
+          "firstAssistantResponseAt": "2026-03-22T15:30:28.398Z",
+          "latencyMs": 16044
         }
       ],
-      "totalDurationMs": 20639,
+      "totalDurationMs": 16051,
       "evaluation": {
         "status": "fail",
         "score": 0.8,
@@ -588,7 +589,7 @@
                 "axis": "flow_correctness",
                 "critical": true,
                 "passed": true,
-                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE"
+                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT"
               },
               {
                 "label": "Genug Assistentenantworten vorhanden",
@@ -658,16 +659,10 @@
         "id": "Q4",
         "title": "Baumarten in Leipzig",
         "kind": "question",
-        "userTurns": [
-          "Welche Baumarten gibt es in Leipzig?"
-        ],
+        "userTurns": ["Welche Baumarten gibt es in Leipzig?"],
         "expectedFlow": {
           "clarification": "forbidden",
-          "requiredMetadataStatuses": [
-            "WAITING_FOR_INPUT",
-            "REWRITING_QUESTION",
-            "GATHERING_DATA"
-          ],
+          "requiredMetadataStatuses": ["WAITING_FOR_INPUT", "REWRITING_QUESTION", "GATHERING_DATA"],
           "minAssistantMessages": 1
         },
         "requiredSignals": [
@@ -695,19 +690,19 @@
         {
           "role": "assistant",
           "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
-          "timestamp": "2026-03-22T15:47:44.238Z",
+          "timestamp": "2026-03-22T15:30:28.403Z",
           "turnIndex": null
         },
         {
           "role": "user",
           "content": "Welche Baumarten gibt es in Leipzig?",
-          "timestamp": "2026-03-22T15:47:44.242Z",
+          "timestamp": "2026-03-22T15:30:28.406Z",
           "turnIndex": 0
         },
         {
           "role": "assistant",
           "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
-          "timestamp": "2026-03-22T15:48:03.802Z",
+          "timestamp": "2026-03-22T15:31:06.217Z",
           "turnIndex": 0
         }
       ],
@@ -715,44 +710,49 @@
         {
           "status": "WAITING_FOR_INPUT",
           "message": "",
-          "timestamp": "2026-03-22T15:47:44.242Z"
+          "timestamp": "2026-03-22T15:30:28.406Z"
         },
         {
           "status": "REWRITING_QUESTION",
           "message": "",
-          "timestamp": "2026-03-22T15:47:44.249Z"
+          "timestamp": "2026-03-22T15:30:28.411Z"
         },
         {
           "status": "ERROR",
           "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
-          "timestamp": "2026-03-22T15:47:44.272Z"
+          "timestamp": "2026-03-22T15:30:28.433Z"
         },
         {
           "status": "GATHERING_DATA",
           "message": "",
-          "timestamp": "2026-03-22T15:47:44.276Z"
+          "timestamp": "2026-03-22T15:30:28.436Z"
         },
         {
           "status": "ERROR",
           "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
-          "timestamp": "2026-03-22T15:48:03.796Z"
+          "timestamp": "2026-03-22T15:31:06.211Z"
         },
         {
           "status": "GENERATING_RESPONSE",
           "message": "",
-          "timestamp": "2026-03-22T15:48:03.802Z"
+          "timestamp": "2026-03-22T15:31:06.217Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T15:31:06.220Z"
         }
       ],
       "turnTimings": [
         {
           "turnIndex": 0,
           "userPrompt": "Welche Baumarten gibt es in Leipzig?",
-          "startedAt": "2026-03-22T15:47:44.242Z",
-          "firstAssistantResponseAt": "2026-03-22T15:48:03.802Z",
-          "latencyMs": 19560
+          "startedAt": "2026-03-22T15:30:28.406Z",
+          "firstAssistantResponseAt": "2026-03-22T15:31:06.217Z",
+          "latencyMs": 37811
         }
       ],
-      "totalDurationMs": 19564,
+      "totalDurationMs": 37818,
       "evaluation": {
         "status": "fail",
         "score": 0.8,
@@ -799,7 +799,7 @@
                 "axis": "flow_correctness",
                 "critical": true,
                 "passed": true,
-                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE"
+                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT"
               },
               {
                 "label": "Genug Assistentenantworten vorhanden",
@@ -869,16 +869,10 @@
         "id": "Q5",
         "title": "Stadtteil mit den meisten Bäumen",
         "kind": "question",
-        "userTurns": [
-          "Welcher Stadtteil hat die meisten Bäume?"
-        ],
+        "userTurns": ["Welcher Stadtteil hat die meisten Bäume?"],
         "expectedFlow": {
           "clarification": "forbidden",
-          "requiredMetadataStatuses": [
-            "WAITING_FOR_INPUT",
-            "REWRITING_QUESTION",
-            "GATHERING_DATA"
-          ],
+          "requiredMetadataStatuses": ["WAITING_FOR_INPUT", "REWRITING_QUESTION", "GATHERING_DATA"],
           "minAssistantMessages": 1
         },
         "requiredSignals": [
@@ -908,19 +902,19 @@
         {
           "role": "assistant",
           "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
-          "timestamp": "2026-03-22T15:48:03.803Z",
+          "timestamp": "2026-03-22T15:31:06.221Z",
           "turnIndex": null
         },
         {
           "role": "user",
           "content": "Welcher Stadtteil hat die meisten Bäume?",
-          "timestamp": "2026-03-22T15:48:03.805Z",
+          "timestamp": "2026-03-22T15:31:06.224Z",
           "turnIndex": 0
         },
         {
           "role": "assistant",
           "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
-          "timestamp": "2026-03-22T15:48:18.686Z",
+          "timestamp": "2026-03-22T15:31:42.134Z",
           "turnIndex": 0
         }
       ],
@@ -928,44 +922,49 @@
         {
           "status": "WAITING_FOR_INPUT",
           "message": "",
-          "timestamp": "2026-03-22T15:48:03.805Z"
+          "timestamp": "2026-03-22T15:31:06.224Z"
         },
         {
           "status": "REWRITING_QUESTION",
           "message": "",
-          "timestamp": "2026-03-22T15:48:03.810Z"
+          "timestamp": "2026-03-22T15:31:06.227Z"
         },
         {
           "status": "ERROR",
           "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
-          "timestamp": "2026-03-22T15:48:03.832Z"
+          "timestamp": "2026-03-22T15:31:06.253Z"
         },
         {
           "status": "GATHERING_DATA",
           "message": "",
-          "timestamp": "2026-03-22T15:48:03.833Z"
+          "timestamp": "2026-03-22T15:31:06.254Z"
         },
         {
           "status": "ERROR",
           "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
-          "timestamp": "2026-03-22T15:48:18.668Z"
+          "timestamp": "2026-03-22T15:31:42.118Z"
         },
         {
           "status": "GENERATING_RESPONSE",
           "message": "",
-          "timestamp": "2026-03-22T15:48:18.686Z"
+          "timestamp": "2026-03-22T15:31:42.134Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T15:31:42.135Z"
         }
       ],
       "turnTimings": [
         {
           "turnIndex": 0,
           "userPrompt": "Welcher Stadtteil hat die meisten Bäume?",
-          "startedAt": "2026-03-22T15:48:03.805Z",
-          "firstAssistantResponseAt": "2026-03-22T15:48:18.686Z",
-          "latencyMs": 14881
+          "startedAt": "2026-03-22T15:31:06.224Z",
+          "firstAssistantResponseAt": "2026-03-22T15:31:42.134Z",
+          "latencyMs": 35910
         }
       ],
-      "totalDurationMs": 14885,
+      "totalDurationMs": 35915,
       "evaluation": {
         "status": "fail",
         "score": 0.8,
@@ -1012,7 +1011,7 @@
                 "axis": "flow_correctness",
                 "critical": true,
                 "passed": true,
-                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE"
+                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT"
               },
               {
                 "label": "Genug Assistentenantworten vorhanden",
@@ -1082,15 +1081,10 @@
         "id": "Q6",
         "title": "Patenbäume in meiner Nähe",
         "kind": "question",
-        "userTurns": [
-          "Gibt es Patenbäume in meiner Nähe?"
-        ],
+        "userTurns": ["Gibt es Patenbäume in meiner Nähe?"],
         "expectedFlow": {
           "clarification": "allowed",
-          "requiredMetadataStatuses": [
-            "WAITING_FOR_INPUT",
-            "REWRITING_QUESTION"
-          ],
+          "requiredMetadataStatuses": ["WAITING_FOR_INPUT", "REWRITING_QUESTION"],
           "minAssistantMessages": 1
         },
         "requiredSignals": [
@@ -1120,19 +1114,19 @@
         {
           "role": "assistant",
           "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
-          "timestamp": "2026-03-22T15:48:18.688Z",
+          "timestamp": "2026-03-22T15:31:42.137Z",
           "turnIndex": null
         },
         {
           "role": "user",
           "content": "Gibt es Patenbäume in meiner Nähe?",
-          "timestamp": "2026-03-22T15:48:18.690Z",
+          "timestamp": "2026-03-22T15:31:42.142Z",
           "turnIndex": 0
         },
         {
           "role": "assistant",
           "content": "Entschuldigung, ich konnte gerade keine Antwort formulieren. Bitte versuche es erneut.",
-          "timestamp": "2026-03-22T15:48:35.539Z",
+          "timestamp": "2026-03-22T15:32:04.982Z",
           "turnIndex": 0
         }
       ],
@@ -1140,44 +1134,49 @@
         {
           "status": "WAITING_FOR_INPUT",
           "message": "",
-          "timestamp": "2026-03-22T15:48:18.689Z"
+          "timestamp": "2026-03-22T15:31:42.142Z"
         },
         {
           "status": "REWRITING_QUESTION",
           "message": "",
-          "timestamp": "2026-03-22T15:48:18.692Z"
+          "timestamp": "2026-03-22T15:31:42.144Z"
         },
         {
           "status": "ERROR",
           "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
-          "timestamp": "2026-03-22T15:48:18.718Z"
+          "timestamp": "2026-03-22T15:31:42.172Z"
         },
         {
           "status": "GATHERING_DATA",
           "message": "",
-          "timestamp": "2026-03-22T15:48:18.721Z"
+          "timestamp": "2026-03-22T15:31:42.174Z"
         },
         {
           "status": "GENERATING_RESPONSE",
           "message": "",
-          "timestamp": "2026-03-22T15:48:35.515Z"
+          "timestamp": "2026-03-22T15:32:04.962Z"
         },
         {
           "status": "ERROR",
           "message": "Entschuldigung, ich konnte gerade keine Antwort formulieren. Bitte versuche es erneut.",
-          "timestamp": "2026-03-22T15:48:35.538Z"
+          "timestamp": "2026-03-22T15:32:04.982Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T15:32:04.984Z"
         }
       ],
       "turnTimings": [
         {
           "turnIndex": 0,
           "userPrompt": "Gibt es Patenbäume in meiner Nähe?",
-          "startedAt": "2026-03-22T15:48:18.690Z",
-          "firstAssistantResponseAt": "2026-03-22T15:48:35.539Z",
-          "latencyMs": 16849
+          "startedAt": "2026-03-22T15:31:42.142Z",
+          "firstAssistantResponseAt": "2026-03-22T15:32:04.982Z",
+          "latencyMs": 22840
         }
       ],
-      "totalDurationMs": 16851,
+      "totalDurationMs": 22849,
       "evaluation": {
         "status": "fail",
         "score": 0.8571428571428571,
@@ -1231,7 +1230,7 @@
                 "axis": "flow_correctness",
                 "critical": true,
                 "passed": true,
-                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> GENERATING_RESPONSE -> ERROR"
+                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> GENERATING_RESPONSE -> ERROR -> WAITING_FOR_INPUT"
               },
               {
                 "label": "Genug Assistentenantworten vorhanden",
@@ -1294,16 +1293,10 @@
         "id": "Q7",
         "title": "Bäume mit Gießpaten",
         "kind": "question",
-        "userTurns": [
-          "Welche Bäume haben Gießpaten?"
-        ],
+        "userTurns": ["Welche Bäume haben Gießpaten?"],
         "expectedFlow": {
           "clarification": "forbidden",
-          "requiredMetadataStatuses": [
-            "WAITING_FOR_INPUT",
-            "REWRITING_QUESTION",
-            "GATHERING_DATA"
-          ],
+          "requiredMetadataStatuses": ["WAITING_FOR_INPUT", "REWRITING_QUESTION", "GATHERING_DATA"],
           "minAssistantMessages": 1
         },
         "requiredSignals": [
@@ -1333,19 +1326,19 @@
         {
           "role": "assistant",
           "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
-          "timestamp": "2026-03-22T15:48:35.539Z",
+          "timestamp": "2026-03-22T15:32:04.986Z",
           "turnIndex": null
         },
         {
           "role": "user",
           "content": "Welche Bäume haben Gießpaten?",
-          "timestamp": "2026-03-22T15:48:35.540Z",
+          "timestamp": "2026-03-22T15:32:04.989Z",
           "turnIndex": 0
         },
         {
           "role": "assistant",
           "content": "Entschuldigung, ich konnte gerade keine Antwort formulieren. Bitte versuche es erneut.",
-          "timestamp": "2026-03-22T15:49:05.351Z",
+          "timestamp": "2026-03-22T15:32:32.321Z",
           "turnIndex": 0
         }
       ],
@@ -1353,44 +1346,49 @@
         {
           "status": "WAITING_FOR_INPUT",
           "message": "",
-          "timestamp": "2026-03-22T15:48:35.540Z"
+          "timestamp": "2026-03-22T15:32:04.989Z"
         },
         {
           "status": "REWRITING_QUESTION",
           "message": "",
-          "timestamp": "2026-03-22T15:48:35.542Z"
+          "timestamp": "2026-03-22T15:32:04.992Z"
         },
         {
           "status": "ERROR",
           "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
-          "timestamp": "2026-03-22T15:48:35.564Z"
+          "timestamp": "2026-03-22T15:32:05.011Z"
         },
         {
           "status": "GATHERING_DATA",
           "message": "",
-          "timestamp": "2026-03-22T15:48:35.566Z"
+          "timestamp": "2026-03-22T15:32:05.013Z"
         },
         {
           "status": "GENERATING_RESPONSE",
           "message": "",
-          "timestamp": "2026-03-22T15:49:05.330Z"
+          "timestamp": "2026-03-22T15:32:32.299Z"
         },
         {
           "status": "ERROR",
           "message": "Entschuldigung, ich konnte gerade keine Antwort formulieren. Bitte versuche es erneut.",
-          "timestamp": "2026-03-22T15:49:05.350Z"
+          "timestamp": "2026-03-22T15:32:32.321Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T15:32:32.323Z"
         }
       ],
       "turnTimings": [
         {
           "turnIndex": 0,
           "userPrompt": "Welche Bäume haben Gießpaten?",
-          "startedAt": "2026-03-22T15:48:35.540Z",
-          "firstAssistantResponseAt": "2026-03-22T15:49:05.351Z",
-          "latencyMs": 29811
+          "startedAt": "2026-03-22T15:32:04.989Z",
+          "firstAssistantResponseAt": "2026-03-22T15:32:32.321Z",
+          "latencyMs": 27332
         }
       ],
-      "totalDurationMs": 29812,
+      "totalDurationMs": 27338,
       "evaluation": {
         "status": "fail",
         "score": 0.8,
@@ -1437,7 +1435,7 @@
                 "axis": "flow_correctness",
                 "critical": true,
                 "passed": true,
-                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> GENERATING_RESPONSE -> ERROR"
+                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> GENERATING_RESPONSE -> ERROR -> WAITING_FOR_INPUT"
               },
               {
                 "label": "Genug Assistentenantworten vorhanden",
@@ -1507,15 +1505,10 @@
         "id": "Q8",
         "title": "Bäume in der Umgebung einer Kita",
         "kind": "question",
-        "userTurns": [
-          "Welche Bäume kann ich in der Umgebung meiner Kita gießen?"
-        ],
+        "userTurns": ["Welche Bäume kann ich in der Umgebung meiner Kita gießen?"],
         "expectedFlow": {
           "clarification": "allowed",
-          "requiredMetadataStatuses": [
-            "WAITING_FOR_INPUT",
-            "REWRITING_QUESTION"
-          ],
+          "requiredMetadataStatuses": ["WAITING_FOR_INPUT", "REWRITING_QUESTION"],
           "minAssistantMessages": 1
         },
         "requiredSignals": [
@@ -1545,19 +1538,19 @@
         {
           "role": "assistant",
           "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
-          "timestamp": "2026-03-22T15:49:05.352Z",
+          "timestamp": "2026-03-22T15:32:32.324Z",
           "turnIndex": null
         },
         {
           "role": "user",
           "content": "Welche Bäume kann ich in der Umgebung meiner Kita gießen?",
-          "timestamp": "2026-03-22T15:49:05.352Z",
+          "timestamp": "2026-03-22T15:32:32.325Z",
           "turnIndex": 0
         },
         {
           "role": "assistant",
           "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
-          "timestamp": "2026-03-22T15:49:18.553Z",
+          "timestamp": "2026-03-22T15:32:54.604Z",
           "turnIndex": 0
         }
       ],
@@ -1565,44 +1558,49 @@
         {
           "status": "WAITING_FOR_INPUT",
           "message": "",
-          "timestamp": "2026-03-22T15:49:05.352Z"
+          "timestamp": "2026-03-22T15:32:32.325Z"
         },
         {
           "status": "REWRITING_QUESTION",
           "message": "",
-          "timestamp": "2026-03-22T15:49:05.354Z"
+          "timestamp": "2026-03-22T15:32:32.327Z"
         },
         {
           "status": "ERROR",
           "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
-          "timestamp": "2026-03-22T15:49:05.376Z"
+          "timestamp": "2026-03-22T15:32:32.346Z"
         },
         {
           "status": "GATHERING_DATA",
           "message": "",
-          "timestamp": "2026-03-22T15:49:05.378Z"
+          "timestamp": "2026-03-22T15:32:32.348Z"
         },
         {
           "status": "ERROR",
           "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
-          "timestamp": "2026-03-22T15:49:18.550Z"
+          "timestamp": "2026-03-22T15:32:54.595Z"
         },
         {
           "status": "GENERATING_RESPONSE",
           "message": "",
-          "timestamp": "2026-03-22T15:49:18.553Z"
+          "timestamp": "2026-03-22T15:32:54.604Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T15:32:54.606Z"
         }
       ],
       "turnTimings": [
         {
           "turnIndex": 0,
           "userPrompt": "Welche Bäume kann ich in der Umgebung meiner Kita gießen?",
-          "startedAt": "2026-03-22T15:49:05.352Z",
-          "firstAssistantResponseAt": "2026-03-22T15:49:18.553Z",
-          "latencyMs": 13201
+          "startedAt": "2026-03-22T15:32:32.325Z",
+          "firstAssistantResponseAt": "2026-03-22T15:32:54.604Z",
+          "latencyMs": 22279
         }
       ],
-      "totalDurationMs": 13202,
+      "totalDurationMs": 22282,
       "evaluation": {
         "status": "soft-fail",
         "score": 0.9285714285714286,
@@ -1656,7 +1654,7 @@
                 "axis": "flow_correctness",
                 "critical": true,
                 "passed": true,
-                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE"
+                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT"
               },
               {
                 "label": "Genug Assistentenantworten vorhanden",
@@ -1719,16 +1717,10 @@
         "id": "Q9",
         "title": "Verteilung der Baumarten",
         "kind": "question",
-        "userTurns": [
-          "Wie sind die Baumarten in Leipzig verteilt?"
-        ],
+        "userTurns": ["Wie sind die Baumarten in Leipzig verteilt?"],
         "expectedFlow": {
           "clarification": "forbidden",
-          "requiredMetadataStatuses": [
-            "WAITING_FOR_INPUT",
-            "REWRITING_QUESTION",
-            "GATHERING_DATA"
-          ],
+          "requiredMetadataStatuses": ["WAITING_FOR_INPUT", "REWRITING_QUESTION", "GATHERING_DATA"],
           "minAssistantMessages": 1
         },
         "requiredSignals": [
@@ -1758,19 +1750,19 @@
         {
           "role": "assistant",
           "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
-          "timestamp": "2026-03-22T15:49:18.554Z",
+          "timestamp": "2026-03-22T15:32:54.607Z",
           "turnIndex": null
         },
         {
           "role": "user",
           "content": "Wie sind die Baumarten in Leipzig verteilt?",
-          "timestamp": "2026-03-22T15:49:18.556Z",
+          "timestamp": "2026-03-22T15:32:54.609Z",
           "turnIndex": 0
         },
         {
           "role": "assistant",
           "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
-          "timestamp": "2026-03-22T15:49:29.267Z",
+          "timestamp": "2026-03-22T15:33:05.023Z",
           "turnIndex": 0
         }
       ],
@@ -1778,44 +1770,49 @@
         {
           "status": "WAITING_FOR_INPUT",
           "message": "",
-          "timestamp": "2026-03-22T15:49:18.556Z"
+          "timestamp": "2026-03-22T15:32:54.609Z"
         },
         {
           "status": "REWRITING_QUESTION",
           "message": "",
-          "timestamp": "2026-03-22T15:49:18.560Z"
+          "timestamp": "2026-03-22T15:32:54.610Z"
         },
         {
           "status": "ERROR",
           "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
-          "timestamp": "2026-03-22T15:49:18.581Z"
+          "timestamp": "2026-03-22T15:32:54.633Z"
         },
         {
           "status": "GATHERING_DATA",
           "message": "",
-          "timestamp": "2026-03-22T15:49:18.583Z"
+          "timestamp": "2026-03-22T15:32:54.634Z"
         },
         {
           "status": "ERROR",
           "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
-          "timestamp": "2026-03-22T15:49:29.265Z"
+          "timestamp": "2026-03-22T15:33:05.018Z"
         },
         {
           "status": "GENERATING_RESPONSE",
           "message": "",
-          "timestamp": "2026-03-22T15:49:29.267Z"
+          "timestamp": "2026-03-22T15:33:05.023Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T15:33:05.025Z"
         }
       ],
       "turnTimings": [
         {
           "turnIndex": 0,
           "userPrompt": "Wie sind die Baumarten in Leipzig verteilt?",
-          "startedAt": "2026-03-22T15:49:18.556Z",
-          "firstAssistantResponseAt": "2026-03-22T15:49:29.267Z",
-          "latencyMs": 10711
+          "startedAt": "2026-03-22T15:32:54.609Z",
+          "firstAssistantResponseAt": "2026-03-22T15:33:05.023Z",
+          "latencyMs": 10414
         }
       ],
-      "totalDurationMs": 10714,
+      "totalDurationMs": 10419,
       "evaluation": {
         "status": "fail",
         "score": 0.8,
@@ -1862,7 +1859,7 @@
                 "axis": "flow_correctness",
                 "critical": true,
                 "passed": true,
-                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE"
+                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT"
               },
               {
                 "label": "Genug Assistentenantworten vorhanden",
@@ -1932,15 +1929,10 @@
         "id": "Q10",
         "title": "Bäume mit Trockenheitsstress",
         "kind": "question",
-        "userTurns": [
-          "Welche Bäume in Leipzig leiden aktuell unter Trockenheit?"
-        ],
+        "userTurns": ["Welche Bäume in Leipzig leiden aktuell unter Trockenheit?"],
         "expectedFlow": {
           "clarification": "allowed",
-          "requiredMetadataStatuses": [
-            "WAITING_FOR_INPUT",
-            "REWRITING_QUESTION"
-          ],
+          "requiredMetadataStatuses": ["WAITING_FOR_INPUT", "REWRITING_QUESTION"],
           "minAssistantMessages": 1
         },
         "requiredSignals": [
@@ -1970,19 +1962,19 @@
         {
           "role": "assistant",
           "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
-          "timestamp": "2026-03-22T15:49:29.268Z",
+          "timestamp": "2026-03-22T15:33:05.026Z",
           "turnIndex": null
         },
         {
           "role": "user",
           "content": "Welche Bäume in Leipzig leiden aktuell unter Trockenheit?",
-          "timestamp": "2026-03-22T15:49:29.268Z",
+          "timestamp": "2026-03-22T15:33:05.029Z",
           "turnIndex": 0
         },
         {
           "role": "assistant",
           "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
-          "timestamp": "2026-03-22T15:49:42.014Z",
+          "timestamp": "2026-03-22T15:33:29.173Z",
           "turnIndex": 0
         }
       ],
@@ -1990,44 +1982,49 @@
         {
           "status": "WAITING_FOR_INPUT",
           "message": "",
-          "timestamp": "2026-03-22T15:49:29.268Z"
+          "timestamp": "2026-03-22T15:33:05.029Z"
         },
         {
           "status": "REWRITING_QUESTION",
           "message": "",
-          "timestamp": "2026-03-22T15:49:29.271Z"
+          "timestamp": "2026-03-22T15:33:05.033Z"
         },
         {
           "status": "ERROR",
           "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
-          "timestamp": "2026-03-22T15:49:29.288Z"
+          "timestamp": "2026-03-22T15:33:05.055Z"
         },
         {
           "status": "GATHERING_DATA",
           "message": "",
-          "timestamp": "2026-03-22T15:49:29.290Z"
+          "timestamp": "2026-03-22T15:33:05.056Z"
         },
         {
           "status": "ERROR",
           "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
-          "timestamp": "2026-03-22T15:49:42.012Z"
+          "timestamp": "2026-03-22T15:33:29.169Z"
         },
         {
           "status": "GENERATING_RESPONSE",
           "message": "",
-          "timestamp": "2026-03-22T15:49:42.014Z"
+          "timestamp": "2026-03-22T15:33:29.173Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T15:33:29.175Z"
         }
       ],
       "turnTimings": [
         {
           "turnIndex": 0,
           "userPrompt": "Welche Bäume in Leipzig leiden aktuell unter Trockenheit?",
-          "startedAt": "2026-03-22T15:49:29.268Z",
-          "firstAssistantResponseAt": "2026-03-22T15:49:42.014Z",
-          "latencyMs": 12746
+          "startedAt": "2026-03-22T15:33:05.029Z",
+          "firstAssistantResponseAt": "2026-03-22T15:33:29.173Z",
+          "latencyMs": 24144
         }
       ],
-      "totalDurationMs": 12747,
+      "totalDurationMs": 24149,
       "evaluation": {
         "status": "fail",
         "score": 0.8461538461538461,
@@ -2074,7 +2071,7 @@
                 "axis": "flow_correctness",
                 "critical": true,
                 "passed": true,
-                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE"
+                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT"
               },
               {
                 "label": "Genug Assistentenantworten vorhanden",
@@ -2137,16 +2134,10 @@
         "id": "Q11",
         "title": "Zukünftige Gießmenge ohne Datenbasis",
         "kind": "question",
-        "userTurns": [
-          "Wie viel wurde im Stadtteil Connewitz im Jahr 2026 gegossen?"
-        ],
+        "userTurns": ["Wie viel wurde im Stadtteil Connewitz im Jahr 2026 gegossen?"],
         "expectedFlow": {
           "clarification": "forbidden",
-          "requiredMetadataStatuses": [
-            "WAITING_FOR_INPUT",
-            "REWRITING_QUESTION",
-            "GATHERING_DATA"
-          ],
+          "requiredMetadataStatuses": ["WAITING_FOR_INPUT", "REWRITING_QUESTION", "GATHERING_DATA"],
           "minAssistantMessages": 1
         },
         "requiredSignals": [
@@ -2193,19 +2184,19 @@
         {
           "role": "assistant",
           "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
-          "timestamp": "2026-03-22T15:49:42.015Z",
+          "timestamp": "2026-03-22T15:33:29.176Z",
           "turnIndex": null
         },
         {
           "role": "user",
           "content": "Wie viel wurde im Stadtteil Connewitz im Jahr 2026 gegossen?",
-          "timestamp": "2026-03-22T15:49:42.015Z",
+          "timestamp": "2026-03-22T15:33:29.178Z",
           "turnIndex": 0
         },
         {
           "role": "assistant",
           "content": "Entschuldigung, ich konnte gerade keine Antwort formulieren. Bitte versuche es erneut.",
-          "timestamp": "2026-03-22T15:50:29.637Z",
+          "timestamp": "2026-03-22T15:34:14.242Z",
           "turnIndex": 0
         }
       ],
@@ -2213,44 +2204,49 @@
         {
           "status": "WAITING_FOR_INPUT",
           "message": "",
-          "timestamp": "2026-03-22T15:49:42.015Z"
+          "timestamp": "2026-03-22T15:33:29.178Z"
         },
         {
           "status": "REWRITING_QUESTION",
           "message": "",
-          "timestamp": "2026-03-22T15:49:42.017Z"
+          "timestamp": "2026-03-22T15:33:29.182Z"
         },
         {
           "status": "ERROR",
           "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
-          "timestamp": "2026-03-22T15:49:42.043Z"
+          "timestamp": "2026-03-22T15:33:29.201Z"
         },
         {
           "status": "GATHERING_DATA",
           "message": "",
-          "timestamp": "2026-03-22T15:49:42.044Z"
+          "timestamp": "2026-03-22T15:33:29.203Z"
         },
         {
           "status": "GENERATING_RESPONSE",
           "message": "",
-          "timestamp": "2026-03-22T15:50:29.612Z"
+          "timestamp": "2026-03-22T15:34:14.217Z"
         },
         {
           "status": "ERROR",
           "message": "Entschuldigung, ich konnte gerade keine Antwort formulieren. Bitte versuche es erneut.",
-          "timestamp": "2026-03-22T15:50:29.637Z"
+          "timestamp": "2026-03-22T15:34:14.242Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T15:34:14.245Z"
         }
       ],
       "turnTimings": [
         {
           "turnIndex": 0,
           "userPrompt": "Wie viel wurde im Stadtteil Connewitz im Jahr 2026 gegossen?",
-          "startedAt": "2026-03-22T15:49:42.015Z",
-          "firstAssistantResponseAt": "2026-03-22T15:50:29.637Z",
-          "latencyMs": 47622
+          "startedAt": "2026-03-22T15:33:29.178Z",
+          "firstAssistantResponseAt": "2026-03-22T15:34:14.242Z",
+          "latencyMs": 45064
         }
       ],
-      "totalDurationMs": 47623,
+      "totalDurationMs": 45070,
       "evaluation": {
         "status": "fail",
         "score": 0.7368421052631579,
@@ -2297,7 +2293,7 @@
                 "axis": "flow_correctness",
                 "critical": true,
                 "passed": true,
-                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> GENERATING_RESPONSE -> ERROR"
+                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> GENERATING_RESPONSE -> ERROR -> WAITING_FOR_INPUT"
               },
               {
                 "label": "Genug Assistentenantworten vorhanden",
@@ -2381,15 +2377,10 @@
         "id": "Q12",
         "title": "Themenüberblick",
         "kind": "question",
-        "userTurns": [
-          "Was kannst du mir über die Bäume in Leipzig erklären?"
-        ],
+        "userTurns": ["Was kannst du mir über die Bäume in Leipzig erklären?"],
         "expectedFlow": {
           "clarification": "forbidden",
-          "requiredMetadataStatuses": [
-            "WAITING_FOR_INPUT",
-            "REWRITING_QUESTION"
-          ],
+          "requiredMetadataStatuses": ["WAITING_FOR_INPUT", "REWRITING_QUESTION"],
           "minAssistantMessages": 1
         },
         "requiredSignals": [
@@ -2419,19 +2410,19 @@
         {
           "role": "assistant",
           "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
-          "timestamp": "2026-03-22T15:50:29.639Z",
+          "timestamp": "2026-03-22T15:34:14.246Z",
           "turnIndex": null
         },
         {
           "role": "user",
           "content": "Was kannst du mir über die Bäume in Leipzig erklären?",
-          "timestamp": "2026-03-22T15:50:29.640Z",
+          "timestamp": "2026-03-22T15:34:14.249Z",
           "turnIndex": 0
         },
         {
           "role": "assistant",
           "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
-          "timestamp": "2026-03-22T15:50:46.648Z",
+          "timestamp": "2026-03-22T15:34:28.628Z",
           "turnIndex": 0
         }
       ],
@@ -2439,44 +2430,49 @@
         {
           "status": "WAITING_FOR_INPUT",
           "message": "",
-          "timestamp": "2026-03-22T15:50:29.640Z"
+          "timestamp": "2026-03-22T15:34:14.249Z"
         },
         {
           "status": "REWRITING_QUESTION",
           "message": "",
-          "timestamp": "2026-03-22T15:50:29.644Z"
+          "timestamp": "2026-03-22T15:34:14.253Z"
         },
         {
           "status": "ERROR",
           "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
-          "timestamp": "2026-03-22T15:50:29.663Z"
+          "timestamp": "2026-03-22T15:34:14.276Z"
         },
         {
           "status": "GATHERING_DATA",
           "message": "",
-          "timestamp": "2026-03-22T15:50:29.665Z"
+          "timestamp": "2026-03-22T15:34:14.278Z"
         },
         {
           "status": "ERROR",
           "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
-          "timestamp": "2026-03-22T15:50:46.644Z"
+          "timestamp": "2026-03-22T15:34:28.623Z"
         },
         {
           "status": "GENERATING_RESPONSE",
           "message": "",
-          "timestamp": "2026-03-22T15:50:46.648Z"
+          "timestamp": "2026-03-22T15:34:28.628Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T15:34:28.631Z"
         }
       ],
       "turnTimings": [
         {
           "turnIndex": 0,
           "userPrompt": "Was kannst du mir über die Bäume in Leipzig erklären?",
-          "startedAt": "2026-03-22T15:50:29.640Z",
-          "firstAssistantResponseAt": "2026-03-22T15:50:46.648Z",
-          "latencyMs": 17008
+          "startedAt": "2026-03-22T15:34:14.249Z",
+          "firstAssistantResponseAt": "2026-03-22T15:34:28.628Z",
+          "latencyMs": 14379
         }
       ],
-      "totalDurationMs": 17010,
+      "totalDurationMs": 14386,
       "evaluation": {
         "status": "fail",
         "score": 0.8,
@@ -2523,7 +2519,7 @@
                 "axis": "flow_correctness",
                 "critical": true,
                 "passed": true,
-                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE"
+                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT"
               },
               {
                 "label": "Genug Assistentenantworten vorhanden",
@@ -2593,18 +2589,10 @@
         "id": "D1",
         "title": "Dialog: Gießmenge nach Stadtteil und Jahr",
         "kind": "dialogue",
-        "userTurns": [
-          "Wie viel wurde im Stadtteil Connewitz gegossen?",
-          "Wie viel in 2026?",
-          "Ja."
-        ],
+        "userTurns": ["Wie viel wurde im Stadtteil Connewitz gegossen?", "Wie viel in 2026?", "Ja."],
         "expectedFlow": {
           "clarification": "forbidden",
-          "requiredMetadataStatuses": [
-            "WAITING_FOR_INPUT",
-            "REWRITING_QUESTION",
-            "GATHERING_DATA"
-          ],
+          "requiredMetadataStatuses": ["WAITING_FOR_INPUT", "REWRITING_QUESTION", "GATHERING_DATA"],
           "minAssistantMessages": 3
         },
         "requiredSignals": [
@@ -2639,43 +2627,43 @@
         {
           "role": "assistant",
           "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
-          "timestamp": "2026-03-22T15:50:46.650Z",
+          "timestamp": "2026-03-22T15:34:28.632Z",
           "turnIndex": null
         },
         {
           "role": "user",
           "content": "Wie viel wurde im Stadtteil Connewitz gegossen?",
-          "timestamp": "2026-03-22T15:50:46.651Z",
+          "timestamp": "2026-03-22T15:34:28.635Z",
           "turnIndex": 0
         },
         {
           "role": "assistant",
           "content": "Entschuldigung, ich konnte gerade keine Antwort formulieren. Bitte versuche es erneut.",
-          "timestamp": "2026-03-22T15:51:06.838Z",
+          "timestamp": "2026-03-22T15:34:44.125Z",
           "turnIndex": 0
         },
         {
           "role": "user",
           "content": "Wie viel in 2026?",
-          "timestamp": "2026-03-22T15:51:06.840Z",
+          "timestamp": "2026-03-22T15:34:44.128Z",
           "turnIndex": 1
         },
         {
           "role": "assistant",
           "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
-          "timestamp": "2026-03-22T15:51:49.654Z",
+          "timestamp": "2026-03-22T15:35:00.573Z",
           "turnIndex": 1
         },
         {
           "role": "user",
           "content": "Ja.",
-          "timestamp": "2026-03-22T15:51:49.656Z",
+          "timestamp": "2026-03-22T15:35:00.574Z",
           "turnIndex": 2
         },
         {
           "role": "assistant",
           "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
-          "timestamp": "2026-03-22T15:52:06.674Z",
+          "timestamp": "2026-03-22T15:35:14.404Z",
           "turnIndex": 2
         }
       ],
@@ -2683,118 +2671,123 @@
         {
           "status": "WAITING_FOR_INPUT",
           "message": "",
-          "timestamp": "2026-03-22T15:50:46.651Z"
+          "timestamp": "2026-03-22T15:34:28.635Z"
         },
         {
           "status": "REWRITING_QUESTION",
           "message": "",
-          "timestamp": "2026-03-22T15:50:46.653Z"
+          "timestamp": "2026-03-22T15:34:28.638Z"
         },
         {
           "status": "ERROR",
           "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
-          "timestamp": "2026-03-22T15:50:46.673Z"
+          "timestamp": "2026-03-22T15:34:29.623Z"
         },
         {
           "status": "GATHERING_DATA",
           "message": "",
-          "timestamp": "2026-03-22T15:50:46.674Z"
+          "timestamp": "2026-03-22T15:34:29.628Z"
         },
         {
           "status": "GENERATING_RESPONSE",
           "message": "",
-          "timestamp": "2026-03-22T15:51:06.822Z"
+          "timestamp": "2026-03-22T15:34:44.102Z"
         },
         {
           "status": "ERROR",
           "message": "Entschuldigung, ich konnte gerade keine Antwort formulieren. Bitte versuche es erneut.",
-          "timestamp": "2026-03-22T15:51:06.838Z"
+          "timestamp": "2026-03-22T15:34:44.125Z"
         },
         {
           "status": "WAITING_FOR_INPUT",
           "message": "",
-          "timestamp": "2026-03-22T15:51:06.840Z"
+          "timestamp": "2026-03-22T15:34:44.128Z"
         },
         {
           "status": "REWRITING_QUESTION",
           "message": "",
-          "timestamp": "2026-03-22T15:51:06.843Z"
+          "timestamp": "2026-03-22T15:34:44.131Z"
         },
         {
           "status": "ERROR",
           "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
-          "timestamp": "2026-03-22T15:51:06.869Z"
+          "timestamp": "2026-03-22T15:34:44.151Z"
         },
         {
           "status": "GATHERING_DATA",
           "message": "",
-          "timestamp": "2026-03-22T15:51:06.870Z"
+          "timestamp": "2026-03-22T15:34:44.153Z"
         },
         {
           "status": "ERROR",
           "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
-          "timestamp": "2026-03-22T15:51:49.650Z"
+          "timestamp": "2026-03-22T15:35:00.561Z"
         },
         {
           "status": "GENERATING_RESPONSE",
           "message": "",
-          "timestamp": "2026-03-22T15:51:49.654Z"
+          "timestamp": "2026-03-22T15:35:00.572Z"
         },
         {
           "status": "WAITING_FOR_INPUT",
           "message": "",
-          "timestamp": "2026-03-22T15:51:49.656Z"
+          "timestamp": "2026-03-22T15:35:00.574Z"
         },
         {
           "status": "REWRITING_QUESTION",
           "message": "",
-          "timestamp": "2026-03-22T15:51:49.658Z"
+          "timestamp": "2026-03-22T15:35:00.578Z"
         },
         {
           "status": "ERROR",
           "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
-          "timestamp": "2026-03-22T15:51:49.681Z"
+          "timestamp": "2026-03-22T15:35:00.602Z"
         },
         {
           "status": "GATHERING_DATA",
           "message": "",
-          "timestamp": "2026-03-22T15:51:49.682Z"
+          "timestamp": "2026-03-22T15:35:00.604Z"
         },
         {
           "status": "ERROR",
           "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
-          "timestamp": "2026-03-22T15:52:06.671Z"
+          "timestamp": "2026-03-22T15:35:14.400Z"
         },
         {
           "status": "GENERATING_RESPONSE",
           "message": "",
-          "timestamp": "2026-03-22T15:52:06.674Z"
+          "timestamp": "2026-03-22T15:35:14.404Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T15:35:14.406Z"
         }
       ],
       "turnTimings": [
         {
           "turnIndex": 0,
           "userPrompt": "Wie viel wurde im Stadtteil Connewitz gegossen?",
-          "startedAt": "2026-03-22T15:50:46.651Z",
-          "firstAssistantResponseAt": "2026-03-22T15:51:06.838Z",
-          "latencyMs": 20187
+          "startedAt": "2026-03-22T15:34:28.635Z",
+          "firstAssistantResponseAt": "2026-03-22T15:34:44.125Z",
+          "latencyMs": 15490
         },
         {
           "turnIndex": 1,
           "userPrompt": "Wie viel in 2026?",
-          "startedAt": "2026-03-22T15:51:06.840Z",
-          "firstAssistantResponseAt": "2026-03-22T15:51:49.654Z",
-          "latencyMs": 42814
+          "startedAt": "2026-03-22T15:34:44.128Z",
+          "firstAssistantResponseAt": "2026-03-22T15:35:00.573Z",
+          "latencyMs": 16445
         },
         {
           "turnIndex": 2,
           "userPrompt": "Ja.",
-          "startedAt": "2026-03-22T15:51:49.656Z",
-          "firstAssistantResponseAt": "2026-03-22T15:52:06.674Z",
-          "latencyMs": 17018
+          "startedAt": "2026-03-22T15:35:00.574Z",
+          "firstAssistantResponseAt": "2026-03-22T15:35:14.404Z",
+          "latencyMs": 13830
         }
       ],
-      "totalDurationMs": 80024,
+      "totalDurationMs": 45774,
       "evaluation": {
         "status": "fail",
         "score": 0.6842105263157895,
@@ -2848,7 +2841,7 @@
                 "axis": "flow_correctness",
                 "critical": true,
                 "passed": true,
-                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> GENERATING_RESPONSE -> ERROR -> WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE"
+                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> GENERATING_RESPONSE -> ERROR -> WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT"
               },
               {
                 "label": "Genug Assistentenantworten vorhanden",
@@ -2924,11 +2917,7 @@
         ],
         "expectedFlow": {
           "clarification": "forbidden",
-          "requiredMetadataStatuses": [
-            "WAITING_FOR_INPUT",
-            "REWRITING_QUESTION",
-            "GATHERING_DATA"
-          ],
+          "requiredMetadataStatuses": ["WAITING_FOR_INPUT", "REWRITING_QUESTION", "GATHERING_DATA"],
           "minAssistantMessages": 2
         },
         "requiredSignals": [
@@ -2956,31 +2945,31 @@
         {
           "role": "assistant",
           "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
-          "timestamp": "2026-03-22T15:52:06.674Z",
+          "timestamp": "2026-03-22T15:35:14.407Z",
           "turnIndex": null
         },
         {
           "role": "user",
           "content": "Welche Wasserentnahmestellen gibt es in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig?",
-          "timestamp": "2026-03-22T15:52:06.675Z",
+          "timestamp": "2026-03-22T15:35:14.409Z",
           "turnIndex": 0
         },
         {
           "role": "assistant",
           "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
-          "timestamp": "2026-03-22T15:52:31.256Z",
+          "timestamp": "2026-03-22T15:35:29.705Z",
           "turnIndex": 0
         },
         {
           "role": "user",
           "content": "Nein.",
-          "timestamp": "2026-03-22T15:52:31.257Z",
+          "timestamp": "2026-03-22T15:35:29.706Z",
           "turnIndex": 1
         },
         {
           "role": "assistant",
           "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
-          "timestamp": "2026-03-22T15:52:44.298Z",
+          "timestamp": "2026-03-22T15:35:47.200Z",
           "turnIndex": 1
         }
       ],
@@ -2988,81 +2977,86 @@
         {
           "status": "WAITING_FOR_INPUT",
           "message": "",
-          "timestamp": "2026-03-22T15:52:06.675Z"
+          "timestamp": "2026-03-22T15:35:14.409Z"
         },
         {
           "status": "REWRITING_QUESTION",
           "message": "",
-          "timestamp": "2026-03-22T15:52:06.676Z"
+          "timestamp": "2026-03-22T15:35:14.412Z"
         },
         {
           "status": "ERROR",
           "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
-          "timestamp": "2026-03-22T15:52:06.697Z"
+          "timestamp": "2026-03-22T15:35:14.431Z"
         },
         {
           "status": "GATHERING_DATA",
           "message": "",
-          "timestamp": "2026-03-22T15:52:06.699Z"
+          "timestamp": "2026-03-22T15:35:14.433Z"
         },
         {
           "status": "ERROR",
           "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
-          "timestamp": "2026-03-22T15:52:31.252Z"
+          "timestamp": "2026-03-22T15:35:29.699Z"
         },
         {
           "status": "GENERATING_RESPONSE",
           "message": "",
-          "timestamp": "2026-03-22T15:52:31.256Z"
+          "timestamp": "2026-03-22T15:35:29.705Z"
         },
         {
           "status": "WAITING_FOR_INPUT",
           "message": "",
-          "timestamp": "2026-03-22T15:52:31.257Z"
+          "timestamp": "2026-03-22T15:35:29.706Z"
         },
         {
           "status": "REWRITING_QUESTION",
           "message": "",
-          "timestamp": "2026-03-22T15:52:31.260Z"
+          "timestamp": "2026-03-22T15:35:29.709Z"
         },
         {
           "status": "ERROR",
           "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
-          "timestamp": "2026-03-22T15:52:31.283Z"
+          "timestamp": "2026-03-22T15:35:29.734Z"
         },
         {
           "status": "GATHERING_DATA",
           "message": "",
-          "timestamp": "2026-03-22T15:52:31.284Z"
+          "timestamp": "2026-03-22T15:35:29.736Z"
         },
         {
           "status": "ERROR",
           "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
-          "timestamp": "2026-03-22T15:52:44.296Z"
+          "timestamp": "2026-03-22T15:35:47.196Z"
         },
         {
           "status": "GENERATING_RESPONSE",
           "message": "",
-          "timestamp": "2026-03-22T15:52:44.298Z"
+          "timestamp": "2026-03-22T15:35:47.200Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T15:35:47.203Z"
         }
       ],
       "turnTimings": [
         {
           "turnIndex": 0,
           "userPrompt": "Welche Wasserentnahmestellen gibt es in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig?",
-          "startedAt": "2026-03-22T15:52:06.675Z",
-          "firstAssistantResponseAt": "2026-03-22T15:52:31.256Z",
-          "latencyMs": 24581
+          "startedAt": "2026-03-22T15:35:14.409Z",
+          "firstAssistantResponseAt": "2026-03-22T15:35:29.705Z",
+          "latencyMs": 15296
         },
         {
           "turnIndex": 1,
           "userPrompt": "Nein.",
-          "startedAt": "2026-03-22T15:52:31.257Z",
-          "firstAssistantResponseAt": "2026-03-22T15:52:44.298Z",
-          "latencyMs": 13041
+          "startedAt": "2026-03-22T15:35:29.706Z",
+          "firstAssistantResponseAt": "2026-03-22T15:35:47.200Z",
+          "latencyMs": 17494
         }
       ],
-      "totalDurationMs": 37624,
+      "totalDurationMs": 32797,
       "evaluation": {
         "status": "fail",
         "score": 0.8666666666666667,
@@ -3109,7 +3103,7 @@
                 "axis": "flow_correctness",
                 "critical": true,
                 "passed": true,
-                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE"
+                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT"
               },
               {
                 "label": "Genug Assistentenantworten vorhanden",
@@ -3186,11 +3180,7 @@
         ],
         "expectedFlow": {
           "clarification": "forbidden",
-          "requiredMetadataStatuses": [
-            "WAITING_FOR_INPUT",
-            "REWRITING_QUESTION",
-            "GATHERING_DATA"
-          ],
+          "requiredMetadataStatuses": ["WAITING_FOR_INPUT", "REWRITING_QUESTION", "GATHERING_DATA"],
           "minAssistantMessages": 3
         },
         "requiredSignals": [
@@ -3218,43 +3208,43 @@
         {
           "role": "assistant",
           "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
-          "timestamp": "2026-03-22T15:52:44.298Z",
+          "timestamp": "2026-03-22T15:35:47.204Z",
           "turnIndex": null
         },
         {
           "role": "user",
           "content": "Welchen Baum kann ich in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig heute gießen?",
-          "timestamp": "2026-03-22T15:52:44.299Z",
+          "timestamp": "2026-03-22T15:35:47.207Z",
           "turnIndex": 0
         },
         {
           "role": "assistant",
           "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
-          "timestamp": "2026-03-22T15:53:17.216Z",
+          "timestamp": "2026-03-22T15:36:08.337Z",
           "turnIndex": 0
         },
         {
           "role": "user",
           "content": "Nein, ich kann maximal 15 Liter gießen.",
-          "timestamp": "2026-03-22T15:53:17.216Z",
+          "timestamp": "2026-03-22T15:36:08.339Z",
           "turnIndex": 1
         },
         {
           "role": "assistant",
           "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
-          "timestamp": "2026-03-22T15:53:47.228Z",
+          "timestamp": "2026-03-22T15:36:19.090Z",
           "turnIndex": 1
         },
         {
           "role": "user",
           "content": "Ja, mache ich.",
-          "timestamp": "2026-03-22T15:53:47.229Z",
+          "timestamp": "2026-03-22T15:36:19.091Z",
           "turnIndex": 2
         },
         {
           "role": "assistant",
           "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
-          "timestamp": "2026-03-22T15:53:58.822Z",
+          "timestamp": "2026-03-22T15:36:31.406Z",
           "turnIndex": 2
         }
       ],
@@ -3262,118 +3252,123 @@
         {
           "status": "WAITING_FOR_INPUT",
           "message": "",
-          "timestamp": "2026-03-22T15:52:44.299Z"
+          "timestamp": "2026-03-22T15:35:47.207Z"
         },
         {
           "status": "REWRITING_QUESTION",
           "message": "",
-          "timestamp": "2026-03-22T15:52:44.301Z"
+          "timestamp": "2026-03-22T15:35:47.211Z"
         },
         {
           "status": "ERROR",
           "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
-          "timestamp": "2026-03-22T15:52:44.319Z"
+          "timestamp": "2026-03-22T15:35:47.230Z"
         },
         {
           "status": "GATHERING_DATA",
           "message": "",
-          "timestamp": "2026-03-22T15:52:44.321Z"
+          "timestamp": "2026-03-22T15:35:47.232Z"
         },
         {
           "status": "ERROR",
           "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
-          "timestamp": "2026-03-22T15:53:17.212Z"
+          "timestamp": "2026-03-22T15:36:08.330Z"
         },
         {
           "status": "GENERATING_RESPONSE",
           "message": "",
-          "timestamp": "2026-03-22T15:53:17.216Z"
+          "timestamp": "2026-03-22T15:36:08.337Z"
         },
         {
           "status": "WAITING_FOR_INPUT",
           "message": "",
-          "timestamp": "2026-03-22T15:53:17.216Z"
+          "timestamp": "2026-03-22T15:36:08.339Z"
         },
         {
           "status": "REWRITING_QUESTION",
           "message": "",
-          "timestamp": "2026-03-22T15:53:17.218Z"
+          "timestamp": "2026-03-22T15:36:08.340Z"
         },
         {
           "status": "ERROR",
           "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
-          "timestamp": "2026-03-22T15:53:17.238Z"
+          "timestamp": "2026-03-22T15:36:08.358Z"
         },
         {
           "status": "GATHERING_DATA",
           "message": "",
-          "timestamp": "2026-03-22T15:53:17.240Z"
+          "timestamp": "2026-03-22T15:36:08.360Z"
         },
         {
           "status": "ERROR",
           "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
-          "timestamp": "2026-03-22T15:53:47.226Z"
+          "timestamp": "2026-03-22T15:36:19.087Z"
         },
         {
           "status": "GENERATING_RESPONSE",
           "message": "",
-          "timestamp": "2026-03-22T15:53:47.228Z"
+          "timestamp": "2026-03-22T15:36:19.090Z"
         },
         {
           "status": "WAITING_FOR_INPUT",
           "message": "",
-          "timestamp": "2026-03-22T15:53:47.229Z"
+          "timestamp": "2026-03-22T15:36:19.091Z"
         },
         {
           "status": "REWRITING_QUESTION",
           "message": "",
-          "timestamp": "2026-03-22T15:53:47.231Z"
+          "timestamp": "2026-03-22T15:36:19.093Z"
         },
         {
           "status": "ERROR",
           "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
-          "timestamp": "2026-03-22T15:53:47.253Z"
+          "timestamp": "2026-03-22T15:36:19.118Z"
         },
         {
           "status": "GATHERING_DATA",
           "message": "",
-          "timestamp": "2026-03-22T15:53:47.254Z"
+          "timestamp": "2026-03-22T15:36:19.120Z"
         },
         {
           "status": "ERROR",
           "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
-          "timestamp": "2026-03-22T15:53:58.819Z"
+          "timestamp": "2026-03-22T15:36:31.400Z"
         },
         {
           "status": "GENERATING_RESPONSE",
           "message": "",
-          "timestamp": "2026-03-22T15:53:58.822Z"
+          "timestamp": "2026-03-22T15:36:31.405Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T15:36:31.408Z"
         }
       ],
       "turnTimings": [
         {
           "turnIndex": 0,
           "userPrompt": "Welchen Baum kann ich in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig heute gießen?",
-          "startedAt": "2026-03-22T15:52:44.299Z",
-          "firstAssistantResponseAt": "2026-03-22T15:53:17.216Z",
-          "latencyMs": 32917
+          "startedAt": "2026-03-22T15:35:47.207Z",
+          "firstAssistantResponseAt": "2026-03-22T15:36:08.337Z",
+          "latencyMs": 21130
         },
         {
           "turnIndex": 1,
           "userPrompt": "Nein, ich kann maximal 15 Liter gießen.",
-          "startedAt": "2026-03-22T15:53:17.216Z",
-          "firstAssistantResponseAt": "2026-03-22T15:53:47.228Z",
-          "latencyMs": 30012
+          "startedAt": "2026-03-22T15:36:08.339Z",
+          "firstAssistantResponseAt": "2026-03-22T15:36:19.090Z",
+          "latencyMs": 10751
         },
         {
           "turnIndex": 2,
           "userPrompt": "Ja, mache ich.",
-          "startedAt": "2026-03-22T15:53:47.229Z",
-          "firstAssistantResponseAt": "2026-03-22T15:53:58.822Z",
-          "latencyMs": 11593
+          "startedAt": "2026-03-22T15:36:19.091Z",
+          "firstAssistantResponseAt": "2026-03-22T15:36:31.406Z",
+          "latencyMs": 12315
         }
       ],
-      "totalDurationMs": 74524,
+      "totalDurationMs": 44205,
       "evaluation": {
         "status": "fail",
         "score": 0.875,
@@ -3420,7 +3415,7 @@
                 "axis": "flow_correctness",
                 "critical": true,
                 "passed": true,
-                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE"
+                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT"
               },
               {
                 "label": "Genug Assistentenantworten vorhanden",
@@ -3490,15 +3485,10 @@
         "id": "D4",
         "title": "Dialog: Themenüberblick",
         "kind": "dialogue",
-        "userTurns": [
-          "Was kannst du mir über die Bäume in Leipzig erklären?"
-        ],
+        "userTurns": ["Was kannst du mir über die Bäume in Leipzig erklären?"],
         "expectedFlow": {
           "clarification": "forbidden",
-          "requiredMetadataStatuses": [
-            "WAITING_FOR_INPUT",
-            "REWRITING_QUESTION"
-          ],
+          "requiredMetadataStatuses": ["WAITING_FOR_INPUT", "REWRITING_QUESTION"],
           "minAssistantMessages": 1
         },
         "requiredSignals": [
@@ -3519,19 +3509,19 @@
         {
           "role": "assistant",
           "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
-          "timestamp": "2026-03-22T15:53:58.823Z",
+          "timestamp": "2026-03-22T15:36:31.409Z",
           "turnIndex": null
         },
         {
           "role": "user",
           "content": "Was kannst du mir über die Bäume in Leipzig erklären?",
-          "timestamp": "2026-03-22T15:53:58.823Z",
+          "timestamp": "2026-03-22T15:36:31.412Z",
           "turnIndex": 0
         },
         {
           "role": "assistant",
           "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
-          "timestamp": "2026-03-22T15:54:19.804Z",
+          "timestamp": "2026-03-22T15:36:45.016Z",
           "turnIndex": 0
         }
       ],
@@ -3539,44 +3529,49 @@
         {
           "status": "WAITING_FOR_INPUT",
           "message": "",
-          "timestamp": "2026-03-22T15:53:58.823Z"
+          "timestamp": "2026-03-22T15:36:31.412Z"
         },
         {
           "status": "REWRITING_QUESTION",
           "message": "",
-          "timestamp": "2026-03-22T15:53:58.825Z"
+          "timestamp": "2026-03-22T15:36:31.415Z"
         },
         {
           "status": "ERROR",
           "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
-          "timestamp": "2026-03-22T15:53:58.847Z"
+          "timestamp": "2026-03-22T15:36:31.434Z"
         },
         {
           "status": "GATHERING_DATA",
           "message": "",
-          "timestamp": "2026-03-22T15:53:58.848Z"
+          "timestamp": "2026-03-22T15:36:31.437Z"
         },
         {
           "status": "ERROR",
           "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
-          "timestamp": "2026-03-22T15:54:19.803Z"
+          "timestamp": "2026-03-22T15:36:45.012Z"
         },
         {
           "status": "GENERATING_RESPONSE",
           "message": "",
-          "timestamp": "2026-03-22T15:54:19.804Z"
+          "timestamp": "2026-03-22T15:36:45.016Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T15:36:45.017Z"
         }
       ],
       "turnTimings": [
         {
           "turnIndex": 0,
           "userPrompt": "Was kannst du mir über die Bäume in Leipzig erklären?",
-          "startedAt": "2026-03-22T15:53:58.823Z",
-          "firstAssistantResponseAt": "2026-03-22T15:54:19.804Z",
-          "latencyMs": 20981
+          "startedAt": "2026-03-22T15:36:31.412Z",
+          "firstAssistantResponseAt": "2026-03-22T15:36:45.016Z",
+          "latencyMs": 13604
         }
       ],
-      "totalDurationMs": 20982,
+      "totalDurationMs": 13609,
       "evaluation": {
         "status": "fail",
         "score": 0.8666666666666667,
@@ -3623,7 +3618,7 @@
                 "axis": "flow_correctness",
                 "critical": true,
                 "passed": true,
-                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE"
+                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT"
               },
               {
                 "label": "Genug Assistentenantworten vorhanden",
@@ -3693,10 +3688,7 @@
         "id": "D5",
         "title": "Dialog: Klärungsbedürftige Ortsanfrage",
         "kind": "dialogue",
-        "userTurns": [
-          "Welchen Baum kann ich heute gießen?",
-          "In Connewitz."
-        ],
+        "userTurns": ["Welchen Baum kann ich heute gießen?", "In Connewitz."],
         "expectedFlow": {
           "clarification": "required",
           "requiredMetadataStatuses": [
@@ -3732,31 +3724,31 @@
         {
           "role": "assistant",
           "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
-          "timestamp": "2026-03-22T15:54:19.805Z",
+          "timestamp": "2026-03-22T15:36:45.018Z",
           "turnIndex": null
         },
         {
           "role": "user",
           "content": "Welchen Baum kann ich heute gießen?",
-          "timestamp": "2026-03-22T15:54:19.805Z",
+          "timestamp": "2026-03-22T15:36:45.020Z",
           "turnIndex": 0
         },
         {
           "role": "assistant",
           "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
-          "timestamp": "2026-03-22T15:54:37.793Z",
+          "timestamp": "2026-03-22T15:37:00.785Z",
           "turnIndex": 0
         },
         {
           "role": "user",
           "content": "In Connewitz.",
-          "timestamp": "2026-03-22T15:54:37.794Z",
+          "timestamp": "2026-03-22T15:37:00.787Z",
           "turnIndex": 1
         },
         {
           "role": "assistant",
           "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
-          "timestamp": "2026-03-22T15:54:51.327Z",
+          "timestamp": "2026-03-22T15:37:43.993Z",
           "turnIndex": 1
         }
       ],
@@ -3764,81 +3756,86 @@
         {
           "status": "WAITING_FOR_INPUT",
           "message": "",
-          "timestamp": "2026-03-22T15:54:19.805Z"
+          "timestamp": "2026-03-22T15:36:45.020Z"
         },
         {
           "status": "REWRITING_QUESTION",
           "message": "",
-          "timestamp": "2026-03-22T15:54:19.806Z"
+          "timestamp": "2026-03-22T15:36:45.022Z"
         },
         {
           "status": "ERROR",
           "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
-          "timestamp": "2026-03-22T15:54:19.823Z"
+          "timestamp": "2026-03-22T15:36:45.047Z"
         },
         {
           "status": "GATHERING_DATA",
           "message": "",
-          "timestamp": "2026-03-22T15:54:19.824Z"
+          "timestamp": "2026-03-22T15:36:45.049Z"
         },
         {
           "status": "ERROR",
           "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
-          "timestamp": "2026-03-22T15:54:37.791Z"
+          "timestamp": "2026-03-22T15:37:00.781Z"
         },
         {
           "status": "GENERATING_RESPONSE",
           "message": "",
-          "timestamp": "2026-03-22T15:54:37.793Z"
+          "timestamp": "2026-03-22T15:37:00.785Z"
         },
         {
           "status": "WAITING_FOR_INPUT",
           "message": "",
-          "timestamp": "2026-03-22T15:54:37.794Z"
+          "timestamp": "2026-03-22T15:37:00.787Z"
         },
         {
           "status": "REWRITING_QUESTION",
           "message": "",
-          "timestamp": "2026-03-22T15:54:37.795Z"
+          "timestamp": "2026-03-22T15:37:00.791Z"
         },
         {
           "status": "ERROR",
           "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
-          "timestamp": "2026-03-22T15:54:37.817Z"
+          "timestamp": "2026-03-22T15:37:00.812Z"
         },
         {
           "status": "GATHERING_DATA",
           "message": "",
-          "timestamp": "2026-03-22T15:54:37.818Z"
+          "timestamp": "2026-03-22T15:37:00.813Z"
         },
         {
           "status": "ERROR",
           "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
-          "timestamp": "2026-03-22T15:54:51.325Z"
+          "timestamp": "2026-03-22T15:37:43.987Z"
         },
         {
           "status": "GENERATING_RESPONSE",
           "message": "",
-          "timestamp": "2026-03-22T15:54:51.327Z"
+          "timestamp": "2026-03-22T15:37:43.993Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T15:37:43.995Z"
         }
       ],
       "turnTimings": [
         {
           "turnIndex": 0,
           "userPrompt": "Welchen Baum kann ich heute gießen?",
-          "startedAt": "2026-03-22T15:54:19.805Z",
-          "firstAssistantResponseAt": "2026-03-22T15:54:37.793Z",
-          "latencyMs": 17988
+          "startedAt": "2026-03-22T15:36:45.020Z",
+          "firstAssistantResponseAt": "2026-03-22T15:37:00.785Z",
+          "latencyMs": 15765
         },
         {
           "turnIndex": 1,
           "userPrompt": "In Connewitz.",
-          "startedAt": "2026-03-22T15:54:37.794Z",
-          "firstAssistantResponseAt": "2026-03-22T15:54:51.327Z",
-          "latencyMs": 13533
+          "startedAt": "2026-03-22T15:37:00.787Z",
+          "firstAssistantResponseAt": "2026-03-22T15:37:43.993Z",
+          "latencyMs": 43206
         }
       ],
-      "totalDurationMs": 31523,
+      "totalDurationMs": 58978,
       "evaluation": {
         "status": "fail",
         "score": 0.6666666666666666,
@@ -3892,7 +3889,7 @@
                 "axis": "flow_correctness",
                 "critical": true,
                 "passed": false,
-                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE"
+                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT"
               },
               {
                 "label": "Genug Assistentenantworten vorhanden",
@@ -3968,11 +3965,7 @@
         ],
         "expectedFlow": {
           "clarification": "forbidden",
-          "requiredMetadataStatuses": [
-            "WAITING_FOR_INPUT",
-            "REWRITING_QUESTION",
-            "GATHERING_DATA"
-          ],
+          "requiredMetadataStatuses": ["WAITING_FOR_INPUT", "REWRITING_QUESTION", "GATHERING_DATA"],
           "minAssistantMessages": 2
         },
         "requiredSignals": [
@@ -4002,31 +3995,31 @@
         {
           "role": "assistant",
           "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
-          "timestamp": "2026-03-22T15:54:51.328Z",
+          "timestamp": "2026-03-22T15:37:43.996Z",
           "turnIndex": null
         },
         {
           "role": "user",
           "content": "Wie viel wurde im Stadtteil Connewitz im Jahr 2030 gegossen?",
-          "timestamp": "2026-03-22T15:54:51.328Z",
+          "timestamp": "2026-03-22T15:37:43.999Z",
           "turnIndex": 0
         },
         {
           "role": "assistant",
           "content": "Entschuldigung, ich konnte gerade keine Antwort formulieren. Bitte versuche es erneut.",
-          "timestamp": "2026-03-22T15:55:23.183Z",
+          "timestamp": "2026-03-22T15:37:56.512Z",
           "turnIndex": 0
         },
         {
           "role": "user",
           "content": "Dann gib mir bitte die aktuellsten Daten.",
-          "timestamp": "2026-03-22T15:55:23.185Z",
+          "timestamp": "2026-03-22T15:37:56.516Z",
           "turnIndex": 1
         },
         {
           "role": "assistant",
           "content": "Für diese Frage konnte ich leider keine zufriedenstellende Antwort finden. Bitte versuche diese anders zu formulieren oder stelle eine ganz neue Frage!",
-          "timestamp": "2026-03-22T15:55:46.075Z",
+          "timestamp": "2026-03-22T15:38:05.679Z",
           "turnIndex": 1
         }
       ],
@@ -4034,81 +4027,86 @@
         {
           "status": "WAITING_FOR_INPUT",
           "message": "",
-          "timestamp": "2026-03-22T15:54:51.328Z"
+          "timestamp": "2026-03-22T15:37:43.999Z"
         },
         {
           "status": "REWRITING_QUESTION",
           "message": "",
-          "timestamp": "2026-03-22T15:54:51.330Z"
+          "timestamp": "2026-03-22T15:37:44.001Z"
         },
         {
           "status": "ERROR",
           "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
-          "timestamp": "2026-03-22T15:54:51.357Z"
+          "timestamp": "2026-03-22T15:37:44.021Z"
         },
         {
           "status": "GATHERING_DATA",
           "message": "",
-          "timestamp": "2026-03-22T15:54:51.358Z"
+          "timestamp": "2026-03-22T15:37:44.022Z"
         },
         {
           "status": "GENERATING_RESPONSE",
           "message": "",
-          "timestamp": "2026-03-22T15:55:23.162Z"
+          "timestamp": "2026-03-22T15:37:56.489Z"
         },
         {
           "status": "ERROR",
           "message": "Entschuldigung, ich konnte gerade keine Antwort formulieren. Bitte versuche es erneut.",
-          "timestamp": "2026-03-22T15:55:23.183Z"
+          "timestamp": "2026-03-22T15:37:56.512Z"
         },
         {
           "status": "WAITING_FOR_INPUT",
           "message": "",
-          "timestamp": "2026-03-22T15:55:23.185Z"
+          "timestamp": "2026-03-22T15:37:56.516Z"
         },
         {
           "status": "REWRITING_QUESTION",
           "message": "",
-          "timestamp": "2026-03-22T15:55:23.186Z"
+          "timestamp": "2026-03-22T15:37:56.519Z"
         },
         {
           "status": "ERROR",
           "message": "Es gab ein Problem beim Umformulieren der Frage. Ich nutze deine ursprüngliche Eingabe.",
-          "timestamp": "2026-03-22T15:55:23.204Z"
+          "timestamp": "2026-03-22T15:37:56.540Z"
         },
         {
           "status": "GATHERING_DATA",
           "message": "",
-          "timestamp": "2026-03-22T15:55:23.204Z"
+          "timestamp": "2026-03-22T15:37:56.542Z"
         },
         {
           "status": "ERROR",
           "message": "Es konnten keine Antworten im Triplestore gefunden werden.",
-          "timestamp": "2026-03-22T15:55:46.071Z"
+          "timestamp": "2026-03-22T15:38:05.676Z"
         },
         {
           "status": "GENERATING_RESPONSE",
           "message": "",
-          "timestamp": "2026-03-22T15:55:46.075Z"
+          "timestamp": "2026-03-22T15:38:05.679Z"
+        },
+        {
+          "status": "WAITING_FOR_INPUT",
+          "message": "",
+          "timestamp": "2026-03-22T15:38:05.680Z"
         }
       ],
       "turnTimings": [
         {
           "turnIndex": 0,
           "userPrompt": "Wie viel wurde im Stadtteil Connewitz im Jahr 2030 gegossen?",
-          "startedAt": "2026-03-22T15:54:51.328Z",
-          "firstAssistantResponseAt": "2026-03-22T15:55:23.183Z",
-          "latencyMs": 31855
+          "startedAt": "2026-03-22T15:37:43.999Z",
+          "firstAssistantResponseAt": "2026-03-22T15:37:56.512Z",
+          "latencyMs": 12513
         },
         {
           "turnIndex": 1,
           "userPrompt": "Dann gib mir bitte die aktuellsten Daten.",
-          "startedAt": "2026-03-22T15:55:23.185Z",
-          "firstAssistantResponseAt": "2026-03-22T15:55:46.075Z",
-          "latencyMs": 22890
+          "startedAt": "2026-03-22T15:37:56.516Z",
+          "firstAssistantResponseAt": "2026-03-22T15:38:05.679Z",
+          "latencyMs": 9163
         }
       ],
-      "totalDurationMs": 54747,
+      "totalDurationMs": 21685,
       "evaluation": {
         "status": "fail",
         "score": 0.7777777777777778,
@@ -4155,7 +4153,7 @@
                 "axis": "flow_correctness",
                 "critical": true,
                 "passed": true,
-                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> GENERATING_RESPONSE -> ERROR -> WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE"
+                "details": "Observed sequence: WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> GENERATING_RESPONSE -> ERROR -> WAITING_FOR_INPUT -> REWRITING_QUESTION -> ERROR -> GATHERING_DATA -> ERROR -> GENERATING_RESPONSE -> WAITING_FOR_INPUT"
               },
               {
                 "label": "Genug Assistentenantworten vorhanden",

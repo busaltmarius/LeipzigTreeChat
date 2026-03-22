@@ -63,13 +63,8 @@ Start the Docker services from the repository root:
 docker compose up -d virtuoso qanary_pipeline leipzig-tree-knowledge-graph
 ```
 
-Start the local workspace processes in another terminal:
-
-```sh
-bun run dev
-```
-
-This ensures the local Qanary components are available to the pipeline.
+Start the Docker-backed infrastructure first. The root benchmark command now
+starts the required local Qanary components automatically.
 
 ## Run the benchmark
 
@@ -79,17 +74,21 @@ From the repository root:
 bun run benchmark:demo
 ```
 
-The root script currently expands to:
+The root script currently does five things:
+
+- loads the root `.env`
+- starts the five required Qanary components through Turbo
+- waits until each component reports that it started
+- waits until each component reports that it was registered in the Qanary
+  pipeline
+- runs the package benchmark
+- shuts the component dev process down again
+
+You can still run the package-level benchmark directly if the components are
+already running:
 
 ```sh
 bun --env-file=.env run --filter @leipzigtreechat/chatbot benchmark:demo
-```
-
-You can also run the package-level command directly:
-
-```sh
-cd packages/chatbot
-bun --env-file=../../.env run benchmark:demo
 ```
 
 ## Benchmark output
@@ -131,8 +130,11 @@ Common failure patterns:
 - Missing `OPENROUTER_API_KEY`: question rewriting or response generation will
   fail in the LLM-backed steps.
 - Docker services not running: Virtuoso or the Qanary pipeline are unreachable.
-- Local Qanary components not running: the pipeline starts, but downstream
-  answers stay empty or degrade into fallback responses.
+- Missing component `.env` files: the root benchmark wrapper refuses to start if
+  one of the local Qanary component env files does not exist.
+- Component registration does not succeed: a Qanary component may start locally
+  but still fail to register in the pipeline if `SPRING_BOOT_ADMIN_URL`,
+  `QANARY_HOST`, or Docker networking is wrong.
 
 If the benchmark starts but reports poor results across all cases, open
 `packages/chatbot/benchmark-results/latest.md` first. It is the fastest way to

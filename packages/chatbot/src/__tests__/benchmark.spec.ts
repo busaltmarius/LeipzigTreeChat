@@ -441,4 +441,64 @@ describe("benchmark runner", () => {
     expect(markdown).toContain("## Overview");
     expect(markdown).toContain("## Recommended Demo Subset");
   });
+
+  test("reports progress after each completed case", async () => {
+    const observedProgress: string[] = [];
+
+    await runBenchmarkSuite(
+      [
+        {
+          id: "PROGRESS_1",
+          title: "Progress case 1",
+          kind: "question",
+          userTurns: ["Wie viel wurde im Stadtteil Connewitz gegossen?"],
+          expectedFlow: {
+            clarification: "forbidden" as const,
+            requiredMetadataStatuses: ["WAITING_FOR_INPUT", "REWRITING_QUESTION", "GATHERING_DATA"],
+            minAssistantMessages: 1,
+          },
+          requiredSignals: [
+            {
+              label: "Contains Connewitz",
+              value: "Connewitz",
+              axis: "grounding" as const,
+              critical: true,
+              target: "assistant_last" as const,
+            },
+          ],
+          forbiddenSignals: [],
+          notes: "progress case 1",
+        },
+        {
+          id: "PROGRESS_2",
+          title: "Progress case 2",
+          kind: "question",
+          userTurns: ["Welche Baumarten gibt es in Leipzig?"],
+          expectedFlow: {
+            clarification: "forbidden" as const,
+            requiredMetadataStatuses: ["WAITING_FOR_INPUT", "REWRITING_QUESTION", "GATHERING_DATA"],
+            minAssistantMessages: 1,
+          },
+          requiredSignals: [
+            {
+              label: "Contains Connewitz fallback text",
+              value: "Connewitz",
+              axis: "grounding" as const,
+              critical: false,
+              target: "assistant_last" as const,
+            },
+          ],
+          forbiddenSignals: [],
+          notes: "progress case 2",
+        },
+      ],
+      (event) => {
+        observedProgress.push(
+          `${event.completedCases}/${event.totalCases}:${event.result.fixture.id}:${event.result.evaluation.status}`
+        );
+      }
+    );
+
+    expect(observedProgress).toEqual(["1/2:PROGRESS_1:pass", "2/2:PROGRESS_2:pass"]);
+  });
 });
