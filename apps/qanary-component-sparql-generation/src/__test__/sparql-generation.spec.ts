@@ -33,7 +33,7 @@ mock.module("../../qanary-component-relation-detection/src/relation-types.ts", (
   KNOWN_RELATION_TYPES: [
     "UNKNOWN",
     "AMOUNT_WATERED_DISTRICT",
-    "SPONSORED_TREES",
+    "AMOUNT_SPONSORED_TREES",
     "WATERABLE_TREES_AT_ADDRESS",
     "TREES_BY_SPECIES_DISTRICT",
     "WATERABLE_TREES_AT_KITA",

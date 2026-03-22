@@ -1,7 +1,7 @@
 export const KNOWN_RELATION_TYPES = [
   "UNKNOWN",
   "AMOUNT_WATERED_DISTRICT",
-  "SPONSORED_TREES",
+  "AMOUNT_SPONSORED_TREES",
   "WATERABLE_TREES_AT_ADDRESS",
   "TREES_BY_SPECIES_DISTRICT",
   "WATERABLE_TREES_AT_KITA",
@@ -12,7 +12,7 @@ export type KnownRelationType = (typeof KNOWN_RELATION_TYPES)[number];
 const RELATION_TYPE_EXPLANATIONS: Record<KnownRelationType, string> = {
   UNKNOWN: "The question does not clearly match any supported relation type.",
   AMOUNT_WATERED_DISTRICT: "Asks for watering amount, volume, or count in a district.",
-  SPONSORED_TREES: "Asks for sponsored trees.",
+  AMOUNT_SPONSORED_TREES: "Asks for the amount of sponsored trees.",
   WATERABLE_TREES_AT_ADDRESS:
     "Asks which trees can be watered near a specific address (havent been watered for one year).",
   TREES_BY_SPECIES_DISTRICT: "Asks for trees by species within a district.",

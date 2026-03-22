@@ -125,29 +125,27 @@ PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
 SELECT ?instanceUri ?instanceBody ?spotBody ?start ?end ?instanceScore ?spotScore
 WHERE {
   GRAPH <${outGraph}> {
-    # Get AnnotationOfInstance
-    ?instanceUri a ?instanceType ;
-                 oa:hasBody ?instanceBody ;
-                 oa:score ?instanceScore ;
-                 oa:hasTarget ?target1 .
-
-    FILTER(?instanceType = <${QANARY_PREFIX}AnnotationOfInstance>)
-    
-    ?target1 oa:hasSelector ?selector1 .
-    ?selector1 oa:start ?start ;
-               oa:end ?end .
-    
-    # Get corresponding AnnotationOfSpotInstance with same text positions
-    ?spotUri a ?spotType ;
+      # Get all AnnotationOfSpotInstance annotations (mandatory)
+    ?spotUri a <${QANARY_PREFIX}AnnotationOfSpotInstance> ;
              oa:hasBody ?spotBody ;
              oa:score ?spotScore ;
              oa:hasTarget ?target2 .
-
-    FILTER(?spotType = <${QANARY_PREFIX}AnnotationOfSpotInstance>)
     
     ?target2 oa:hasSelector ?selector2 .
     ?selector2 oa:start ?start ;
                oa:end ?end .
+
+      # Get corresponding AnnotationOfInstance with same text positions (optional)
+      OPTIONAL {
+        ?instanceUri a <${QANARY_PREFIX}AnnotationOfInstance> ;
+                     oa:hasBody ?instanceBody ;
+                     oa:score ?instanceScore ;
+                     oa:hasTarget ?target1 .
+
+        ?target1 oa:hasSelector ?selector1 .
+        ?selector1 oa:start ?start ;
+                   oa:end ?end .
+      }
   }
 }
 `;

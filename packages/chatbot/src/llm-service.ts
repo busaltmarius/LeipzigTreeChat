@@ -99,7 +99,7 @@ export class LLMService extends Context.Tag("LLMService")<LLMService, LLMService
     Effect.gen(function* () {
       const openrouter = yield* OpenRouter;
       const openrouterClient = yield* openrouter.client();
-      const deepseek_v3_2 = openrouterClient.chat("deepseek/deepseek-v3.2");
+      const llmModel = openrouterClient.chat("google/gemini-2.0-flash-001");
       const generateTextEffect = (
         operation: string,
         messages: NonNullable<Parameters<typeof generateText>[0]["messages"]>
@@ -107,7 +107,7 @@ export class LLMService extends Context.Tag("LLMService")<LLMService, LLMService
         Effect.tryPromise({
           try: () =>
             generateText({
-              model: deepseek_v3_2,
+              model: llmModel,
               messages,
             }),
           catch: (reason: unknown) => new LLMServiceError(operation, reason),
@@ -200,23 +200,16 @@ export class LLMService extends Context.Tag("LLMService")<LLMService, LLMService
               {
                 role: "user",
                 content: [
-                  `Here is the conversation history so far:
-
-<conversation_history>
-${conversationHistory}
-</conversation_history>
-
-The user's most recent message is:
-"${newInput}"
-
-Rewrite this message into a single, clear, self-contained question that reflects the user's true intent based on the conversation context. 
-
-If the user is making a clarification or correction, merge it with the previous question.
-If the user is asking a follow-up question, incorporate relevant context from the previous question to make it self-contained.
-If the user is asking a new unrelated question, return it with minimal changes.
-
-Return ONLY the rewritten question.`
-                  ].join(""),
+                  "## Gesprächshistorie:",
+                  "\n",
+                  conversationHistory || "(Keine vorherige Gesprächshistorie)",
+                  "\n\n",
+                  "## Neue Eingabe:",
+                  "\n",
+                  newInput,
+                  "\n\n",
+                  "Kombiniere diese zu EINER umfassenden Frage:",
+                ].join(""),
               },
             ]);
 

@@ -195,7 +195,7 @@ export const Nodes = <const N extends string[]>(
           client.execute,
           Effect.flatMap(HttpClientResponse.filterStatusOk),
           Effect.flatMap(HttpClientResponse.schemaBodyJson(QanaryResponse)),
-          Effect.timeout("60 seconds"),
+          Effect.timeout("120 seconds"),
           Effect.scoped,
           Effect.either
         );
