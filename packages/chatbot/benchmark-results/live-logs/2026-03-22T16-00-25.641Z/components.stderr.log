@@ -1,0 +1,3 @@
+$ turbo run dev --ui stream "--filter=qanary-component-eat-simple" "--filter=qanary-component-nerd-simple" "--filter=qanary-component-dis" "--filter=qanary-component-relation-detection" "--filter=qanary-component-sparql-generation"
+• turbo 2.8.20
+error: script "dev" was terminated by signal SIGTERM (Polite quit request)

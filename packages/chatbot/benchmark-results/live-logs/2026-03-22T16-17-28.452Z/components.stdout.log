@@ -1,0 +1,97 @@
+
+   • Packages in scope: qanary-component-dis, qanary-component-eat-simple, qanary-component-nerd-simple, qanary-component-relation-detection, qanary-component-sparql-generation
+   • Running dev in 5 packages
+   • Remote caching disabled
+
+@leipzigtreechat/qanary-api:build: cache hit, replaying logs 4a0bf6c24a629308
+@leipzigtreechat/qanary-api:build: 
+@leipzigtreechat/qanary-api:build: [0m[2m[35m$[0m [2m[1mtsc[0m
+@leipzigtreechat/qanary-component-core:build: cache hit, replaying logs 4562b031eb3003d3
+@leipzigtreechat/shared:build: cache hit, replaying logs 64830288c690b807
+@leipzigtreechat/qanary-component-core:build: 
+@leipzigtreechat/qanary-component-core:build: [0m[2m[35m$[0m [2m[1mtsc[0m
+@leipzigtreechat/shared:build: 
+@leipzigtreechat/shared:build: [0m[2m[35m$[0m [2m[1mtsc[0m
+@leipzigtreechat/qanary-component-helpers:build: cache hit, replaying logs 0686551964dd1b39
+@leipzigtreechat/qanary-component-helpers:build: 
+@leipzigtreechat/qanary-component-helpers:build: [0m[2m[35m$[0m [2m[1mtsc[0m
+qanary-component-sparql-generation:dev: cache bypass, force executing e3f88d7abf09d7ff
+qanary-component-eat-simple:dev: cache bypass, force executing de6aa7efc6c1a8e5
+qanary-component-relation-detection:dev: cache bypass, force executing da5a8b8db2085587
+qanary-component-nerd-simple:dev: cache bypass, force executing e1d983e9778e8ed7
+qanary-component-dis:dev: cache bypass, force executing 959fa65080960a75
+qanary-component-eat-simple:dev: $ bun --env-file=.env --watch src/index.ts
+qanary-component-relation-detection:dev: $ bun --env-file=.env --watch src/index.ts
+qanary-component-sparql-generation:dev: $ bun --env-file=.env --watch src/index.ts
+qanary-component-dis:dev: $ bun --env-file=.env --watch src/index.ts
+qanary-component-nerd-simple:dev: $ bun --env-file=.env --watch src/index.ts
+qanary-component-nerd-simple:dev: Started Qanary component at http://host.docker.internal:40501/
+qanary-component-dis:dev: Started Qanary component at http://host.docker.internal:40502/
+qanary-component-relation-detection:dev: Started Qanary component at http://host.docker.internal:40503/
+qanary-component-eat-simple:dev: Started Qanary component at http://host.docker.internal:40500/
+qanary-component-sparql-generation:dev: Started Qanary component at http://host.docker.internal:40504/
+qanary-component-dis:dev: Component qanary-component-dis was registered
+qanary-component-dis:dev:   Endpoint: http://localhost:8080/instances/c8747af27f33
+qanary-component-dis:dev:   Data: {
+qanary-component-dis:dev:     name: "qanary-component-dis",
+qanary-component-dis:dev:     serviceUrl: "http://host.docker.internal:40502",
+qanary-component-dis:dev:     healthUrl: "http://host.docker.internal:40502/health",
+qanary-component-dis:dev:     metadata: {
+qanary-component-dis:dev:       start: "2026-03-22T16:17:28.977Z",
+qanary-component-dis:dev:       description: "A simple Qanary component template for disambiguation",
+qanary-component-dis:dev:       about: "http://host.docker.internal:40502/about",
+qanary-component-dis:dev:       written_in: "TypeScript",
+qanary-component-dis:dev:     },
+qanary-component-dis:dev:   }
+qanary-component-nerd-simple:dev: Component qanary-component-nerd-simple was registered
+qanary-component-nerd-simple:dev:   Endpoint: http://localhost:8080/instances/583767798718
+qanary-component-nerd-simple:dev:   Data: {
+qanary-component-nerd-simple:dev:     name: "qanary-component-nerd-simple",
+qanary-component-nerd-simple:dev:     serviceUrl: "http://host.docker.internal:40501",
+qanary-component-nerd-simple:dev:     healthUrl: "http://host.docker.internal:40501/health",
+qanary-component-nerd-simple:dev:     metadata: {
+qanary-component-nerd-simple:dev:       start: "2026-03-22T16:17:28.975Z",
+qanary-component-nerd-simple:dev:       description: "A simple Qanary component template for NED and NER.",
+qanary-component-nerd-simple:dev:       about: "http://host.docker.internal:40501/about",
+qanary-component-nerd-simple:dev:       written_in: "TypeScript",
+qanary-component-nerd-simple:dev:     },
+qanary-component-nerd-simple:dev:   }
+qanary-component-eat-simple:dev: Component qanary-component-eat-simple was registered
+qanary-component-eat-simple:dev:   Endpoint: http://localhost:8080/instances/790034d78e2b
+qanary-component-eat-simple:dev:   Data: {
+qanary-component-eat-simple:dev:     name: "qanary-component-eat-simple",
+qanary-component-eat-simple:dev:     serviceUrl: "http://host.docker.internal:40500",
+qanary-component-eat-simple:dev:     healthUrl: "http://host.docker.internal:40500/health",
+qanary-component-eat-simple:dev:     metadata: {
+qanary-component-eat-simple:dev:       start: "2026-03-22T16:17:28.981Z",
+qanary-component-eat-simple:dev:       description: "A simple Qanary component template for EAT extraction.",
+qanary-component-eat-simple:dev:       about: "http://host.docker.internal:40500/about",
+qanary-component-eat-simple:dev:       written_in: "TypeScript",
+qanary-component-eat-simple:dev:     },
+qanary-component-eat-simple:dev:   }
+qanary-component-relation-detection:dev: Component qanary-component-relation-detection was registered
+qanary-component-relation-detection:dev:   Endpoint: http://localhost:8080/instances/971eb1bf4b7a
+qanary-component-relation-detection:dev:   Data: {
+qanary-component-relation-detection:dev:     name: "qanary-component-relation-detection",
+qanary-component-relation-detection:dev:     serviceUrl: "http://host.docker.internal:40503",
+qanary-component-relation-detection:dev:     healthUrl: "http://host.docker.internal:40503/health",
+qanary-component-relation-detection:dev:     metadata: {
+qanary-component-relation-detection:dev:       start: "2026-03-22T16:17:28.980Z",
+qanary-component-relation-detection:dev:       description: "A simple Qanary component for relation detection",
+qanary-component-relation-detection:dev:       about: "http://host.docker.internal:40503/about",
+qanary-component-relation-detection:dev:       written_in: "TypeScript",
+qanary-component-relation-detection:dev:     },
+qanary-component-relation-detection:dev:   }
+qanary-component-sparql-generation:dev: Component qanary-component-sparql-generation was registered
+qanary-component-sparql-generation:dev:   Endpoint: http://localhost:8080/instances/9c53aab64618
+qanary-component-sparql-generation:dev:   Data: {
+qanary-component-sparql-generation:dev:     name: "qanary-component-sparql-generation",
+qanary-component-sparql-generation:dev:     serviceUrl: "http://host.docker.internal:40504",
+qanary-component-sparql-generation:dev:     healthUrl: "http://host.docker.internal:40504/health",
+qanary-component-sparql-generation:dev:     metadata: {
+qanary-component-sparql-generation:dev:       start: "2026-03-22T16:17:29.009Z",
+qanary-component-sparql-generation:dev:       description: "A simple Qanary component to generate and execute SPARQL queries.",
+qanary-component-sparql-generation:dev:       about: "http://host.docker.internal:40504/about",
+qanary-component-sparql-generation:dev:       written_in: "TypeScript",
+qanary-component-sparql-generation:dev:     },
+qanary-component-sparql-generation:dev:   }

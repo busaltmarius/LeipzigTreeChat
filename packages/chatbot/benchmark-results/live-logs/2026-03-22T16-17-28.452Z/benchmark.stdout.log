@@ -1,0 +1,301 @@
+@leipzigtreechat/chatbot benchmark:demo: timestamp=2026-03-22T16:17:29.815Z level=TRACE fiber=#1 message="[UserInputNode] Start execution"
+@leipzigtreechat/chatbot benchmark:demo: [17:17:29.817] DEBUG (#1): UserInputNode
+@leipzigtreechat/chatbot benchmark:demo:   [ "State: ", {
+@leipzigtreechat/chatbot benchmark:demo:       chatmode: "USER_QUESTION",
+@leipzigtreechat/chatbot benchmark:demo:       user_question: "",
+@leipzigtreechat/chatbot benchmark:demo:       qanary_answer: undefined,
+@leipzigtreechat/chatbot benchmark:demo:       clarification: undefined,
+@leipzigtreechat/chatbot benchmark:demo:       messages: [
+@leipzigtreechat/chatbot benchmark:demo:         AIMessage {
+@leipzigtreechat/chatbot benchmark:demo:   "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
+@leipzigtreechat/chatbot benchmark:demo:   "additional_kwargs": {},
+@leipzigtreechat/chatbot benchmark:demo:   "response_metadata": {},
+@leipzigtreechat/chatbot benchmark:demo:   "tool_calls": [],
+@leipzigtreechat/chatbot benchmark:demo:   "invalid_tool_calls": []
+@leipzigtreechat/chatbot benchmark:demo: }
+@leipzigtreechat/chatbot benchmark:demo:       ],
+@leipzigtreechat/chatbot benchmark:demo:       has_ended: false,
+@leipzigtreechat/chatbot benchmark:demo:     } ]
+@leipzigtreechat/chatbot benchmark:demo: timestamp=2026-03-22T16:17:29.819Z level=TRACE fiber=#1 message="[UserInputNode] Ended execution after 4ms"
+@leipzigtreechat/chatbot benchmark:demo: timestamp=2026-03-22T16:17:29.820Z level=TRACE fiber=#8 message="[RouterNode] Start execution"
+@leipzigtreechat/chatbot benchmark:demo: [17:17:29.820] DEBUG (#8): RouterNode
+@leipzigtreechat/chatbot benchmark:demo:   [ "State: ", {
+@leipzigtreechat/chatbot benchmark:demo:       chatmode: "USER_QUESTION",
+@leipzigtreechat/chatbot benchmark:demo:       user_question: "Wie viel wurde im Stadtteil Connewitz gegossen?",
+@leipzigtreechat/chatbot benchmark:demo:       qanary_answer: undefined,
+@leipzigtreechat/chatbot benchmark:demo:       clarification: undefined,
+@leipzigtreechat/chatbot benchmark:demo:       messages: [
+@leipzigtreechat/chatbot benchmark:demo:         AIMessage {
+@leipzigtreechat/chatbot benchmark:demo:   "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
+@leipzigtreechat/chatbot benchmark:demo:   "additional_kwargs": {},
+@leipzigtreechat/chatbot benchmark:demo:   "response_metadata": {},
+@leipzigtreechat/chatbot benchmark:demo:   "tool_calls": [],
+@leipzigtreechat/chatbot benchmark:demo:   "invalid_tool_calls": []
+@leipzigtreechat/chatbot benchmark:demo: }, HumanMessage {
+@leipzigtreechat/chatbot benchmark:demo:   "content": "Wie viel wurde im Stadtteil Connewitz gegossen?",
+@leipzigtreechat/chatbot benchmark:demo:   "additional_kwargs": {},
+@leipzigtreechat/chatbot benchmark:demo:   "response_metadata": {}
+@leipzigtreechat/chatbot benchmark:demo: }
+@leipzigtreechat/chatbot benchmark:demo:       ],
+@leipzigtreechat/chatbot benchmark:demo:       has_ended: false,
+@leipzigtreechat/chatbot benchmark:demo:     } ]
+@leipzigtreechat/chatbot benchmark:demo: timestamp=2026-03-22T16:17:29.821Z level=TRACE fiber=#8 message="[RouterNode] Ended execution after 2ms"
+@leipzigtreechat/chatbot benchmark:demo: timestamp=2026-03-22T16:17:29.821Z level=TRACE fiber=#9 message="[QuestionRewriteNode] Start execution"
+@leipzigtreechat/chatbot benchmark:demo: [17:17:29.821] DEBUG (#9): QuestionRewriteNode
+@leipzigtreechat/chatbot benchmark:demo:   [ "State: ", {
+@leipzigtreechat/chatbot benchmark:demo:       chatmode: "RESPONSE",
+@leipzigtreechat/chatbot benchmark:demo:       user_question: "Wie viel wurde im Stadtteil Connewitz gegossen?",
+@leipzigtreechat/chatbot benchmark:demo:       qanary_answer: undefined,
+@leipzigtreechat/chatbot benchmark:demo:       clarification: undefined,
+@leipzigtreechat/chatbot benchmark:demo:       messages: [
+@leipzigtreechat/chatbot benchmark:demo:         AIMessage {
+@leipzigtreechat/chatbot benchmark:demo:   "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
+@leipzigtreechat/chatbot benchmark:demo:   "additional_kwargs": {},
+@leipzigtreechat/chatbot benchmark:demo:   "response_metadata": {},
+@leipzigtreechat/chatbot benchmark:demo:   "tool_calls": [],
+@leipzigtreechat/chatbot benchmark:demo:   "invalid_tool_calls": []
+@leipzigtreechat/chatbot benchmark:demo: }, HumanMessage {
+@leipzigtreechat/chatbot benchmark:demo:   "content": "Wie viel wurde im Stadtteil Connewitz gegossen?",
+@leipzigtreechat/chatbot benchmark:demo:   "additional_kwargs": {},
+@leipzigtreechat/chatbot benchmark:demo:   "response_metadata": {}
+@leipzigtreechat/chatbot benchmark:demo: }
+@leipzigtreechat/chatbot benchmark:demo:       ],
+@leipzigtreechat/chatbot benchmark:demo:       has_ended: false,
+@leipzigtreechat/chatbot benchmark:demo:     } ]
+@leipzigtreechat/chatbot benchmark:demo: [17:17:29.887] ERROR (#9): QuestionRewriteNode
+@leipzigtreechat/chatbot benchmark:demo:   [ "Error while rewriting question:", LLMServiceError: An error has occurred
+@leipzigtreechat/chatbot benchmark:demo:     at catch (/Volumes/Programming/htwk/quatsch/baumbart/packages/chatbot/src/llm-service.ts:113:43) ]
+@leipzigtreechat/chatbot benchmark:demo: [17:17:29.888] DEBUG (#9): QuestionRewriteNode
+@leipzigtreechat/chatbot benchmark:demo:   [ "Original input: ", "Wie viel wurde im Stadtteil Connewitz gegossen?" ]
+@leipzigtreechat/chatbot benchmark:demo: [17:17:29.888] DEBUG (#9): QuestionRewriteNode
+@leipzigtreechat/chatbot benchmark:demo:   [ "Rewritten question: ", "Wie viel wurde im Stadtteil Connewitz gegossen?" ]
+@leipzigtreechat/chatbot benchmark:demo: timestamp=2026-03-22T16:17:29.888Z level=TRACE fiber=#9 message="[QuestionRewriteNode] Ended execution after 67ms"
+@leipzigtreechat/chatbot benchmark:demo: timestamp=2026-03-22T16:17:29.889Z level=TRACE fiber=#10 message="[QanaryOrchestratorNode] Start execution"
+@leipzigtreechat/chatbot benchmark:demo: [17:17:29.890] DEBUG (#10): QanaryOrchestratorNode
+@leipzigtreechat/chatbot benchmark:demo:   [ "State: ", {
+@leipzigtreechat/chatbot benchmark:demo:       chatmode: "RESPONSE",
+@leipzigtreechat/chatbot benchmark:demo:       user_question: "Wie viel wurde im Stadtteil Connewitz gegossen?",
+@leipzigtreechat/chatbot benchmark:demo:       qanary_answer: undefined,
+@leipzigtreechat/chatbot benchmark:demo:       clarification: undefined,
+@leipzigtreechat/chatbot benchmark:demo:       messages: [
+@leipzigtreechat/chatbot benchmark:demo:         AIMessage {
+@leipzigtreechat/chatbot benchmark:demo:   "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
+@leipzigtreechat/chatbot benchmark:demo:   "additional_kwargs": {},
+@leipzigtreechat/chatbot benchmark:demo:   "response_metadata": {},
+@leipzigtreechat/chatbot benchmark:demo:   "tool_calls": [],
+@leipzigtreechat/chatbot benchmark:demo:   "invalid_tool_calls": []
+@leipzigtreechat/chatbot benchmark:demo: }, HumanMessage {
+@leipzigtreechat/chatbot benchmark:demo:   "content": "Wie viel wurde im Stadtteil Connewitz gegossen?",
+@leipzigtreechat/chatbot benchmark:demo:   "additional_kwargs": {},
+@leipzigtreechat/chatbot benchmark:demo:   "response_metadata": {}
+@leipzigtreechat/chatbot benchmark:demo: }
+@leipzigtreechat/chatbot benchmark:demo:       ],
+@leipzigtreechat/chatbot benchmark:demo:       has_ended: false,
+@leipzigtreechat/chatbot benchmark:demo:     } ]
+@leipzigtreechat/chatbot benchmark:demo: [17:17:41.752] DEBUG (#10): QanaryOrchestratorNode
+@leipzigtreechat/chatbot benchmark:demo:   [ "Qanary Result: ", {
+@leipzigtreechat/chatbot benchmark:demo:       _id: "Either",
+@leipzigtreechat/chatbot benchmark:demo:       _tag: "Right",
+@leipzigtreechat/chatbot benchmark:demo:       right: {
+@leipzigtreechat/chatbot benchmark:demo:         inGraph: "urn:graph:38bb9ee2-84d4-4c61-8991-3aecb446daba",
+@leipzigtreechat/chatbot benchmark:demo:       },
+@leipzigtreechat/chatbot benchmark:demo:     } ]
+@leipzigtreechat/chatbot benchmark:demo: [17:17:41.753] INFO (#10): QanaryOrchestratorNode
+@leipzigtreechat/chatbot benchmark:demo:   [ "Executing SPARQL query for clarifications", {
+@leipzigtreechat/chatbot benchmark:demo:       getClarificationsQuery: "\n              PREFIX oa: <http://www.w3.org/ns/openannotation/core/>\n              SELECT ?annotationId ?clarification WHERE {\n                GRAPH <urn:graph:38bb9ee2-84d4-4c61-8991-3aecb446daba> {\n                  ?annotationId a <urn:qanary#AnnotationOfClarification> ;\n                    oa:hasBody ?clarification .\n                }\n              }\n            ",
+@leipzigtreechat/chatbot benchmark:demo:     } ]
+@leipzigtreechat/chatbot benchmark:demo: [17:17:41.780] INFO (#10): QanaryOrchestratorNode
+@leipzigtreechat/chatbot benchmark:demo:   [ "Executing SPARQL query for answer annotation", {
+@leipzigtreechat/chatbot benchmark:demo:       getDataQuery: "\n                  PREFIX oa: <http://www.w3.org/ns/openannotation/core/>\n                  SELECT ?annotationId ?answer WHERE {\n                    GRAPH <urn:graph:38bb9ee2-84d4-4c61-8991-3aecb446daba> {\n                      ?annotationId a <urn:qanary#AnnotationOfAnswerJson> ;\n                        oa:hasBody ?answer .\n                    }\n                  }\n                ",
+@leipzigtreechat/chatbot benchmark:demo:     } ]
+@leipzigtreechat/chatbot benchmark:demo: timestamp=2026-03-22T16:17:41.789Z level=TRACE fiber=#10 message="[QanaryOrchestratorNode] Ended execution after 11900ms"
+@leipzigtreechat/chatbot benchmark:demo: timestamp=2026-03-22T16:17:41.789Z level=TRACE fiber=#14 message="[RouterNode] Start execution"
+@leipzigtreechat/chatbot benchmark:demo: [17:17:41.790] DEBUG (#14): RouterNode
+@leipzigtreechat/chatbot benchmark:demo:   [ "State: ", {
+@leipzigtreechat/chatbot benchmark:demo:       chatmode: "RESPONSE",
+@leipzigtreechat/chatbot benchmark:demo:       user_question: "Wie viel wurde im Stadtteil Connewitz gegossen?",
+@leipzigtreechat/chatbot benchmark:demo:       qanary_answer: {
+@leipzigtreechat/chatbot benchmark:demo:         _tag: "QanaryFinalAnswer",
+@leipzigtreechat/chatbot benchmark:demo:         uri: [Object ...],
+@leipzigtreechat/chatbot benchmark:demo:         content: "{\"head\":{\"vars\":[\"totalWateredVolume\",\"totalWateredCount\"]},\"results\":{\"bindings\":[{\"totalWateredVolume\":{\"value\":\"12919\",\"datatype\":{\"value\":\"http://www.w3.org/2001/XMLSchema#integer\"},\"language\":\"\"},\"totalWateredCount\":{\"value\":\"89\",\"datatype\":{\"value\":\"http://www.w3.org/2001/XMLSchema#integer\"},\"language\":\"\"}}]}}",
+@leipzigtreechat/chatbot benchmark:demo:       },
+@leipzigtreechat/chatbot benchmark:demo:       clarification: ClarificationConversation {
+@leipzigtreechat/chatbot benchmark:demo:         uri: [Object ...],
+@leipzigtreechat/chatbot benchmark:demo:         _questions: [Object ...],
+@leipzigtreechat/chatbot benchmark:demo:         _openQuestions: [Object ...],
+@leipzigtreechat/chatbot benchmark:demo:         _resolvedQuestions: [Object ...],
+@leipzigtreechat/chatbot benchmark:demo:         _tag: "Conversation",
+@leipzigtreechat/chatbot benchmark:demo:         _currentQuestionUri: null,
+@leipzigtreechat/chatbot benchmark:demo:         addQuestion: [Function: addQuestion],
+@leipzigtreechat/chatbot benchmark:demo:         hasQuestion: [Function: hasQuestion],
+@leipzigtreechat/chatbot benchmark:demo:         setCurrentQuestion: [Function: setCurrentQuestion],
+@leipzigtreechat/chatbot benchmark:demo:         hasCurrentQuestion: [Function: hasCurrentQuestion],
+@leipzigtreechat/chatbot benchmark:demo:         answerCurrentQuestion: [Function: answerCurrentQuestion],
+@leipzigtreechat/chatbot benchmark:demo:         hasAnswer: [Function: hasAnswer],
+@leipzigtreechat/chatbot benchmark:demo:         hasOpenQuestions: [Function: hasOpenQuestions],
+@leipzigtreechat/chatbot benchmark:demo:         resolvedQuestions: [Function: resolvedQuestions],
+@leipzigtreechat/chatbot benchmark:demo:         openQuestions: [Function: openQuestions],
+@leipzigtreechat/chatbot benchmark:demo:         getFirstOpenQuestion: [Function: getFirstOpenQuestion],
+@leipzigtreechat/chatbot benchmark:demo:         [Symbol(effect/Hash)]: [Function],
+@leipzigtreechat/chatbot benchmark:demo:         [Symbol(effect/Equal)]: [Function],
+@leipzigtreechat/chatbot benchmark:demo:       },
+@leipzigtreechat/chatbot benchmark:demo:       messages: [
+@leipzigtreechat/chatbot benchmark:demo:         AIMessage {
+@leipzigtreechat/chatbot benchmark:demo:   "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
+@leipzigtreechat/chatbot benchmark:demo:   "additional_kwargs": {},
+@leipzigtreechat/chatbot benchmark:demo:   "response_metadata": {},
+@leipzigtreechat/chatbot benchmark:demo:   "tool_calls": [],
+@leipzigtreechat/chatbot benchmark:demo:   "invalid_tool_calls": []
+@leipzigtreechat/chatbot benchmark:demo: }, HumanMessage {
+@leipzigtreechat/chatbot benchmark:demo:   "content": "Wie viel wurde im Stadtteil Connewitz gegossen?",
+@leipzigtreechat/chatbot benchmark:demo:   "additional_kwargs": {},
+@leipzigtreechat/chatbot benchmark:demo:   "response_metadata": {}
+@leipzigtreechat/chatbot benchmark:demo: }
+@leipzigtreechat/chatbot benchmark:demo:       ],
+@leipzigtreechat/chatbot benchmark:demo:       has_ended: false,
+@leipzigtreechat/chatbot benchmark:demo:     } ]
+@leipzigtreechat/chatbot benchmark:demo: timestamp=2026-03-22T16:17:41.791Z level=TRACE fiber=#14 message="[RouterNode] Ended execution after 2ms"
+@leipzigtreechat/chatbot benchmark:demo: timestamp=2026-03-22T16:17:41.791Z level=TRACE fiber=#15 message="[ResponseNode] Start execution"
+@leipzigtreechat/chatbot benchmark:demo: [17:17:41.792] DEBUG (#15): ResponseNode
+@leipzigtreechat/chatbot benchmark:demo:   [ "State: ", {
+@leipzigtreechat/chatbot benchmark:demo:       chatmode: "USER_QUESTION",
+@leipzigtreechat/chatbot benchmark:demo:       user_question: "Wie viel wurde im Stadtteil Connewitz gegossen?",
+@leipzigtreechat/chatbot benchmark:demo:       qanary_answer: {
+@leipzigtreechat/chatbot benchmark:demo:         _tag: "QanaryFinalAnswer",
+@leipzigtreechat/chatbot benchmark:demo:         uri: [Object ...],
+@leipzigtreechat/chatbot benchmark:demo:         content: "{\"head\":{\"vars\":[\"totalWateredVolume\",\"totalWateredCount\"]},\"results\":{\"bindings\":[{\"totalWateredVolume\":{\"value\":\"12919\",\"datatype\":{\"value\":\"http://www.w3.org/2001/XMLSchema#integer\"},\"language\":\"\"},\"totalWateredCount\":{\"value\":\"89\",\"datatype\":{\"value\":\"http://www.w3.org/2001/XMLSchema#integer\"},\"language\":\"\"}}]}}",
+@leipzigtreechat/chatbot benchmark:demo:       },
+@leipzigtreechat/chatbot benchmark:demo:       clarification: ClarificationConversation {
+@leipzigtreechat/chatbot benchmark:demo:         uri: [Object ...],
+@leipzigtreechat/chatbot benchmark:demo:         _questions: [Object ...],
+@leipzigtreechat/chatbot benchmark:demo:         _openQuestions: [Object ...],
+@leipzigtreechat/chatbot benchmark:demo:         _resolvedQuestions: [Object ...],
+@leipzigtreechat/chatbot benchmark:demo:         _tag: "Conversation",
+@leipzigtreechat/chatbot benchmark:demo:         _currentQuestionUri: null,
+@leipzigtreechat/chatbot benchmark:demo:         addQuestion: [Function: addQuestion],
+@leipzigtreechat/chatbot benchmark:demo:         hasQuestion: [Function: hasQuestion],
+@leipzigtreechat/chatbot benchmark:demo:         setCurrentQuestion: [Function: setCurrentQuestion],
+@leipzigtreechat/chatbot benchmark:demo:         hasCurrentQuestion: [Function: hasCurrentQuestion],
+@leipzigtreechat/chatbot benchmark:demo:         answerCurrentQuestion: [Function: answerCurrentQuestion],
+@leipzigtreechat/chatbot benchmark:demo:         hasAnswer: [Function: hasAnswer],
+@leipzigtreechat/chatbot benchmark:demo:         hasOpenQuestions: [Function: hasOpenQuestions],
+@leipzigtreechat/chatbot benchmark:demo:         resolvedQuestions: [Function: resolvedQuestions],
+@leipzigtreechat/chatbot benchmark:demo:         openQuestions: [Function: openQuestions],
+@leipzigtreechat/chatbot benchmark:demo:         getFirstOpenQuestion: [Function: getFirstOpenQuestion],
+@leipzigtreechat/chatbot benchmark:demo:         [Symbol(effect/Hash)]: [Function],
+@leipzigtreechat/chatbot benchmark:demo:         [Symbol(effect/Equal)]: [Function],
+@leipzigtreechat/chatbot benchmark:demo:       },
+@leipzigtreechat/chatbot benchmark:demo:       messages: [
+@leipzigtreechat/chatbot benchmark:demo:         AIMessage {
+@leipzigtreechat/chatbot benchmark:demo:   "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
+@leipzigtreechat/chatbot benchmark:demo:   "additional_kwargs": {},
+@leipzigtreechat/chatbot benchmark:demo:   "response_metadata": {},
+@leipzigtreechat/chatbot benchmark:demo:   "tool_calls": [],
+@leipzigtreechat/chatbot benchmark:demo:   "invalid_tool_calls": []
+@leipzigtreechat/chatbot benchmark:demo: }, HumanMessage {
+@leipzigtreechat/chatbot benchmark:demo:   "content": "Wie viel wurde im Stadtteil Connewitz gegossen?",
+@leipzigtreechat/chatbot benchmark:demo:   "additional_kwargs": {},
+@leipzigtreechat/chatbot benchmark:demo:   "response_metadata": {}
+@leipzigtreechat/chatbot benchmark:demo: }
+@leipzigtreechat/chatbot benchmark:demo:       ],
+@leipzigtreechat/chatbot benchmark:demo:       has_ended: false,
+@leipzigtreechat/chatbot benchmark:demo:     } ]
+@leipzigtreechat/chatbot benchmark:demo: [17:17:41.812] ERROR (#15): ResponseNode
+@leipzigtreechat/chatbot benchmark:demo:   [ "Error while generating chatbot response:", LLMServiceError: An error has occurred
+@leipzigtreechat/chatbot benchmark:demo:     at catch (/Volumes/Programming/htwk/quatsch/baumbart/packages/chatbot/src/llm-service.ts:113:43) ]
+@leipzigtreechat/chatbot benchmark:demo: timestamp=2026-03-22T16:17:41.813Z level=TRACE fiber=#15 message="[ResponseNode] Ended execution after 22ms"
+@leipzigtreechat/chatbot benchmark:demo: [1/18] Q1 Gießmenge nach Stadtteil -> fail (12006 ms) running totals: pass=0, soft-fail=0, fail=1
+@leipzigtreechat/chatbot benchmark:demo: timestamp=2026-03-22T16:17:41.814Z level=TRACE fiber=#16 message="[UserInputNode] Start execution"
+@leipzigtreechat/chatbot benchmark:demo: [17:17:41.814] DEBUG (#16): UserInputNode
+@leipzigtreechat/chatbot benchmark:demo:   [ "State: ", {
+@leipzigtreechat/chatbot benchmark:demo:       chatmode: "USER_QUESTION",
+@leipzigtreechat/chatbot benchmark:demo:       user_question: "",
+@leipzigtreechat/chatbot benchmark:demo:       qanary_answer: undefined,
+@leipzigtreechat/chatbot benchmark:demo:       clarification: undefined,
+@leipzigtreechat/chatbot benchmark:demo:       messages: [
+@leipzigtreechat/chatbot benchmark:demo:         AIMessage {
+@leipzigtreechat/chatbot benchmark:demo:   "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
+@leipzigtreechat/chatbot benchmark:demo:   "additional_kwargs": {},
+@leipzigtreechat/chatbot benchmark:demo:   "response_metadata": {},
+@leipzigtreechat/chatbot benchmark:demo:   "tool_calls": [],
+@leipzigtreechat/chatbot benchmark:demo:   "invalid_tool_calls": []
+@leipzigtreechat/chatbot benchmark:demo: }
+@leipzigtreechat/chatbot benchmark:demo:       ],
+@leipzigtreechat/chatbot benchmark:demo:       has_ended: false,
+@leipzigtreechat/chatbot benchmark:demo:     } ]
+@leipzigtreechat/chatbot benchmark:demo: timestamp=2026-03-22T16:17:41.815Z level=TRACE fiber=#16 message="[UserInputNode] Ended execution after 1ms"
+@leipzigtreechat/chatbot benchmark:demo: timestamp=2026-03-22T16:17:41.816Z level=TRACE fiber=#17 message="[RouterNode] Start execution"
+@leipzigtreechat/chatbot benchmark:demo: [17:17:41.816] DEBUG (#17): RouterNode
+@leipzigtreechat/chatbot benchmark:demo:   [ "State: ", {
+@leipzigtreechat/chatbot benchmark:demo:       chatmode: "USER_QUESTION",
+@leipzigtreechat/chatbot benchmark:demo:       user_question: "Welche Wasserentnahmestellen gibt es in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig?",
+@leipzigtreechat/chatbot benchmark:demo:       qanary_answer: undefined,
+@leipzigtreechat/chatbot benchmark:demo:       clarification: undefined,
+@leipzigtreechat/chatbot benchmark:demo:       messages: [
+@leipzigtreechat/chatbot benchmark:demo:         AIMessage {
+@leipzigtreechat/chatbot benchmark:demo:   "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
+@leipzigtreechat/chatbot benchmark:demo:   "additional_kwargs": {},
+@leipzigtreechat/chatbot benchmark:demo:   "response_metadata": {},
+@leipzigtreechat/chatbot benchmark:demo:   "tool_calls": [],
+@leipzigtreechat/chatbot benchmark:demo:   "invalid_tool_calls": []
+@leipzigtreechat/chatbot benchmark:demo: }, HumanMessage {
+@leipzigtreechat/chatbot benchmark:demo:   "content": "Welche Wasserentnahmestellen gibt es in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig?",
+@leipzigtreechat/chatbot benchmark:demo:   "additional_kwargs": {},
+@leipzigtreechat/chatbot benchmark:demo:   "response_metadata": {}
+@leipzigtreechat/chatbot benchmark:demo: }
+@leipzigtreechat/chatbot benchmark:demo:       ],
+@leipzigtreechat/chatbot benchmark:demo:       has_ended: false,
+@leipzigtreechat/chatbot benchmark:demo:     } ]
+@leipzigtreechat/chatbot benchmark:demo: timestamp=2026-03-22T16:17:41.816Z level=TRACE fiber=#17 message="[RouterNode] Ended execution after 0ms"
+@leipzigtreechat/chatbot benchmark:demo: timestamp=2026-03-22T16:17:41.817Z level=TRACE fiber=#18 message="[QuestionRewriteNode] Start execution"
+@leipzigtreechat/chatbot benchmark:demo: [17:17:41.817] DEBUG (#18): QuestionRewriteNode
+@leipzigtreechat/chatbot benchmark:demo:   [ "State: ", {
+@leipzigtreechat/chatbot benchmark:demo:       chatmode: "RESPONSE",
+@leipzigtreechat/chatbot benchmark:demo:       user_question: "Welche Wasserentnahmestellen gibt es in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig?",
+@leipzigtreechat/chatbot benchmark:demo:       qanary_answer: undefined,
+@leipzigtreechat/chatbot benchmark:demo:       clarification: undefined,
+@leipzigtreechat/chatbot benchmark:demo:       messages: [
+@leipzigtreechat/chatbot benchmark:demo:         AIMessage {
+@leipzigtreechat/chatbot benchmark:demo:   "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
+@leipzigtreechat/chatbot benchmark:demo:   "additional_kwargs": {},
+@leipzigtreechat/chatbot benchmark:demo:   "response_metadata": {},
+@leipzigtreechat/chatbot benchmark:demo:   "tool_calls": [],
+@leipzigtreechat/chatbot benchmark:demo:   "invalid_tool_calls": []
+@leipzigtreechat/chatbot benchmark:demo: }, HumanMessage {
+@leipzigtreechat/chatbot benchmark:demo:   "content": "Welche Wasserentnahmestellen gibt es in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig?",
+@leipzigtreechat/chatbot benchmark:demo:   "additional_kwargs": {},
+@leipzigtreechat/chatbot benchmark:demo:   "response_metadata": {}
+@leipzigtreechat/chatbot benchmark:demo: }
+@leipzigtreechat/chatbot benchmark:demo:       ],
+@leipzigtreechat/chatbot benchmark:demo:       has_ended: false,
+@leipzigtreechat/chatbot benchmark:demo:     } ]
+@leipzigtreechat/chatbot benchmark:demo: [17:17:41.835] ERROR (#18): QuestionRewriteNode
+@leipzigtreechat/chatbot benchmark:demo:   [ "Error while rewriting question:", LLMServiceError: An error has occurred
+@leipzigtreechat/chatbot benchmark:demo:     at catch (/Volumes/Programming/htwk/quatsch/baumbart/packages/chatbot/src/llm-service.ts:113:43) ]
+@leipzigtreechat/chatbot benchmark:demo: [17:17:41.836] DEBUG (#18): QuestionRewriteNode
+@leipzigtreechat/chatbot benchmark:demo:   [ "Original input: ", "Welche Wasserentnahmestellen gibt es in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig?" ]
+@leipzigtreechat/chatbot benchmark:demo: [17:17:41.836] DEBUG (#18): QuestionRewriteNode
+@leipzigtreechat/chatbot benchmark:demo:   [ "Rewritten question: ", "Welche Wasserentnahmestellen gibt es in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig?" ]
+@leipzigtreechat/chatbot benchmark:demo: timestamp=2026-03-22T16:17:41.836Z level=TRACE fiber=#18 message="[QuestionRewriteNode] Ended execution after 19ms"
+@leipzigtreechat/chatbot benchmark:demo: timestamp=2026-03-22T16:17:41.837Z level=TRACE fiber=#19 message="[QanaryOrchestratorNode] Start execution"
+@leipzigtreechat/chatbot benchmark:demo: [17:17:41.838] DEBUG (#19): QanaryOrchestratorNode
+@leipzigtreechat/chatbot benchmark:demo:   [ "State: ", {
+@leipzigtreechat/chatbot benchmark:demo:       chatmode: "RESPONSE",
+@leipzigtreechat/chatbot benchmark:demo:       user_question: "Welche Wasserentnahmestellen gibt es in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig?",
+@leipzigtreechat/chatbot benchmark:demo:       qanary_answer: undefined,
+@leipzigtreechat/chatbot benchmark:demo:       clarification: undefined,
+@leipzigtreechat/chatbot benchmark:demo:       messages: [
+@leipzigtreechat/chatbot benchmark:demo:         AIMessage {
+@leipzigtreechat/chatbot benchmark:demo:   "content": "Hallo, ich bin Baumbart, der Baumwächter von Leipzig. Wie kann ich dir helfen?",
+@leipzigtreechat/chatbot benchmark:demo:   "additional_kwargs": {},
+@leipzigtreechat/chatbot benchmark:demo:   "response_metadata": {},
+@leipzigtreechat/chatbot benchmark:demo:   "tool_calls": [],
+@leipzigtreechat/chatbot benchmark:demo:   "invalid_tool_calls": []
+@leipzigtreechat/chatbot benchmark:demo: }, HumanMessage {
+@leipzigtreechat/chatbot benchmark:demo:   "content": "Welche Wasserentnahmestellen gibt es in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig?",
+@leipzigtreechat/chatbot benchmark:demo:   "additional_kwargs": {},
+@leipzigtreechat/chatbot benchmark:demo:   "response_metadata": {}
+@leipzigtreechat/chatbot benchmark:demo: }
+@leipzigtreechat/chatbot benchmark:demo:       ],
+@leipzigtreechat/chatbot benchmark:demo:       has_ended: false,
+@leipzigtreechat/chatbot benchmark:demo:     } ]

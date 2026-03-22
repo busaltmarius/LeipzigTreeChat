@@ -1,9 +1,12 @@
 import { spawn } from "node:child_process";
-import { existsSync } from "node:fs";
+import { createWriteStream, existsSync } from "node:fs";
+import { mkdir } from "node:fs/promises";
 import { resolve } from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
+import { config as loadDotEnv } from "dotenv";
 
 const rootDir = resolve(import.meta.dir, "..");
+const rootEnvFile = resolve(rootDir, ".env");
 
 const componentPackages = [
   {
@@ -34,6 +37,7 @@ const componentPackages = [
 ];
 
 const readinessTimeoutMs = 120000;
+const benchmarkResultsDir = resolve(rootDir, "packages/chatbot/benchmark-results");
 
 const log = (message) => {
   console.info(`[benchmark:demo] ${message}`);
@@ -44,11 +48,49 @@ const fail = (message) => {
   process.exitCode = 1;
 };
 
+const loadRootEnv = () => {
+  if (!existsSync(rootEnvFile)) {
+    throw new Error(`Missing root environment file: ${rootEnvFile}`);
+  }
+
+  const result = loadDotEnv({
+    path: rootEnvFile,
+    override: true,
+    quiet: true,
+  });
+
+  if (result.error) {
+    throw result.error;
+  }
+};
+
+const summarizeRootEnv = () => {
+  const requiredKeys = ["OPENROUTER_API_KEY", "QANARY_API_BASE_URL", "TRIPLESTORE_URL"];
+  const availableKeys = requiredKeys.filter((key) => {
+    return typeof process.env[key] === "string" && process.env[key].length > 0;
+  });
+
+  return `Using root .env from ${rootEnvFile} (loaded keys: ${availableKeys.join(", ") || "none"}).`;
+};
+
 const stripAnsi = (value) => {
   return value
     .replace(/\u001B\[[0-9;]*[A-Za-z]/g, "")
     .replace(/\u0004/g, "")
     .trimEnd();
+};
+
+const createLogPaths = () => {
+  const safeTimestamp = new Date().toISOString().replaceAll(":", "-");
+  const runDir = resolve(benchmarkResultsDir, "live-logs", safeTimestamp);
+
+  return {
+    runDir,
+    componentStdoutPath: resolve(runDir, "components.stdout.log"),
+    componentStderrPath: resolve(runDir, "components.stderr.log"),
+    benchmarkStdoutPath: resolve(runDir, "benchmark.stdout.log"),
+    benchmarkStderrPath: resolve(runDir, "benchmark.stderr.log"),
+  };
 };
 
 const ensureComponentEnvFilesExist = () => {
@@ -195,8 +237,10 @@ const createReadinessTracker = () => {
   };
 };
 
-const pipeProcessOutput = (child, readinessTracker) => {
-  const attach = (stream, target) => {
+const pipeProcessOutput = (child, readinessTracker, options = {}) => {
+  const { stdoutLogStream, stderrLogStream } = options;
+
+  const attach = (stream, target, logStream) => {
     if (!stream) {
       return;
     }
@@ -206,6 +250,7 @@ const pipeProcessOutput = (child, readinessTracker) => {
     stream.on("data", (chunk) => {
       const text = chunk.toString();
       target.write(text);
+      logStream?.write(text);
       buffer += text;
 
       const lines = buffer.split(/\r?\n/);
@@ -223,13 +268,26 @@ const pipeProcessOutput = (child, readinessTracker) => {
     });
   };
 
-  attach(child.stdout, process.stdout);
-  attach(child.stderr, process.stderr);
+  attach(child.stdout, process.stdout, stdoutLogStream);
+  attach(child.stderr, process.stderr, stderrLogStream);
 };
 
 const run = async () => {
+  loadRootEnv();
+  log(summarizeRootEnv());
   ensureComponentEnvFilesExist();
+  const logPaths = createLogPaths();
+  await mkdir(logPaths.runDir, { recursive: true });
+  const componentStdoutLogStream = createWriteStream(logPaths.componentStdoutPath, { flags: "a" });
+  const componentStderrLogStream = createWriteStream(logPaths.componentStderrPath, { flags: "a" });
+  const benchmarkStdoutLogStream = createWriteStream(logPaths.benchmarkStdoutPath, { flags: "a" });
+  const benchmarkStderrLogStream = createWriteStream(logPaths.benchmarkStderrPath, { flags: "a" });
   const readinessTracker = createReadinessTracker();
+
+  log(`Component stdout log: ${logPaths.componentStdoutPath}`);
+  log(`Component stderr log: ${logPaths.componentStderrPath}`);
+  log(`Benchmark stdout log: ${logPaths.benchmarkStdoutPath}`);
+  log(`Benchmark stderr log: ${logPaths.benchmarkStderrPath}`);
 
   log("Starting required Qanary components through Turbo.");
   const componentProcess = spawnManaged("bun", [
@@ -240,7 +298,10 @@ const run = async () => {
     "stream",
     ...componentPackages.map((component) => `--filter=${component.name}`),
   ]);
-  pipeProcessOutput(componentProcess, readinessTracker);
+  pipeProcessOutput(componentProcess, readinessTracker, {
+    stdoutLogStream: componentStdoutLogStream,
+    stderrLogStream: componentStderrLogStream,
+  });
 
   const cleanup = async () => {
     await stopChildProcess(componentProcess);
@@ -264,8 +325,12 @@ const run = async () => {
     const benchmarkExitCode = await new Promise((resolveCode, reject) => {
       const benchmarkProcess = spawn("bun", ["run", "--filter", "@leipzigtreechat/chatbot", "benchmark:demo"], {
         cwd: rootDir,
-        stdio: "inherit",
+        stdio: ["inherit", "pipe", "pipe"],
         env: process.env,
+      });
+      pipeProcessOutput(benchmarkProcess, readinessTracker, {
+        stdoutLogStream: benchmarkStdoutLogStream,
+        stderrLogStream: benchmarkStderrLogStream,
       });
 
       benchmarkProcess.once("error", reject);
@@ -278,6 +343,10 @@ const run = async () => {
   } finally {
     log("Stopping local Qanary components.");
     await cleanup();
+    componentStdoutLogStream.end();
+    componentStderrLogStream.end();
+    benchmarkStdoutLogStream.end();
+    benchmarkStderrLogStream.end();
   }
 };
 
