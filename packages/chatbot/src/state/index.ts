@@ -16,21 +16,38 @@ export {
   QanaryFinalAnswer,
 } from "./qanary-types.js";
 
-export type Chatmode = "QUESTION_ANSWERING" | "CLARIFICATION";
+export type Chatmode = "USER_QUESTION" | "CLARIFICATION" | "RESPONSE";
 
 /**
  * Global state of the chatbot agent
  */
 export const AgentStateAnnotation = Annotation.Root({
+  /**
+   * The messages (AI and human) in the conversation.
+   */
   messages: Annotation<BaseMessage[], Messages>({
     reducer: messagesStateReducer,
     default: () => [],
   }),
+  /**
+   * The current chat mode of the agent. ONLY the the RouterNode should modify this!
+   */
   chatmode: Annotation<Chatmode>(),
+  /**
+   * The question asked by the user.
+   */
   user_question: Annotation<string>(),
-  has_user_question: Annotation<boolean>(),
+  /**
+   * The answer returned by the Qanary pipeline.
+   */
   qanary_answer: Annotation<QanaryFinalAnswer | undefined>(),
+  /**
+   * The clarification conversation in progress, if any.
+   */
   clarification: Annotation<ClarificationConversation | undefined>(),
+  /**
+   * Whether the conversation should end.
+   */
   has_ended: Annotation<boolean>(),
 });
 
