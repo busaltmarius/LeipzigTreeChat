@@ -1,133 +1,166 @@
 # Qanary Disambiguation Component
 
-This component implements entity disambiguation for the Leipzig Tree Chat project. It resolves ambiguous entity mentions from NER annotations to specific resources in the Baumkataster knowledge graph.
+This component resolves ambiguous entity mentions from NER annotations to
+concrete resources in the Leipzig tree knowledge graph.
 
 ## Overview
 
-The disambiguation component:
-1. **Fetches NER annotations** (`AnnotationOfSpotInstance`) created by the NERD component from the Virtuoso triplestore
-2. **Extracts exact quotes** from the original question text using position offsets (start/end)
-3. **Performs fuzzy matching** using Levenshtein distance against the knowledge base
-4. **Creates disambiguation annotations** (`AnnotationOfInstance`) linking entity mentions to specific URNs in the knowledge graph
-5. **Supports multiple entity types** with entity-specific configuration and thresholds
+The current component flow is:
+
+1. Read `AnnotationOfSpotInstance` annotations from the Qanary graph in
+   Virtuoso.
+2. Fetch the original question text and reconstruct the exact entity quote from
+   the annotation offsets.
+3. Parse the annotation `spotBody` payload and read `parsed.type` as the entity
+   type.
+4. Fuzzy-match the extracted quote against candidates from the domain knowledge
+   graph.
+5. Write `AnnotationOfInstance` annotations for successful matches.
+6. Generate clarification annotations when multiple candidates remain above the
+   fuzzy threshold.
+
+URI-based entity-type parsing still exists as a backward-compatible fallback,
+but the current primary path expects a JSON body with a `type` field.
 
 ## Architecture
 
-```
+```text
 handler.ts
-  └── disambiguateNERResults()
-        ├── fetchNerAnnotations()     → reads AnnotationOfSpotInstance from Virtuoso
-        ├── disambiguate()            → fuzzy matches against knowledge base (Fuseki)
-        └── writeDisambiguationAnnotation() → writes AnnotationOfInstance to Virtuoso
+  -> fetchNerAnnotations()
+  -> disambiguate()
+  -> writeDisambiguationAnnotation()
+  -> create clarification annotation for ambiguous results
 ```
 
-### Modules
+## Modules
 
 | File | Description |
-|------|-------------|
-| `handler.ts` | Main Qanary handler — receives pipeline messages and orchestrates the pipeline |
-| `implementation.ts` | Core logic: SPARQL queries, entity fetching, fuzzy matching, annotation writing |
-| `entity-types.ts` | Entity type configuration, URI extraction, SPARQL query generation |
-| `fuzzy-matching.ts` | Levenshtein distance and normalized similarity calculation |
-| `types.ts` | TypeScript type definitions (`NerAnnotation`, `DisambiguationResult`) |
-
-## Key Functions
-
-| Function | Description |
-|----------|-------------|
-| `fetchNerAnnotations(message, questionUri)` | Queries `AnnotationOfSpotInstance` from Virtuoso, extracts exact quotes via question text fetch |
-| `disambiguate(annotation)` | Fuzzy matches entity against knowledge base candidates |
-| `writeDisambiguationAnnotation(message, annotation, result)` | Writes `AnnotationOfInstance` back to Virtuoso |
-| `extractEntityTypeFromUri(uri)` | Extracts entity type from NER annotation URI (e.g. `urn:leipzigtreechat:entityType:TREE` → `TREE`) |
-| `generateEntityQuery(entityType)` | Generates entity-specific SPARQL SELECT query for the knowledge base |
+| --- | --- |
+| `handler.ts` | Main Qanary handler and clarification flow orchestration |
+| `implementation.ts` | Annotation fetching, candidate lookup, scoring, and write-back |
+| `entity-types.ts` | Supported entity types and SPARQL query generation |
+| `fuzzy-matching.ts` | Levenshtein distance and normalized similarity helpers |
+| `types.ts` | Shared TypeScript types for annotations and disambiguation results |
 
 ## Supported Entity Types
 
-| Type | Namespace | Identifier | Name Field |
-|------|-----------|------------|------------|
+| Type | Namespace | Identifier | Label Field |
+| --- | --- | --- | --- |
 | `TREE` | `baumkataster:` | `Species` | `ga_lang_deutsch` |
 | `KITA` | `kitas:` | `Kita` | `name_einr` |
 | `DISTRICT` | `ortsteile:` | `District` | `Name` |
 
-## Annotation Schema
+## Input And Output
 
-### Input — `AnnotationOfSpotInstance` (written by NERD component)
+### Input
 
-```turtle
-<urn:qanary:annotation:nerd-XXXX> a qa:AnnotationOfSpotInstance ;
-    oa:hasTarget   <urn:qanary:target:XXXX> ;
-    oa:hasBody     <urn:leipzigtreechat:entityType:TREE> ;
-    oa:score       "0.99"^^xsd:double ;
-    oa:annotatedBy <urn:qanary:component:ner> ;
-    oa:annotatedAt "..."^^xsd:dateTime .
+The component reads `qa:AnnotationOfSpotInstance` annotations from the current
+Qanary graph. In the current implementation, `oa:hasBody` is expected to be a
+JSON payload whose `type` property contains the entity type, for example:
 
-<urn:qanary:target:XXXX> a oa:SpecificResource ;
-    oa:hasSource   <questionUri> ;
-    oa:hasSelector <urn:qanary:selector:pos-XXXX> .
-
-<urn:qanary:selector:pos-XXXX> a oa:TextPositionSelector ;
-    oa:start "28"^^xsd:nonNegativeInteger ;
-    oa:end   "37"^^xsd:nonNegativeInteger .
+```json
+{"type":"TREE"}
 ```
 
-### Output — `AnnotationOfInstance` (written by this component)
+The component also reads the `oa:start` and `oa:end` selector offsets and fetches
+the question text to reconstruct the exact quote.
 
-```turtle
-<urn:qanary:annotation:XXXX> a qa:AnnotationOfInstance ;
-    oa:hasBody     <urn:de:leipzig:trees:resource:ortsteile:30> ;
-    oa:score       "0.99"^^xsd:double ;
-    oa:annotatedBy <urn:qanary:leipzigtreechat:component:disambiguation> ;
-    oa:annotatedAt "..."^^xsd:dateTime .
-```
+If the body is not JSON, the component still attempts to extract the entity type
+from the older URI form `urn:leipzigtreechat:entityType:TYPE`.
 
-## Entity Type URI Format
+### Output
 
-NER annotations must use the following URI format for `oa:hasBody`:
+Successful matches are written back as `qa:AnnotationOfInstance` annotations.
 
-```
-urn:leipzigtreechat:entityType:TYPE
-```
-
-Where `TYPE` is one of: `TREE`, `KITA`, `DISTRICT`
+If more than one candidate remains above the threshold, the handler also creates
+a clarification annotation so downstream conversation logic can ask the user
+which entity they meant.
 
 ## Fuzzy Matching
 
-The component uses **Levenshtein distance** normalized to a similarity score between `0.0` (completely different) and `1.0` (identical):
+The component uses normalized Levenshtein similarity:
 
-```
+```text
 similarity = 1 - (levenshteinDistance / maxLength)
-combinedScore = nerConfidence × fuzzySimilarity
 ```
+
+The effective score written by the current implementation is the fuzzy
+similarity only. The older idea of combining NER confidence with fuzzy
+similarity is not currently active in the code.
 
 ### Thresholds
 
-| Entity Type | Default Threshold |
-|-------------|------------------|
+| Entity Type | Threshold |
+| --- | --- |
 | `TREE` | `0.70` |
 | `KITA` | `0.75` |
 | `DISTRICT` | `0.60` |
 
 ## Configuration
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `KNOWLEDGE_BASE_ENDPOINT` | `http://localhost:8000` | Fuseki SPARQL endpoint for domain data |
+### Hardcoded In Code
 
-The Virtuoso triplestore endpoint is read from the incoming Qanary message (`oa:endpoint`).
+The current implementation hardcodes the data endpoints:
+
+- Virtuoso SPARQL endpoint: `http://localhost:8890/sparql/`
+- Knowledge graph endpoint: `http://localhost:8000`
+
+These values are not currently read from environment variables.
+
+### Environment File
+
+For local development, copy the example file first:
+
+```sh
+cp apps/qanary-component-dis/.env.example apps/qanary-component-dis/.env
+```
+
+The example file defines runtime and registration settings such as:
+
+- `SPRING_BOOT_ADMIN_URL`
+- `QANARY_HOST`
+- `QANARY_PORT`
+- `OPENROUTER_API_KEY`
+
+When the Qanary pipeline runs in Docker and this component runs on the host
+machine, use:
+
+```sh
+QANARY_HOST=host.docker.internal
+```
+
+If `QANARY_HOST=localhost`, the container will try to call itself instead of
+your locally running component.
+
+## Local Development
+
+Run the component from the package directory:
+
+```sh
+bun run dev
+```
+
+This loads `.env` via the package script and starts the component in watch mode.
+
+For the full local stack, including Docker services and the other components,
+use the repository setup guide:
+
+[`../../docs/src/content/docs/guides/getting-started.md`](../../docs/src/content/docs/guides/getting-started.md)
 
 ## Testing
 
-```bash
-cd apps/qanary-component-dis
+Run tests from the package directory:
+
+```sh
 bun test
 ```
 
-### Test Coverage
+Current coverage includes:
 
-| Test File | Coverage |
-|-----------|----------|
-| `entity-types.spec.ts` | Entity type config, URI extraction, query generation |
-| `fuzzy-matching.spec.ts` | Levenshtein distance, similarity scoring |
-| `implementation.spec.ts` | Fetch/disambiguate/write with mocked SPARQL |
-| `index.spec.ts` | Handler orchestration, error handling |
-
+| Test File | Focus |
+| --- | --- |
+| `entity-types.spec.ts` | Entity type config, URI extraction, and query generation |
+| `fuzzy-matching.spec.ts` | Levenshtein distance and similarity scoring |
+| `implementation.spec.ts` | Fetch, disambiguate, and annotation write-back |
+| `handler-clarification.spec.ts` | Clarification generation for ambiguous matches |
+| `index.spec.ts` | Handler orchestration and error handling |

@@ -1,49 +1,53 @@
-# Starlight Starter Kit: Basics
+# Baumbart Docs
 
-[![Built with Starlight](https://astro.badg.es/v2/built-with-starlight/tiny.svg)](https://starlight.astro.build)
+This package contains the Baumbart documentation site built with Astro
+Starlight.
 
-```
-bun create astro@latest -- --template starlight
-```
+## Where To Run Commands
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+Use package-local commands from `docs/`:
 
-## 🚀 Project Structure
-
-Inside of your Astro + Starlight project, you'll see the following folders and files:
-
-```
-.
-├── public/
-├── src/
-│   ├── assets/
-│   ├── content/
-│   │   └── docs/
-│   └── content.config.ts
-├── astro.config.mjs
-├── package.json
-└── tsconfig.json
+```sh
+cd docs
+bun run dev
+bun run build
+bun run preview
 ```
 
-Starlight looks for `.md` or `.mdx` files in the `src/content/docs/` directory. Each file is exposed as a route based on its file name.
+Use repository-root commands when you want to regenerate the source-reference
+pages first:
 
-Images can be added to `src/assets/` and embedded in Markdown with a relative link.
+```sh
+bun run docs:reference
+bun run docs:build
+```
 
-Static assets, like favicons, can be placed in the `public/` directory.
+## What Gets Generated
 
-## 🧞 Commands
+The source-code reference pages under
+[`docs/src/content/docs/source-code/`](./src/content/docs/source-code/)
+are generated from workspace TSDoc output and
+[`scripts/generate-source-reference.mjs`](../scripts/generate-source-reference.mjs).
 
-All commands are run from the root of the project, from a terminal:
+`bun run docs:reference` performs the generation step only.
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `bun install`             | Installs dependencies                            |
-| `bun dev`             | Starts local dev server at `localhost:4321`      |
-| `bun build`           | Build your production site to `./dist/`          |
-| `bun preview`         | Preview your build locally, before deploying     |
-| `bun astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `bun astro -- --help` | Get help using the Astro CLI                     |
+`bun run docs:build` regenerates the reference pages and then builds the
+Starlight site.
 
-## 👀 Want to learn more?
+## Content Layout
 
-Check out [Starlight’s docs](https://starlight.astro.build/), read [the Astro documentation](https://docs.astro.build), or jump into the [Astro Discord server](https://astro.build/chat).
+- [`src/content/docs/guides/`](./src/content/docs/guides/): authored guides such
+  as local setup
+- [`src/content/docs/reference/`](./src/content/docs/reference/): authored
+  reference material for architecture, annotations, and example flows
+- [`src/content/docs/source-code/`](./src/content/docs/source-code/): generated
+  source-code reference pages
+- [`src/assets/`](./src/assets/): images used by the docs site
+
+## Related Files
+
+- Repo entrypoint: [`../README.md`](../README.md)
+- Local setup guide:
+  [`src/content/docs/guides/getting-started.md`](./src/content/docs/guides/getting-started.md)
+- Architecture reference:
+  [`src/content/docs/reference/architecture.md`](./src/content/docs/reference/architecture.md)

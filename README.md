@@ -1,144 +1,72 @@
-# LeipzigTreeChat
+# Baumbart
 
-A Turborepo monorepo containing a chatbot application with CLI and web interfaces.
+Baumbart is a monorepo for the Leipzig tree chatbot. It contains the web UI,
+the CLI, the shared chatbot runtime, several Qanary components, and the
+documentation site.
+
+## Repository Layout
+
+- `apps/chatui`: SvelteKit web frontend for the chatbot
+- `apps/chatcli`: terminal interface for the chatbot runtime
+- `apps/qanary-component-*`: Qanary pipeline components used for structured
+  question answering
+- `packages/*`: shared TypeScript packages for the chatbot runtime and Qanary
+  integrations
+- `docs`: Astro Starlight documentation site
 
 ## Requirements
 
-- [Bun](https://bun.sh/) >= 1.3.2
+- [Bun](https://bun.sh/) `>= 1.3.2`
+- Docker with Compose for the full local stack
 
-## Apps and Packages
-
-### Apps
-
-| App       | Description                            | Technologies                 |
-| --------- | -------------------------------------- | ---------------------------- |
-| `chatcli` | Command-line interface for the chatbot | Bun, Effect, LangChain       |
-| `chatui`  | Web-based chat interface               | SvelteKit, Vite, TailwindCSS |
-
-### Packages
-
-| Package                              | Description                                                   |
-| ------------------------------------ | ------------------------------------------------------------- |
-| `@leipzigtreechat/chatbot`           | Core chatbot logic shared by apps (LangGraph, Effect, AI SDK) |
-| `@leipzigtreechat/typescript-config` | Shared TypeScript configurations                              |
-
-## Installation
-
-1. Clone the repository:
-
-```sh
-git clone <repository-url>
-cd LeipzigTreeChat
-```
-
-2. Install dependencies:
+## Install
 
 ```sh
 bun install
 ```
 
-## Development
+## Common Commands
 
-Start all apps and packages in development mode:
+Run these from the repository root unless noted otherwise.
 
-```sh
-bun run dev
-```
+| Command | Purpose |
+| --- | --- |
+| `bun run dev` | Start workspace development processes via Turborepo |
+| `bun run build` | Build workspace apps and packages |
+| `bun run clean` | Clean workspace build outputs |
+| `bun run format-and-lint` | Check formatting and linting with Biome |
+| `bun run format-and-lint:fix` | Apply Biome fixes |
+| `bun run tsdoc` | Generate TSDoc output for workspace packages |
+| `bun run docs:reference` | Generate source-reference pages for the docs site |
+| `bun run docs:build` | Generate source-reference pages and build the docs site |
 
-Start a specific app:
+## Local Setup
 
-```sh
-# Chat UI
-bun run dev --filter=chatui
+The main local development setup is more than `bun run dev`. A working Baumbart
+stack also needs:
 
-# Chat CLI
-bun run dev --filter=chatcli
-```
+- `.env` files for the apps and Qanary components
+- an OpenRouter API key
+- Docker services for Virtuoso, the Qanary pipeline, and the Leipzig tree
+  knowledge graph
 
-## Building
+Use the detailed guide in
+[`docs/src/content/docs/guides/getting-started.md`](./docs/src/content/docs/guides/getting-started.md)
+for the full setup sequence.
 
-Build all apps and packages:
+## Documentation
 
-```sh
-bun run build
-```
+- Main docs source:
+  [`docs/src/content/docs/`](./docs/src/content/docs/)
+- Docs package README:
+  [`docs/README.md`](./docs/README.md)
+- Architecture guide:
+  [`docs/src/content/docs/reference/architecture.md`](./docs/src/content/docs/reference/architecture.md)
 
-Build a specific app or package:
+## Notes
 
-```sh
-# Build chatui
-bun run build --filter=chatui
-
-# Build chatbot package
-bun run build --filter=@leipzigtreechat/chatbot
-```
-
-## Other Commands
-
-| Command                       | Description                             |
-| ----------------------------- | --------------------------------------- |
-| `bun run format-and-lint`     | Check formatting and linting with Biome |
-| `bun run format-and-lint:fix` | Fix formatting and linting issues       |
-| `bun run check-types`         | Run TypeScript type checking            |
-
-## Code Style
-
-### Commits
-
-This project follows the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification.
-
-Commit messages should follow the format:
-
-```
-<type>[optional scope]: <description>
-```
-
-Common types:
-
-- `feat`: A new feature
-- `fix`: A bug fix
-- `docs`: Documentation changes
-- `style`: Code style changes (formatting, etc.)
-- `refactor`: Code refactoring
-- `test`: Adding or updating tests
-- `chore`: Maintenance tasks
-
-### Effect
-
-This project uses [Effect](https://effect.website/) for type-safe functional programming. Key patterns:
-
-- Use `Effect.gen` with generators for sequential operations
-- Use `Context.Tag` and `Layer` for dependency injection
-- Use `Effect.fail` with tagged errors for typed error handling
-- Use `Effect.pipe` for composing effects
-
-Example:
-
-```ts
-import { Effect } from "effect";
-
-const program = Effect.gen(function* () {
-  const result = yield* someEffect();
-  return result;
-});
-
-program.pipe(
-  Effect.catchTag("MyError", handleError),
-  Effect.provide(MyService.Live),
-);
-```
-
-### Formatting
-
-- [Biome](https://biomejs.dev/) for formatting and linting
-- Run `bun run format-and-lint:fix` to auto-fix issues
-- [Editor integration](https://biomejs.dev/guides/editors/first-party-extensions/)
-
-## Utilities
-
-This monorepo uses:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [Biome](https://biomejs.dev/) for code formatting and linting
-- [Turborepo](https://turborepo.com/) for monorepo task orchestration
-- [Effect](https://effect.website/) for type-safe functional programming
+- `bun run dev` and `bun run build` cover the configured Turborepo workspaces.
+  The docs site is built separately with `bun run docs:build`.
+- The repository currently exposes a root `check-types` command, but no workspace
+  packages define a `check-types` task. It is intentionally omitted here until
+  it performs a real type-check pass.
