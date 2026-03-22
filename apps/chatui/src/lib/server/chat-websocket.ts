@@ -1,9 +1,5 @@
 import type { IncomingMessage } from "node:http";
-import {
-  CHATBOT_METADATA_MESSAGES,
-  ChatBotGraph,
-  type ChatBotMetadataEvent,
-} from "@leipzigtreechat/chatbot";
+import { CHATBOT_METADATA_MESSAGES, ChatBotGraph, type ChatBotMetadataEvent } from "@leipzigtreechat/chatbot";
 import { type RawData, type WebSocket, WebSocketServer } from "ws";
 import type {
   ChatMessage,

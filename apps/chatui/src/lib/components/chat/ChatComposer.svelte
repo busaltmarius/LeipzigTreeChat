@@ -1,10 +1,10 @@
 <script lang="ts">
 type Props = {
-	value: string;
-	pending?: boolean;
-	disabled?: boolean;
-	onChange?: (value: string) => void;
-	onSubmit?: (value: string) => Promise<void> | void;
+  value: string;
+  pending?: boolean;
+  disabled?: boolean;
+  onChange?: (value: string) => void;
+  onSubmit?: (value: string) => Promise<void> | void;
 };
 
 let { value, pending = false, disabled = false, onChange, onSubmit }: Props = $props();

@@ -10,44 +10,44 @@ const isUserMessage = () => role === "user";
 const isErrorMessage = () => variant === "error";
 
 const escapeHtml = (value: string) =>
-	value
-		.replaceAll("&", "&amp;")
-		.replaceAll("<", "&lt;")
-		.replaceAll(">", "&gt;")
-		.replaceAll('"', "&quot;")
-		.replaceAll("'", "&#39;");
+  value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
 
 const isSafeUrl = (value: string) => {
-	try {
-		const url = new URL(value, "https://baumbart.local");
+  try {
+    const url = new URL(value, "https://baumbart.local");
 
-		return ["http:", "https:", "mailto:", "tel:"].includes(url.protocol);
-	} catch {
-		return false;
-	}
+    return ["http:", "https:", "mailto:", "tel:"].includes(url.protocol);
+  } catch {
+    return false;
+  }
 };
 
 const markdown = new Marked();
 
 markdown.use({
-	async: false,
-	breaks: true,
-	gfm: true,
-	renderer: {
-		html({ text }) {
-			return escapeHtml(text);
-		},
-		link({ href, title, tokens }) {
-			if (!isSafeUrl(href)) {
-				return this.parser.parseInline(tokens);
-			}
+  async: false,
+  breaks: true,
+  gfm: true,
+  renderer: {
+    html({ text }) {
+      return escapeHtml(text);
+    },
+    link({ href, title, tokens }) {
+      if (!isSafeUrl(href)) {
+        return this.parser.parseInline(tokens);
+      }
 
-			return false;
-		},
-		image({ text }) {
-			return escapeHtml(text);
-		},
-	},
+      return false;
+    },
+    image({ text }) {
+      return escapeHtml(text);
+    },
+  },
 });
 
 const renderMarkdown = (value: string) => markdown.parse(value) as string;

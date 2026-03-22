@@ -12,43 +12,43 @@ let { messages }: Props = $props();
 let content: HTMLDivElement | undefined;
 
 const scrollToLatest = async () => {
-	await tick();
+  await tick();
 
-	if (typeof window === "undefined") {
-		return;
-	}
+  if (typeof window === "undefined") {
+    return;
+  }
 
-	const scrollingElement = document.scrollingElement;
+  const scrollingElement = document.scrollingElement;
 
-	if (!scrollingElement) {
-		return;
-	}
+  if (!scrollingElement) {
+    return;
+  }
 
-	window.scrollTo({
-		top: scrollingElement.scrollHeight,
-		behavior: "auto",
-	});
+  window.scrollTo({
+    top: scrollingElement.scrollHeight,
+    behavior: "auto",
+  });
 };
 
 onMount(() => {
-	if (!content || typeof ResizeObserver === "undefined") {
-		return;
-	}
+  if (!content || typeof ResizeObserver === "undefined") {
+    return;
+  }
 
-	const resizeObserver = new ResizeObserver(() => {
-		void scrollToLatest();
-	});
+  const resizeObserver = new ResizeObserver(() => {
+    void scrollToLatest();
+  });
 
-	resizeObserver.observe(content);
+  resizeObserver.observe(content);
 
-	return () => {
-		resizeObserver.disconnect();
-	};
+  return () => {
+    resizeObserver.disconnect();
+  };
 });
 
 $effect(() => {
-	messages.length;
-	void scrollToLatest();
+  messages.length;
+  void scrollToLatest();
 });
 </script>
 

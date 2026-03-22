@@ -2,8 +2,8 @@
 import type { Snippet } from "svelte";
 
 type Props = {
-	children: Snippet;
-	isConnected: boolean;
+  children: Snippet;
+  isConnected: boolean;
 };
 
 let { children, isConnected }: Props = $props();
