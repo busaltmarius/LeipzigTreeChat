@@ -41,18 +41,18 @@ components to `host.docker.internal` so the Docker pipeline can reach the
 locally running component processes:
 
 ```sh
-read -rsp "OpenRouter API key: " OPENROUTER_API_KEY && echo && export OPENROUTER_API_KEY && bun run env:setup:docker
+OPENROUTER_API_KEY=sk-or-v1-... bun run env:setup:docker
 ```
 
-This command keeps the key out of your shell history. The helper also writes the
-root `.env` used by Docker Compose and the benchmark command, and it rejects
-keys that do not look like OpenRouter keys. If `VIRTUOSO_DBA_PASSWORD` is not
-already set, it generates one for you.
+Replace `sk-or-v1-...` with your real key when you run it. The helper also
+writes the root `.env` used by Docker Compose and the benchmark command, and it
+rejects keys that do not look like OpenRouter keys. If
+`VIRTUOSO_DBA_PASSWORD` is not already set, it generates one for you.
 
 If you want to keep the component `.env` files in host-local mode instead, run:
 
 ```sh
-read -rsp "OpenRouter API key: " OPENROUTER_API_KEY && echo && export OPENROUTER_API_KEY && bun run env:setup
+OPENROUTER_API_KEY=sk-or-v1-... bun run env:setup
 ```
 
 If you prefer to do the setup manually, create local `.env` files from the
