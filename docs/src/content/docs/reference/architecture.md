@@ -3,8 +3,6 @@ title: Architecture
 description: Current system architecture and request flow of Baumbart.
 ---
 
-# Overview
-
 Baumbart is a LangGraph-driven chatbot runtime that delegates structured
 question answering to a Qanary pipeline and reads the resulting annotations
 and answers from a triplestore.

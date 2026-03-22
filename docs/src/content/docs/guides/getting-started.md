@@ -3,8 +3,6 @@ title: Getting Started
 description: Guide how to get started using and developing the Baumbart chatbot.
 ---
 
-# Getting Started
-
 This guide gets you from a fresh clone to a working local Baumbart chatbot.
 The main target is the browser-based `chatui`, backed by the full Qanary
 pipeline and the Leipzig tree knowledge graph.
