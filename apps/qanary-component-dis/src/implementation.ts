@@ -32,7 +32,7 @@ function hasRawdataUrl(value: unknown): value is { rawdata: string } {
   );
 }
 
-const FUZZY_THRESHOLDS: Record<EntityType, number> = {
+export const FUZZY_THRESHOLDS: Record<EntityType, number> = {
   TREE: 0.7,
   KITA: 0.75,
   DISTRICT: 0.6,

@@ -6,7 +6,7 @@ import {
   getQuestion,
   getQuestionUri,
 } from "@leipzigtreechat/qanary-component-helpers";
-import { disambiguate, fetchNerAnnotations, writeDisambiguationAnnotation } from "./implementation";
+import { FUZZY_THRESHOLDS, disambiguate, fetchNerAnnotations, writeDisambiguationAnnotation } from "./implementation";
 import type { DisambiguationOutcome, DisambiguationResult, NerAnnotation } from "./types";
 
 async function disambiguateNERResults(message: IQanaryMessage): Promise<void> {
@@ -51,24 +51,46 @@ async function disambiguateNERResults(message: IQanaryMessage): Promise<void> {
   const succeeded = outcomes.filter(({ outcome }) => outcome.result !== null).length;
   console.log(`Done: ${succeeded}/${annotations.length} entities disambiguated`);
 
+  // Lower score than threshold
+  const belowThresholdResults = outcomes.filter(({ annotation, outcome }) => {
+    console.log("[belowThreshold] Checking:", {
+    exactQuote: annotation.exactQuote,
+    entityType: annotation.entityType,
+    score: outcome.result?.score,
+    threshold: FUZZY_THRESHOLDS[annotation.entityType as keyof typeof FUZZY_THRESHOLDS] ?? 0.75,
+    hasResult: outcome.result !== null,
+  });
+    if (!outcome.result) return true;
+    console.log(`BIN IM BELOW THRESHOLD CODE`);
+    const entityType = annotation.entityType as keyof typeof FUZZY_THRESHOLDS;
+    const threshold = FUZZY_THRESHOLDS[entityType] ?? 0.75;
+    return outcome.result.score < threshold;
+  });
+
   // Generate clarification questions for ambiguous disambiguations (multiple candidates)
   const ambiguousResults = outcomes.filter(({ outcome }) => outcome.candidates.length > 1);
-  if (ambiguousResults.length > 0) {
+  if (ambiguousResults.length > 0 || belowThresholdResults.length > 0) {
+        console.log(`BIN IM BELOW THRESHOLD CODE${belowThresholdResults.length}`);
+
     try {
       const question = await getQuestion(message);
       if (question) {
-        const ambiguousEntities = ambiguousResults
-          .map(({ annotation, outcome }) => {
-            const candidateLabels = outcome.candidates.map((c) => `"${c.label}"`).join(", ");
-            return `"${annotation.exactQuote}" (Typ: ${annotation.entityType}, mögliche Treffer: ${candidateLabels})`;
-          })
-          .join("; ");
+            const ambiguousEntities = [
+              ...ambiguousResults.map(({ annotation, outcome }) => {
+                const candidateLabels = outcome.candidates.map((c) => `"${c.label}"`).join(", ");
+                return `"${annotation.exactQuote}" (Typ: ${annotation.entityType}, mögliche Treffer: ${candidateLabels})`;
+              }),
+              ...belowThresholdResults.map(({ annotation, outcome }) => {
+                const isMatchStr = outcome.result ? outcome.result.score.toFixed(2) : "kein Match";
+                return `"${annotation.exactQuote}" (Score: ${isMatchStr} unter threshold)`;
+              }),
+            ].join("; ");
 
         const clarificationText = await generateClarificationQuestion({
           question,
           componentName: "qanary-component-dis",
           ambiguityDescription:
-            `Für folgende Entitäten wurden mehrere passende Einträge in der Wissensbasis gefunden: ${ambiguousEntities}. ` +
+            `Für folgende Entitäten wurde kein eindeutiger Eintrag in der Wissensbasis gefunden: ${ambiguousEntities}. ` +
             `Bitte frage den Nutzer, welchen konkreten Eintrag er meint.`,
         });
 
