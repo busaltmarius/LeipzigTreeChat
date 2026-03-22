@@ -15,6 +15,11 @@ export default defineConfig({
   integrations: [
     starlight({
       title: "Baumbart Documentation",
+      favicon: "/baumbart-docs-logo.png",
+      logo: {
+        src: "./src/assets/baumbart-docs-logo.png",
+        alt: "Baumbart logo",
+      },
       customCss: ["./src/styles/global.css"],
       social: [{ icon: "github", label: "GitHub", href: "https://github.com/busaltmarius/LeipzigTreeChat" }],
       sidebar: [
