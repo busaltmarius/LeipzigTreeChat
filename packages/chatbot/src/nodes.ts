@@ -104,7 +104,7 @@ export const Nodes = <const N extends string[]>(
       (routingConfig: { nextNode: NodeID }, getUserInput: () => Promise<string>) => async (state: AgentState) => {
         const { nextNode } = routingConfig;
         const program = Effect.gen(function* () {
-          yield* Effect.logDebug("State: ", state);
+          //yield* Effect.logDebug("State: ", state);
           yield* sendMetadataEffect("WAITING_FOR_INPUT");
           const userInput = yield* Effect.promise(() => getUserInput());
 
@@ -168,7 +168,7 @@ export const Nodes = <const N extends string[]>(
     QanaryOrchestratorNode: (routingConfig: { routerNode: NodeID }) => async (state: AgentState) => {
       const { routerNode } = routingConfig;
       const program = Effect.gen(function* () {
-        yield* Effect.logDebug("State: ", state);
+        //yield* Effect.logDebug("State: ", state);
         yield* sendMetadataEffect("GATHERING_DATA");
 
         // 1. Access the HTTP Client from the context
@@ -195,7 +195,7 @@ export const Nodes = <const N extends string[]>(
           client.execute,
           Effect.flatMap(HttpClientResponse.filterStatusOk),
           Effect.flatMap(HttpClientResponse.schemaBodyJson(QanaryResponse)),
-          Effect.timeout("120 seconds"),
+          Effect.timeout("240 seconds"),
           Effect.scoped,
           Effect.either
         );
@@ -335,7 +335,7 @@ export const Nodes = <const N extends string[]>(
       async (state: AgentState) => {
         const { errorNode, nextNode } = routingConfig;
         const program = Effect.gen(function* () {
-          yield* Effect.logDebug("State: ", state);
+          //yield* Effect.logDebug("State: ", state);
 
           const safeValidationFn = Effect.gen(function* () {
             const msg = state.user_question;
@@ -403,7 +403,7 @@ export const Nodes = <const N extends string[]>(
     ResponseNode: (routingConfig: { nextNode: NodeID }) => async (state: AgentState) => {
       const { nextNode } = routingConfig;
       const program = Effect.gen(function* () {
-        yield* Effect.logDebug("State: ", state);
+        //yield* Effect.logDebug("State: ", state);
         yield* sendMetadataEffect("GENERATING_RESPONSE");
 
         if (state.qanary_answer === undefined) {
@@ -451,7 +451,7 @@ export const Nodes = <const N extends string[]>(
     RequestClarificationNode: (routingConfig: { nextNode: NodeID }) => async (state: AgentState) => {
       const { nextNode } = routingConfig;
       const program = Effect.gen(function* () {
-        yield* Effect.logDebug("State: ", state);
+        //yield* Effect.logDebug("State: ", state);
         yield* sendMetadataEffect("GENERATING_CLARIFICATION");
         const llmService = yield* LLMService;
         if (state.clarification === undefined) {
@@ -516,7 +516,7 @@ export const Nodes = <const N extends string[]>(
     QuestionRewriteNode: (routingConfig: { nextNode: NodeID }) => async (state: AgentState) => {
       const { nextNode } = routingConfig;
       const program = Effect.gen(function* () {
-        yield* Effect.logDebug("State: ", state);
+        //yield* Effect.logDebug("State: ", state);
         yield* sendMetadataEffect("REWRITING_QUESTION");
         const llmService = yield* LLMService;
 

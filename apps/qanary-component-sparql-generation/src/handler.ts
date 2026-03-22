@@ -46,16 +46,37 @@ const fillSparqlPlaceholders = (
   const streetNumber = getBestInstanceValue(annotationInfo, "STREET_NUMBER");
   const zip = getBestInstanceValue(annotationInfo, "ZIP");
   const city = getBestInstanceValue(annotationInfo, "CITY");
+  const year = getBestInstanceValue(annotationInfo, "YEAR");
+  const limit = getBestInstanceValue(annotationInfo, "LIMIT");
+  const providerName = getBestInstanceValue(annotationInfo, "PROVIDER");
+  const maintenanceAuthority = getBestInstanceValue(annotationInfo, "MAINTENANCE_AUTHORITY");
+  const winterCategory = getBestInstanceValue(annotationInfo, "WINTER_CATEGORY");
   const kitaUrn = getBestInstanceUrn(annotationInfo, "KITA");
+
+  const numericPlaceholder = (value: string): string | undefined => {
+    if (!value) {
+      return undefined;
+    }
+
+    const parsed = Number.parseInt(value, 10);
+    return Number.isFinite(parsed) ? `${parsed}` : undefined;
+  };
+  const currentYear = `${new Date().getFullYear()}`;
 
   const replacements: Record<string, string | undefined> = {
     district: district ? `"${escapeSparqlString(district)}"` : undefined,
     species: species ? `"${escapeSparqlString(species)}"` : undefined,
     street: street ? `"${escapeSparqlString(street)}"` : undefined,
+    streetName: street ? `"${escapeSparqlString(street)}"` : undefined,
     streetNumber: streetNumber ? `"${escapeSparqlString(streetNumber)}"` : undefined,
     zip: zip ? `"${escapeSparqlString(zip)}"` : undefined,
     city: city ? `"${escapeSparqlString(city)}"` : undefined,
     kitaUrn: kitaUrn ? `<${kitaUrn}>` : undefined,
+    providerName: providerName ? `"${escapeSparqlString(providerName)}"` : undefined,
+    maintenanceAuthority: maintenanceAuthority ? `"${escapeSparqlString(maintenanceAuthority)}"` : undefined,
+    winterCategory: winterCategory ? `"${escapeSparqlString(winterCategory)}"` : undefined,
+    recentYear: numericPlaceholder(year) ?? currentYear,
+    limit: numericPlaceholder(limit) ?? "10",
     utmAddressCoordinatesX: utmCoordinates ? `${utmCoordinates.x}` : undefined,
     utmAddressCoordinatesY: utmCoordinates ? `${utmCoordinates.y}` : undefined,
   };

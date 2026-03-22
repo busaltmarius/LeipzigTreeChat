@@ -1,0 +1,745 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix geo1: <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+
+@prefix bk: <urn:de:leipzig:trees:resource:baumkataster:> .
+@prefix bk_vocab: <urn:de:leipzig:trees:vocab:baumkataster:> .
+
+@prefix lg: <urn:de:leipzig:trees:resource:leipziggiesst:> .
+@prefix lg_vocab: <urn:de:leipzig:trees:vocab:leipziggiesst:> .
+
+@prefix kita: <urn:de:leipzig:trees:resource:kitas:> .
+@prefix kita_vocab: <urn:de:leipzig:trees:vocab:kitas:> .
+
+@prefix ot: <urn:de:leipzig:trees:resource:ortsteile:> .
+@prefix ot_vocab: <urn:de:leipzig:trees:vocab:ortsteile:> .
+
+@prefix str: <urn:de:leipzig:trees:resource:strassennetz:> .
+@prefix str_vocab: <urn:de:leipzig:trees:vocab:strassennetz:> .
+
+# ============================================================================
+# ONTOLOGY METADATA
+# ============================================================================
+
+<urn:de:leipzig:trees:ontology> a owl:Ontology ;
+    rdfs:label "Leipzig Tree Knowledge Graph Ontology"@en ;
+    rdfs:label "Leipzig Baum-Wissensgraph Ontologie"@de ;
+    rdfs:comment "Ontology for the integrated Leipzig tree knowledge graph combining data from Baumkataster (tree registry), LeipzigGießt (tree watering), Kindertageseinrichtungen (kindergartens), Ortsteile (districts), and Straßennetz (street network)"@en ;
+    owl:versionInfo "1.0" .
+
+# ============================================================================
+# GEO VOCABULARY (COORDINATE SYSTEMS)
+# ============================================================================
+# WARNING: Different datasets use different coordinate systems
+# - Trees (Baumkataster) & Kitas: UTM Zone 33N (EPSG:25833)
+# - Watering Records (LeipzigGießt): WGS84 (EPSG:4326)
+# - Districts (Ortsteile) & Streets (Straßennetz): Check individual geometry
+# See Data Integration Notes section for details
+
+geo1:lat a rdf:Property ;
+    rdfs:label "Latitude or Northing"@en ;
+    rdfs:comment "Y-axis coordinate: either latitude (WGS84) in decimal degrees or Northing (UTM Zone 33N) in meters. See dataset-specific notes."@en ;
+    rdfs:range xsd:double .
+
+geo1:long a rdf:Property ;
+    rdfs:label "Longitude or Easting"@en ;
+    rdfs:comment "X-axis coordinate: either longitude (WGS84) in decimal degrees or Easting (UTM Zone 33N) in meters. See dataset-specific notes."@en ;
+    rdfs:range xsd:double .
+
+# ============================================================================
+# BAUMKATASTER VOCABULARY (Trees)
+# ============================================================================
+# COORDINATE SYSTEM: UTM Zone 33N (EPSG:25833)
+# geo1:lat = Northing (in meters)
+# geo1:long = Easting (in meters)
+
+bk_vocab:Tree a rdfs:Class ;
+    rdfs:label "Tree"@en ;
+    rdfs:label "Baum"@de ;
+    rdfs:comment "A tree in the Leipzig municipal tree registry"@en ;
+    rdfs:comment "Ein Baum aus dem Leipziger Baumkataster"@de .
+
+bk_vocab:Species a rdfs:Class ;
+    rdfs:label "Species"@en ;
+    rdfs:label "Art"@de ;
+    rdfs:comment "Species resource used in Baumkataster links"@en .
+
+bk_vocab:baumnummer a rdf:Property ;
+    rdfs:label "Tree Number"@en ;
+    rdfs:label "Baumnummer"@de ;
+    rdfs:domain bk_vocab:Tree ;
+    rdfs:range rdfs:Literal ;
+    rdfs:comment "Unique identifier for the tree"@en .
+
+bk_vocab:objectid a rdf:Property ;
+    rdfs:label "Object ID"@en ;
+    rdfs:domain bk_vocab:Tree ;
+    rdfs:range xsd:integer ;
+    rdfs:comment "Internal database object identifier"@en .
+
+bk_vocab:fme_tstamp a rdf:Property ;
+    rdfs:label "Timestamp"@en ;
+    rdfs:label "Zeitstempel"@de ;
+    rdfs:domain bk_vocab:Tree ;
+    rdfs:range xsd:date ;
+    rdfs:comment "Last modification timestamp"@en .
+
+bk_vocab:ga_lang_wiss a rdf:Property ;
+    rdfs:label "Scientific Name"@en ;
+    rdfs:label "Wissenschaftlicher Name"@de ;
+    rdfs:domain bk_vocab:Tree ;
+    rdfs:range xsd:string ;
+    rdfs:comment "The scientific (Latin) name of the species"@en .
+
+bk_vocab:ga_lang_deutsch a rdf:Property ;
+    rdfs:label "German Common Name"@en ;
+    rdfs:label "Deutscher Name"@de ;
+    rdfs:domain bk_vocab:Tree ;
+    rdfs:range xsd:string ;
+    rdfs:comment "The German common name of the species"@en .
+
+bk_vocab:ga_id a rdf:Property ;
+    rdfs:label "Species Resource"@en ;
+    rdfs:label "Arten-Ressource"@de ;
+    rdfs:domain bk_vocab:Tree ;
+    rdfs:range bk_vocab:Species ;
+    rdfs:comment "Links a tree to a species resource URI"@en .
+
+bk_vocab:gattung a rdf:Property ;
+    rdfs:label "Genus"@en ;
+    rdfs:label "Gattung"@de ;
+    rdfs:domain bk_vocab:Tree ;
+    rdfs:range xsd:string ;
+    rdfs:comment "The plant genus"@en .
+
+bk_vocab:gebiet a rdf:Property ;
+    rdfs:label "Area"@en ;
+    rdfs:label "Gebiet"@de ;
+    rdfs:domain bk_vocab:Tree ;
+    rdfs:range xsd:string ;
+    rdfs:comment "The area or zone where the tree is located, like a forest"@en .
+
+bk_vocab:strasse a rdf:Property ;
+    rdfs:label "Street"@en ;
+    rdfs:label "Straße"@de ;
+    rdfs:domain bk_vocab:Tree ;
+    rdfs:range xsd:string ;
+    rdfs:comment "The street or location name"@en .
+
+bk_vocab:st_durchm a rdf:Property ;
+    rdfs:label "Diameter"@en ;
+    rdfs:label "Stammdurchmesser"@de ;
+    rdfs:domain bk_vocab:Tree ;
+    rdfs:range xsd:integer ;
+    rdfs:comment "Stem diameter in centimeters"@en .
+
+bk_vocab:baumhoehe a rdf:Property ;
+    rdfs:label "Tree Height"@en ;
+    rdfs:label "Baumhöhe"@de ;
+    rdfs:domain bk_vocab:Tree ;
+    rdfs:range xsd:integer ;
+    rdfs:comment "Tree height in meters"@en .
+
+bk_vocab:kr_durchm a rdf:Property ;
+    rdfs:label "Crown Diameter"@en ;
+    rdfs:label "Kronendurchmesser"@de ;
+    rdfs:domain bk_vocab:Tree ;
+    rdfs:range xsd:integer ;
+    rdfs:comment "Crown diameter in meters"@en .
+
+bk_vocab:st_umfang a rdf:Property ;
+    rdfs:label "Circumference"@en ;
+    rdfs:label "Stammumfang"@de ;
+    rdfs:domain bk_vocab:Tree ;
+    rdfs:range xsd:integer ;
+    rdfs:comment "Stem circumference in centimeters"@en .
+
+bk_vocab:objektkuerzel a rdf:Property ;
+    rdfs:label "Object Symbol"@en ;
+    rdfs:label "Objektkürzel"@de ;
+    rdfs:domain bk_vocab:Tree ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Abbreviated object identifier"@en .
+
+bk_vocab:patenschaftsnummer a rdf:Property ;
+    rdfs:label "Sponsorship Number"@en ;
+    rdfs:label "Patenschaftsnummer"@de ;
+    rdfs:domain bk_vocab:Tree ;
+    rdfs:range rdfs:Literal ;
+    rdfs:comment "ID for tree sponsorship or adoption"@en .
+
+bk_vocab:status_patenbaum a rdf:Property ;
+    rdfs:label "Sponsorship Status"@en ;
+    rdfs:label "Status Patenbaum"@de ;
+    rdfs:domain bk_vocab:Tree ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Status of tree sponsorship"@en .
+
+bk_vocab:nachpflanzung_geplant a rdf:Property ;
+    rdfs:label "Replanting Planned"@en ;
+    rdfs:label "Nachpflanzung geplant"@de ;
+    rdfs:domain bk_vocab:Tree ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Indicates if replanting is planned"@en .
+
+bk_vocab:pflanzjahr a rdf:Property ;
+    rdfs:label "Planting Year"@en ;
+    rdfs:label "Pflanzjahr"@de ;
+    rdfs:domain bk_vocab:Tree ;
+    rdfs:range xsd:integer ;
+    rdfs:comment "Year the tree was planted"@en .
+
+bk_vocab:standzeitraum a rdf:Property ;
+    rdfs:label "Standing Period"@en ;
+    rdfs:label "Standzeitraum"@de ;
+    rdfs:domain bk_vocab:Tree ;
+    rdfs:range xsd:integer ;
+    rdfs:comment "Estimated standing period / age span in years"@en .
+
+bk_vocab:ot a rdf:Property ;
+    rdfs:label "District Name"@en ;
+    rdfs:label "Ortsteilname"@de ;
+    rdfs:domain bk_vocab:Tree ;
+    rdfs:range xsd:string ;
+    rdfs:comment "District name associated with the tree"@en .
+
+# ============================================================================
+# LEIPZIGGIESST VOCABULARY (Tree Watering Records)
+# ============================================================================
+# COORDINATE SYSTEM: WGS84 (EPSG:4326)
+# geo1:lat = Latitude in decimal degrees (approximately 51.3°N for Leipzig)
+# geo1:long = Longitude in decimal degrees (approximately 12.3°E for Leipzig)
+
+lg_vocab:WateringRecord a rdfs:Class ;
+    rdfs:label "Watering Record"@en ;
+    rdfs:label "Gießprotokoll"@de ;
+    rdfs:comment "A record of tree watering activity from the LeipzigGießt initiative"@en ;
+    rdfs:comment "Ein Eintrag aus dem LeipzigGießt Wasserprotokoll"@de .
+
+lg_vocab:id a rdf:Property ;
+    rdfs:label "ID"@en ;
+    rdfs:domain lg_vocab:WateringRecord ;
+    rdfs:range rdfs:Literal ;
+    rdfs:comment "Internal identifier for the watering record"@en .
+
+lg_vocab:wassermenge a rdf:Property ;
+    rdfs:label "Water Amount"@en ;
+    rdfs:label "Wassermenge"@de ;
+    rdfs:domain lg_vocab:WateringRecord ;
+    rdfs:range xsd:double ;
+    rdfs:comment "The amount of water applied in liters"@en .
+
+lg_vocab:wassersumme a rdf:Property ;
+    rdfs:label "Total Water"@en ;
+    rdfs:label "Wassersumme"@de ;
+    rdfs:domain lg_vocab:WateringRecord ;
+    rdfs:range xsd:double ;
+    rdfs:comment "The cumulative total of water applied over a period"@en .
+
+lg_vocab:standortnr a rdf:Property ;
+    rdfs:label "Location Number"@en ;
+    rdfs:label "Standortnummer"@de ;
+    rdfs:domain lg_vocab:WateringRecord ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Unique identifier for a tree location"@en .
+
+lg_vocab:artbot a rdf:Property ;
+    rdfs:label "Scientific Species Name"@en ;
+    rdfs:label "Botanischer Artname"@de ;
+    rdfs:domain lg_vocab:WateringRecord ;
+    rdfs:range xsd:string ;
+    rdfs:comment "The botanical scientific name of the species"@en .
+
+lg_vocab:artdtsch a rdf:Property ;
+    rdfs:label "German Species Name"@en ;
+    rdfs:label "Deutscher Artname"@de ;
+    rdfs:domain lg_vocab:WateringRecord ;
+    rdfs:range xsd:string ;
+    rdfs:comment "The German common name of the species"@en .
+
+lg_vocab:gattungdeutsch a rdf:Property ;
+    rdfs:label "German Genus Name"@en ;
+    rdfs:label "Deutsche Gattungsbezeichnung"@de ;
+    rdfs:domain lg_vocab:WateringRecord ;
+    rdfs:range xsd:string ;
+    rdfs:comment "The German name of the plant genus"@en .
+
+lg_vocab:strname a rdf:Property ;
+    rdfs:label "Street Name"@en ;
+    rdfs:label "Straßenname"@de ;
+    rdfs:domain lg_vocab:WateringRecord ;
+    rdfs:range xsd:string ;
+    rdfs:comment "The name of the street where the tree is located"@en .
+
+lg_vocab:bezirk a rdf:Property ;
+    rdfs:label "District"@en ;
+    rdfs:label "Bezirk"@de ;
+    rdfs:domain lg_vocab:WateringRecord ;
+    rdfs:range xsd:string ;
+    rdfs:comment "The administrative district where the tree is located"@en .
+
+lg_vocab:pflanzjahr a rdf:Property ;
+    rdfs:label "Planting Year"@en ;
+    rdfs:label "Pflanzjahr"@de ;
+    rdfs:domain lg_vocab:WateringRecord ;
+    rdfs:range xsd:integer ;
+    rdfs:comment "The year the tree was planted"@en .
+
+lg_vocab:standalter a rdf:Property ;
+    rdfs:label "Tree Age"@en ;
+    rdfs:label "Standalter"@de ;
+    rdfs:domain lg_vocab:WateringRecord ;
+    rdfs:range xsd:integer ;
+    rdfs:comment "The age of the tree in years"@en .
+
+lg_vocab:anzahlg a rdf:Property ;
+    rdfs:label "Watering Count"@en ;
+    rdfs:label "Anzahl Gießungen"@de ;
+    rdfs:domain lg_vocab:WateringRecord ;
+    rdfs:range xsd:integer ;
+    rdfs:comment "The number of watering events"@en .
+
+lg_vocab:lat a rdf:Property ;
+    rdfs:label "Latitude"@en ;
+    rdfs:domain lg_vocab:WateringRecord ;
+    rdfs:range xsd:double ;
+    rdfs:comment "Latitude coordinate of the tree location"@en .
+
+lg_vocab:lng a rdf:Property ;
+    rdfs:label "Longitude"@en ;
+    rdfs:domain lg_vocab:WateringRecord ;
+    rdfs:range xsd:double ;
+    rdfs:comment "Longitude coordinate of the tree location"@en .
+
+# ============================================================================
+# KITAS VOCABULARY (Kindergartens)
+# ============================================================================
+# COORDINATE SYSTEM: UTM Zone 33N (EPSG:25833)
+# geo1:lat = Northing (in meters)
+# geo1:long = Easting (in meters)
+
+kita_vocab:Kita a rdfs:Class ;
+    rdfs:label "Kindergarten"@en ;
+    rdfs:label "Kindertageseinrichtung"@de ;
+    rdfs:comment "A kindergarten or child care facility in Leipzig"@en ;
+    rdfs:comment "Eine Kindertageseinrichtung in Leipzig"@de .
+
+kita_vocab:name_einr a rdf:Property ;
+    rdfs:label "Facility Name"@en ;
+    rdfs:label "Name der Einrichtung"@de ;
+    rdfs:domain kita_vocab:Kita ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Name of the kindergarten"@en .
+
+kita_vocab:kivan_id a rdf:Property ;
+    rdfs:label "KIVAN ID"@en ;
+    rdfs:domain kita_vocab:Kita ;
+    rdfs:range xsd:integer ;
+    rdfs:comment "Identifier in the KIVAN system"@en .
+
+kita_vocab:strname a rdf:Property ;
+    rdfs:label "Street Name"@en ;
+    rdfs:label "Straßenname"@de ;
+    rdfs:domain kita_vocab:Kita ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Street where the kindergarten is located"@en .
+
+kita_vocab:hnr_alles a rdf:Property ;
+    rdfs:label "House Number"@en ;
+    rdfs:label "Hausnummer"@de ;
+    rdfs:domain kita_vocab:Kita ;
+    rdfs:range xsd:string ;
+    rdfs:comment "House number"@en .
+
+kita_vocab:plz a rdf:Property ;
+    rdfs:label "Postal Code"@en ;
+    rdfs:label "Postleitzahl"@de ;
+    rdfs:domain kita_vocab:Kita ;
+    rdfs:range rdfs:Literal ;
+    rdfs:comment "Postal code"@en .
+
+kita_vocab:ort a rdf:Property ;
+    rdfs:label "City"@en ;
+    rdfs:label "Ort"@de ;
+    rdfs:domain kita_vocab:Kita ;
+    rdfs:range xsd:string ;
+    rdfs:comment "City name"@en .
+
+kita_vocab:ortsteil a rdf:Property ;
+    rdfs:label "District"@en ;
+    rdfs:label "Ortsteil"@de ;
+    rdfs:domain kita_vocab:Kita ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Administrative district"@en .
+
+kita_vocab:art_einr a rdf:Property ;
+    rdfs:label "Facility Type"@en ;
+    rdfs:label "Art der Einrichtung"@de ;
+    rdfs:domain kita_vocab:Kita ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Type of facility"@en .
+
+kita_vocab:traeg_name a rdf:Property ;
+    rdfs:label "Provider Name"@en ;
+    rdfs:label "Name des Trägers"@de ;
+    rdfs:domain kita_vocab:Kita ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Name of the facility provider/operator"@en .
+
+kita_vocab:traeg_tel a rdf:Property ;
+    rdfs:label "Provider Phone"@en ;
+    rdfs:label "Telefon des Trägers"@de ;
+    rdfs:domain kita_vocab:Kita ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Phone number of the provider"@en .
+
+kita_vocab:ap_vname a rdf:Property ;
+    rdfs:label "Contact First Name"@en ;
+    rdfs:label "Vorname des Ansprechpartners"@de ;
+    rdfs:domain kita_vocab:Kita ;
+    rdfs:range xsd:string ;
+    rdfs:comment "First name of contact person"@en .
+
+kita_vocab:ap_nname a rdf:Property ;
+    rdfs:label "Contact Last Name"@en ;
+    rdfs:label "Nachname des Ansprechpartners"@de ;
+    rdfs:domain kita_vocab:Kita ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Last name of contact person"@en .
+
+kita_vocab:ap_anrede a rdf:Property ;
+    rdfs:label "Contact Salutation"@en ;
+    rdfs:label "Anrede des Ansprechpartners"@de ;
+    rdfs:domain kita_vocab:Kita ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Salutation of contact person (e.g., Herr, Frau)"@en .
+
+kita_vocab:ap_tel a rdf:Property ;
+    rdfs:label "Contact Phone"@en ;
+    rdfs:label "Telefon des Ansprechpartners"@de ;
+    rdfs:domain kita_vocab:Kita ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Phone number of contact person"@en .
+
+kita_vocab:ap_email a rdf:Property ;
+    rdfs:label "Contact Email"@en ;
+    rdfs:label "E-Mail des Ansprechpartners"@de ;
+    rdfs:domain kita_vocab:Kita ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Email address of contact person"@en .
+
+kita_vocab:ap_fax a rdf:Property ;
+    rdfs:label "Contact Fax"@en ;
+    rdfs:label "Fax des Ansprechpartners"@de ;
+    rdfs:domain kita_vocab:Kita ;
+    rdfs:range rdfs:Literal ;
+    rdfs:comment "Fax number of contact person"@en .
+
+kita_vocab:gesamtkap a rdf:Property ;
+    rdfs:label "Total Capacity"@en ;
+    rdfs:label "Gesamtkapazität"@de ;
+    rdfs:domain kita_vocab:Kita ;
+    rdfs:range xsd:integer ;
+    rdfs:comment "Total capacity of the facility"@en .
+
+kita_vocab:platz_kat a rdf:Property ;
+    rdfs:label "Place Category"@en ;
+    rdfs:label "Platz-Kategorie"@de ;
+    rdfs:domain kita_vocab:Kita ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Category of places available"@en .
+
+kita_vocab:frei_traeg a rdf:Property ;
+    rdfs:label "Free Provider"@en ;
+    rdfs:label "Freier Träger"@de ;
+    rdfs:domain kita_vocab:Kita ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Whether facility is operated by free/private provider"@en .
+
+kita_vocab:status a rdf:Property ;
+    rdfs:label "Status"@en ;
+    rdfs:domain kita_vocab:Kita ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Current status of the facility"@en .
+
+kita_vocab:sbz a rdf:Property ;
+    rdfs:label "City District"@en ;
+    rdfs:label "Stadtbezirk"@de ;
+    rdfs:domain kita_vocab:Kita ;
+    rdfs:range xsd:string ;
+    rdfs:comment "City district designation"@en .
+
+kita_vocab:fme_tstamp a rdf:Property ;
+    rdfs:label "Timestamp"@en ;
+    rdfs:label "Zeitstempel"@de ;
+    rdfs:domain kita_vocab:Kita ;
+    rdfs:range xsd:long ;
+    rdfs:comment "Last modification timestamp"@en .
+
+# ============================================================================
+# ORTSTEILE VOCABULARY (Districts)
+# ============================================================================
+
+ot_vocab:District a rdfs:Class ;
+    rdfs:label "District"@en ;
+    rdfs:label "Ortsteil"@de ;
+    rdfs:comment "An administrative district or neighborhood in Leipzig"@en ;
+    rdfs:comment "Ein Stadtteil oder Ortsteil Leipzigs"@de .
+
+ot_vocab:FID a rdf:Property ;
+    rdfs:label "Feature ID"@en ;
+    rdfs:domain ot_vocab:District ;
+    rdfs:range xsd:integer ;
+    rdfs:comment "Feature identifier in the geographic database"@en .
+
+ot_vocab:Name a rdf:Property ;
+    rdfs:label "Name"@en ;
+    rdfs:label "Name"@de ;
+    rdfs:domain ot_vocab:District ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Name of the district"@en .
+
+ot_vocab:OT a rdf:Property ;
+    rdfs:label "District Code"@en ;
+    rdfs:label "Ortsteil-Code"@de ;
+    rdfs:domain ot_vocab:District ;
+    rdfs:range xsd:integer ;
+    rdfs:comment "Numeric code for the district"@en .
+
+ot_vocab:geometry a rdf:Property ;
+    rdfs:label "Geometry"@en ;
+    rdfs:domain ot_vocab:District ;
+    rdfs:range xsd:string ;
+    rdfs:comment "GeoJSON polygon representation of district boundaries"@en .
+
+# ============================================================================
+# STRASSENNETZ VOCABULARY (Street Network)
+# ============================================================================
+
+str_vocab:RoadSegment a rdfs:Class ;
+    rdfs:label "Road Segment"@en ;
+    rdfs:label "Straßensegment"@de ;
+    rdfs:comment "A segment of the street network in Leipzig"@en ;
+    rdfs:comment "Ein Segment des Straßennetzes Leipzigs"@de .
+
+str_vocab:objectid a rdf:Property ;
+    rdfs:label "Object ID"@en ;
+    rdfs:domain str_vocab:RoadSegment ;
+    rdfs:range xsd:integer ;
+    rdfs:comment "Unique identifier"@en .
+
+str_vocab:str a rdf:Property ;
+    rdfs:label "Street Name"@en ;
+    rdfs:label "Straßenname"@de ;
+    rdfs:domain str_vocab:RoadSegment ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Name of the street"@en .
+
+str_vocab:von_str a rdf:Property ;
+    rdfs:label "From Street"@en ;
+    rdfs:label "Von Straße"@de ;
+    rdfs:domain str_vocab:RoadSegment ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Starting point street name"@en .
+
+str_vocab:von_str_nr a rdf:Property ;
+    rdfs:label "From Street Number"@en ;
+    rdfs:label "Von Straßen-Nummer"@de ;
+    rdfs:domain str_vocab:RoadSegment ;
+    rdfs:range xsd:integer ;
+    rdfs:comment "Street number at starting point"@en .
+
+str_vocab:bis_str a rdf:Property ;
+    rdfs:label "To Street"@en ;
+    rdfs:label "Bis Straße"@de ;
+    rdfs:domain str_vocab:RoadSegment ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Ending point street name"@en .
+
+str_vocab:bis_str_nr a rdf:Property ;
+    rdfs:label "To Street Number"@en ;
+    rdfs:label "Bis Straßen-Nummer"@de ;
+    rdfs:domain str_vocab:RoadSegment ;
+    rdfs:range xsd:integer ;
+    rdfs:comment "Street number at ending point"@en .
+
+str_vocab:str_nr a rdf:Property ;
+    rdfs:label "Street Number"@en ;
+    rdfs:label "Straßen-Nummer"@de ;
+    rdfs:domain str_vocab:RoadSegment ;
+    rdfs:range xsd:integer ;
+    rdfs:comment "Official street number"@en .
+
+str_vocab:laenge_m a rdf:Property ;
+    rdfs:label "Length (m)"@en ;
+    rdfs:label "Länge (m)"@de ;
+    rdfs:domain str_vocab:RoadSegment ;
+    rdfs:range xsd:double ;
+    rdfs:comment "Length of the road segment in meters"@en .
+
+str_vocab:sstrgsname a rdf:Property ;
+    rdfs:label "Street Class Name"@en ;
+    rdfs:label "Straßenklasse-Name"@de ;
+    rdfs:domain str_vocab:RoadSegment ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Classification name of the street"@en .
+
+str_vocab:kat_sstrgs a rdf:Property ;
+    rdfs:label "Street Category"@en ;
+    rdfs:label "Straßen-Kategorie"@de ;
+    rdfs:domain str_vocab:RoadSegment ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Street category code"@en .
+
+str_vocab:kat_erschl a rdf:Property ;
+    rdfs:label "Development Category"@en ;
+    rdfs:label "Erschließungs-Kategorie"@de ;
+    rdfs:domain str_vocab:RoadSegment ;
+    rdfs:range xsd:integer ;
+    rdfs:comment "Development/infrastructure category"@en .
+
+str_vocab:baulast a rdf:Property ;
+    rdfs:label "Responsibility"@en ;
+    rdfs:label "Baulast"@de ;
+    rdfs:domain str_vocab:RoadSegment ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Authority responsible for maintenance"@en .
+
+str_vocab:erschlname a rdf:Property ;
+    rdfs:label "Development Name"@en ;
+    rdfs:label "Erschließungs-Name"@de ;
+    rdfs:domain str_vocab:RoadSegment ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Development or project name"@en .
+
+str_vocab:abs_nr a rdf:Property ;
+    rdfs:label "Section Number"@en ;
+    rdfs:label "Abschnitt-Nummer"@de ;
+    rdfs:domain str_vocab:RoadSegment ;
+    rdfs:range xsd:integer ;
+    rdfs:comment "Street section number"@en .
+
+str_vocab:abs_nr17 a rdf:Property ;
+    rdfs:label "Extended Section Number"@en ;
+    rdfs:domain str_vocab:RoadSegment ;
+    rdfs:range xsd:long ;
+    rdfs:comment "Extended section identifier"@en .
+
+str_vocab:stadtbez a rdf:Property ;
+    rdfs:label "City District"@en ;
+    rdfs:label "Stadtbezirk"@de ;
+    rdfs:domain str_vocab:RoadSegment ;
+    rdfs:range xsd:string ;
+    rdfs:comment "City district abbreviation"@en .
+
+str_vocab:wintkat a rdf:Property ;
+    rdfs:label "Winter Service Category"@en ;
+    rdfs:label "Winterdienst-Kategorie"@de ;
+    rdfs:domain str_vocab:RoadSegment ;
+    rdfs:range xsd:integer ;
+    rdfs:comment "Winter maintenance category"@en .
+
+str_vocab:fme_tstamp a rdf:Property ;
+    rdfs:label "Timestamp"@en ;
+    rdfs:label "Zeitstempel"@de ;
+    rdfs:domain str_vocab:RoadSegment ;
+    rdfs:range xsd:date ;
+    rdfs:comment "Last modification timestamp"@en .
+
+str_vocab:geometry a rdf:Property ;
+    rdfs:label "Geometry"@en ;
+    rdfs:domain str_vocab:RoadSegment ;
+    rdfs:range xsd:string ;
+    rdfs:comment "GeoJSON LineString or MultiLineString representation"@en .
+
+# ============================================================================
+# OWL RELATIONSHIPS
+# ============================================================================
+
+owl:sameAs a rdf:Property ;
+    rdfs:label "Same As"@en ;
+    rdfs:comment "Indicates that two RDF resources refer to the same entity"@en ;
+    rdfs:comment "Used to link watering records to tree entities and handle entity deduplication"@en .
+
+# ============================================================================
+# DATA INTEGRATION NOTES
+# ============================================================================
+
+<urn:de:leipzig:trees:integration> a owl:Annotation ;
+    rdfs:label "Data Integration Pattern"@en ;
+    rdfs:comment "The complete graph integrates multiple datasets:"@en ;
+    rdfs:comment "1. Baumkataster: Tree registry with dendrochronological data (diameter, circumference, species, location)"@en ;
+    rdfs:comment "2. LeipzigGießt: Citizen watering records linked to tree locations by location number and species"@en ;
+    rdfs:comment "3. Kindertageseinrichtungen: Geographic locations and contact information of kindergartens"@en ;
+    rdfs:comment "4. Ortsteile: Administrative district boundaries and identifiers"@en ;
+    rdfs:comment "5. Straßennetz: Street network topology with maintenance responsibility"@en ;
+    rdfs:comment ""@en ;
+    rdfs:comment "CRITICAL SPATIAL DATA INCONSISTENCY:"@en ;
+    rdfs:comment "Datasets use different coordinate reference systems:"@en ;
+    rdfs:comment "• Baumkataster (Trees): UTM Zone 33N (EPSG:25833) - Northing/Easting in meters"@en ;
+    rdfs:comment "• Kindertageseinrichtungen (Kitas): UTM Zone 33N (EPSG:25833) - Northing/Easting in meters"@en ;
+    rdfs:comment "• LeipzigGießt (Watering): WGS84 (EPSG:4326) - Latitude/Longitude in decimal degrees"@en ;
+    rdfs:comment "• Ortsteile (Districts): Geometry in GeoJSON (check source)"@en ;
+    rdfs:comment "• Straßennetz (Streets): Geometry in GeoJSON (check source)"@en ;
+    rdfs:comment ""@en ;
+    rdfs:comment "IMPACT: Spatial queries and proximity analysis require coordinate transformation."@en ;
+    rdfs:comment "Direct distance/proximity calculations using raw coordinates will be invalid."@en ;
+    rdfs:comment ""@en ;
+    rdfs:comment "Cross-dataset linking uses:"@en ;
+    rdfs:comment "- owl:sameAs: Connects entities across datasets (e.g., watering records to trees)"@en ;
+    rdfs:comment "- Geographic coordinates (geo1:lat, geo1:long): Enable spatial queries with appropriate transformations"@en ;
+    rdfs:comment "- Administrative identifiers: Link trees to districts (ortsteil) and streets"@en .
+
+# ============================================================================
+# USAGE NOTES
+# ============================================================================
+
+<urn:de:leipzig:trees:usage> a owl:Annotation ;
+    rdfs:label "Graph Usage Guidelines"@en ;
+    rdfs:comment "This ontology describes a knowledge graph containing:"@en ;
+    rdfs:comment "- ~4.5 million RDF triples"@en ;
+    rdfs:comment "- Hierarchical namespacing: separate resource and vocabulary namespaces per dataset"@en ;
+    rdfs:comment "- Dynamic property model: properties derived from source GeoJSON and CSV data"@en ;
+    rdfs:comment "- Mixed coordinate systems: UTM Zone 33N (trees/kitas) and WGS84 (watering records)"@en ;
+    rdfs:comment "- GeoJSON geometry: Raw geometries stored as JSON strings for spatial indexing"@en ;
+    rdfs:comment ""@en ;
+    rdfs:comment "SPATIAL QUERIES - IMPORTANT:"@en ;
+    rdfs:comment "For proximity analysis between trees/kitas and watering records:"@en ;
+    rdfs:comment "1. Transform watering record coordinates from WGS84 (EPSG:4326) to UTM 33N (EPSG:25833)"@en ;
+    rdfs:comment "2. Then perform distance calculations using tree and kita coordinates"@en ;
+    rdfs:comment "3. Alternatively, transform tree/kita coordinates to WGS84 for web mapping"@en ;
+    rdfs:comment ""@en ;
+    rdfs:comment "Sample query examples:"@en ;
+    rdfs:comment "- Find all watering records for a specific tree species using artbot property"@en ;
+    rdfs:comment "- Analyze temporal patterns in tree watering (wassermenge, wassersumme)"@en ;
+    rdfs:comment "- [WITH PROJECTION] Identify trees in proximity to kindergartens using geographic coordinates"@en ;
+    rdfs:comment "- Track tree species (gattung) distribution across districts (ortsteil)"@en ;
+    rdfs:comment "- [WITH PROJECTION] Map watering activity to tree locations"@en ;
+    rdfs:comment "- Find trees by street location (strasse/strname)"@en ;
+    rdfs:comment "- Analyze tree health metrics (st_durchm, st_umfang)"@en .
+
+# ============================================================================
+# NAMESPACE SUMMARY
+# ============================================================================
+
+<urn:de:leipzig:trees:namespaces> a owl:Annotation ;
+    rdfs:label "Namespace Conventions"@en ;
+    rdfs:comment "Resource Namespaces (entity instances):"@en ;
+    rdfs:comment "- bk: (Baumkataster tree instances)"@en ;
+    rdfs:comment "- lg: (LeipzigGießt watering record instances)"@en ;
+    rdfs:comment "- kita: (Kindergarten instances)"@en ;
+    rdfs:comment "- ot: (District instances)"@en ;
+    rdfs:comment "- str: (Road segment instances)"@en ;
+    rdfs:comment ""@en ;
+    rdfs:comment "Vocabulary Namespaces (classes and properties):"@en ;
+    rdfs:comment "- bk_vocab: (Baumkataster vocabulary)"@en ;
+    rdfs:comment "- lg_vocab: (LeipzigGießt vocabulary)"@en ;
+    rdfs:comment "- kita_vocab: (Kindergarten vocabulary)"@en ;
+    rdfs:comment "- ot_vocab: (District vocabulary)"@en ;
+    rdfs:comment "- str_vocab: (Street network vocabulary)"@en ;
+    rdfs:comment ""@en ;
+    rdfs:comment "Standard Vocabularies:"@en ;
+    rdfs:comment "- geo1: (WGS84 geographic coordinates)"@en ;
+    rdfs:comment "- rdf, rdfs, owl, xsd: (W3C standards)"@en .
