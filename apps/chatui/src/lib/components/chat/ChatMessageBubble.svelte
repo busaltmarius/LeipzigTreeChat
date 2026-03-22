@@ -1,4 +1,5 @@
 <script lang="ts">
+import { Marked } from "marked";
 import type { ChatMessage } from "$lib/chat/types";
 
 type Props = ChatMessage;
@@ -7,6 +8,50 @@ let { role, content, variant = "default" }: Props = $props();
 
 const isUserMessage = () => role === "user";
 const isErrorMessage = () => variant === "error";
+
+const escapeHtml = (value: string) =>
+	value
+		.replaceAll("&", "&amp;")
+		.replaceAll("<", "&lt;")
+		.replaceAll(">", "&gt;")
+		.replaceAll('"', "&quot;")
+		.replaceAll("'", "&#39;");
+
+const isSafeUrl = (value: string) => {
+	try {
+		const url = new URL(value, "https://baumbart.local");
+
+		return ["http:", "https:", "mailto:", "tel:"].includes(url.protocol);
+	} catch {
+		return false;
+	}
+};
+
+const markdown = new Marked();
+
+markdown.use({
+	async: false,
+	breaks: true,
+	gfm: true,
+	renderer: {
+		html({ text }) {
+			return escapeHtml(text);
+		},
+		link({ href, title, tokens }) {
+			if (!isSafeUrl(href)) {
+				return this.parser.parseInline(tokens);
+			}
+
+			return false;
+		},
+		image({ text }) {
+			return escapeHtml(text);
+		},
+	},
+});
+
+const renderMarkdown = (value: string) => markdown.parse(value) as string;
+const renderedContent = $derived(renderMarkdown(content));
 </script>
 
 <article class={`rise-in flex ${isUserMessage() ? "justify-end" : "justify-start"}`}>
@@ -17,7 +62,11 @@ const isErrorMessage = () => variant === "error";
 			<p class="mb-2 text-[0.64rem] font-semibold uppercase tracking-[0.3em] text-white/72">
 				Du
 			</p>
-			<p class="whitespace-pre-wrap wrap-break-word text-[0.97rem] leading-7">{content}</p>
+			<div
+				class="message-body text-[0.97rem] leading-7 text-white [&_a]:text-white [&_a]:underline [&_code]:bg-white/16 [&_code]:text-white [&_pre]:bg-white/12"
+			>
+				{@html renderedContent}
+			</div>
 		</div>
 	{:else}
 		<div class="max-w-[min(46rem,100%)]">
@@ -41,8 +90,75 @@ const isErrorMessage = () => variant === "error";
 						: "border border-white/70 bg-white/58 shadow-[0_30px_90px_-48px_rgba(28,25,23,0.46)] backdrop-blur-sm"
 				}`}
 			>
-				<p class="whitespace-pre-wrap wrap-break-word text-[1rem] leading-8">{content}</p>
+				<div
+					class={`message-body text-[1rem] leading-8 ${
+						isErrorMessage()
+							? "[&_a]:text-red-800 [&_code]:bg-red-100 [&_code]:text-red-950 [&_pre]:border-red-200/80 [&_pre]:bg-red-100/85"
+							: "[&_a]:text-emerald-800 [&_code]:bg-stone-100 [&_code]:text-stone-950 [&_pre]:border-stone-200/80 [&_pre]:bg-stone-100/90"
+					}`}
+				>
+					{@html renderedContent}
+				</div>
 			</div>
 		</div>
 	{/if}
 </article>
+
+<style>
+	.message-body :global(*:first-child) {
+		margin-top: 0;
+	}
+
+	.message-body :global(*:last-child) {
+		margin-bottom: 0;
+	}
+
+	.message-body :global(p),
+	.message-body :global(ul),
+	.message-body :global(ol),
+	.message-body :global(pre),
+	.message-body :global(blockquote) {
+		margin: 0 0 1rem;
+	}
+
+	.message-body :global(ul),
+	.message-body :global(ol) {
+		padding-left: 1.4rem;
+	}
+
+	.message-body :global(li + li) {
+		margin-top: 0.35rem;
+	}
+
+	.message-body :global(code) {
+		border-radius: 0.5rem;
+		padding: 0.12rem 0.38rem;
+		font-family: "SFMono-Regular", "SF Mono", "IBM Plex Mono", monospace;
+		font-size: 0.92em;
+	}
+
+	.message-body :global(pre) {
+		overflow-x: auto;
+		border: 1px solid rgba(120, 113, 108, 0.18);
+		border-radius: 1rem;
+		padding: 0.9rem 1rem;
+		line-height: 1.65;
+	}
+
+	.message-body :global(pre code) {
+		background: transparent;
+		padding: 0;
+		border-radius: 0;
+	}
+
+	.message-body :global(a) {
+		font-weight: 500;
+		text-underline-offset: 0.2em;
+	}
+
+	.message-body :global(blockquote) {
+		border-left: 3px solid rgba(120, 113, 108, 0.22);
+		padding-left: 1rem;
+		opacity: 0.92;
+	}
+</style>

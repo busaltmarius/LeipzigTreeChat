@@ -247,29 +247,6 @@ onMount(() => {
 
 const visibleMetadata = $derived(getVisibleMetadata(metadata));
 const hasMessages = $derived(messages.length > 0);
-const shellStatus = $derived.by(() => {
-	if (!isConnected) {
-		return {
-			label: "Verbindung",
-			detail: "WebSocket wird aufgebaut ...",
-			tone: "offline" as const,
-		};
-	}
-
-	if (visibleMetadata) {
-		return {
-			label: visibleMetadata.title,
-			detail: visibleMetadata.description,
-			tone: "busy" as const,
-		};
-	}
-
-	return {
-		label: "Bereit",
-		detail: "Baumbart ist live.",
-		tone: "connected" as const,
-	};
-});
 </script>
 
 <svelte:head>
@@ -280,16 +257,12 @@ const shellStatus = $derived.by(() => {
 	/>
 </svelte:head>
 
-<ChatShell
-	statusLabel={shellStatus.label}
-	statusDetail={shellStatus.detail}
-	statusTone={shellStatus.tone}
->
+<ChatShell {isConnected}>
 	<div class="flex min-h-0 flex-1 flex-col">
 		{#if hasMessages}
 			<ChatTranscript {messages} />
 
-			<div class="pointer-events-none sticky bottom-0 z-10 px-4 pb-4 sm:px-6 lg:px-8">
+			<div class="pointer-events-none fixed inset-x-0 bottom-0 z-30 px-4 pb-4 sm:px-6 lg:px-10">
 				<div class="mx-auto max-w-4xl">
 					{#if visibleMetadata}
 						<div

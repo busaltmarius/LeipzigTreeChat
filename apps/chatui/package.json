@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@leipzigtreechat/chatbot": "workspace: *",
+    "marked": "^17.0.5",
     "ws": "^8.19.0"
   },
   "devDependencies": {
