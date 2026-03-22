@@ -1,6 +1,7 @@
 import type { IncomingMessage } from "node:http";
 import { CHATBOT_METADATA_MESSAGES, ChatBotGraph, type ChatBotMetadataEvent } from "@leipzigtreechat/chatbot";
 import { type RawData, type WebSocket, WebSocketServer } from "ws";
+import { env } from "$env/dynamic/private";
 import type {
   ChatMessage,
   ChatSocketClientMessage,
@@ -16,8 +17,6 @@ import {
   getValidatedChatSessionId,
   serializeChatSession,
 } from "$lib/server/chat-session";
-
-import { env } from '$env/dynamic/private';
 
 const CHAT_SOCKET_PORT = Number.parseInt(process.env.CHATUI_WS_PORT ?? "3031", 10);
 const INVALID_MESSAGE_ERROR = "Die Nachricht konnte nicht verarbeitet werden.";
@@ -128,7 +127,6 @@ const getSessionIdFromRequest = (request: IncomingMessage): string | null => {
 
 const registerConnection = (socket: WebSocket, request: IncomingMessage) => {
   const sessionId = getSessionIdFromRequest(request);
-
 
   // Important workaround to load necessary environment variables correctly
   process.env.OPENROUTER_API_KEY = env.OPENROUTER_API_KEY;
