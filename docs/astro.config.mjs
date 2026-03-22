@@ -1,6 +1,7 @@
 // @ts-check
 
 import starlight from "@astrojs/starlight";
+import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 
 const [githubOwner, githubRepo] = (process.env.GITHUB_REPOSITORY ?? "").split("/");
@@ -10,9 +11,11 @@ const isGitHubActions = process.env.GITHUB_ACTIONS === "true";
 export default defineConfig({
   site: githubOwner ? `https://${githubOwner}.github.io` : undefined,
   base: isGitHubActions && githubRepo ? `/${githubRepo}` : undefined,
+
   integrations: [
     starlight({
       title: "Baumbart Documentation",
+      customCss: ["./src/styles/global.css"],
       social: [{ icon: "github", label: "GitHub", href: "https://github.com/busaltmarius/LeipzigTreeChat" }],
       sidebar: [
         {
@@ -26,7 +29,16 @@ export default defineConfig({
           label: "Reference",
           autogenerate: { directory: "reference" },
         },
+        {
+          label: "Source Code",
+          collapsed: true,
+          autogenerate: { directory: "source-code" },
+        },
       ],
     }),
   ],
+
+  vite: {
+    plugins: [tailwindcss()],
+  },
 });

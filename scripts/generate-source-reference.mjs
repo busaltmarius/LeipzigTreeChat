@@ -3,7 +3,7 @@ import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 const REPO_ROOT = path.resolve(import.meta.dirname, "..");
-const OUTPUT_ROOT = path.join(REPO_ROOT, "docs", "src", "content", "docs", "reference", "Source Code");
+const OUTPUT_ROOT = path.join(REPO_ROOT, "docs", "src", "content", "docs", "source-code");
 
 const packageRoots = [...(await getWorkspaceDirectories("apps")), ...(await getWorkspaceDirectories("packages"))];
 
@@ -103,7 +103,7 @@ function buildIndexPage(packageRecords) {
       const fileLinks = packageRecord.files
         .map(
           (fileRecord) =>
-            `- [\`${packageRecord.packageSlug}/${stripExtension(fileRecord.sourceRelativePath)}\`](./${fileRecord.routePath})`
+            `- [\`${packageRecord.packageSlug}/${stripExtension(fileRecord.sourceRelativePath)}\`](${toSourceCodeHref(fileRecord.routePath)})`
         )
         .join("\n");
 
@@ -157,8 +157,7 @@ ${doclets.map((doclet) => renderDoclet(doclet)).join("\n\n")}`
       if (siblingRecord.slug === fileRecord.slug) {
         return `- \`${siblingTitle}\``;
       }
-      const relativeLink = getRelativeLink(fileRecord.routePath, siblingRecord.routePath);
-      return `- [\`${siblingTitle}\`](${relativeLink})`;
+      return `- [\`${siblingTitle}\`](${toSourceCodeHref(siblingRecord.routePath)})`;
     })
     .join("\n");
 
@@ -327,17 +326,16 @@ function stripExtension(filePath) {
   return extension.length > 0 ? filePath.slice(0, -extension.length) : filePath;
 }
 
-function getRelativeLink(fromFilePath, toFilePath) {
-  const relativePath = path.relative(fromFilePath, toFilePath);
-  return toPosixPath(relativePath || ".");
-}
-
 function toRoutePath(filePath) {
   const normalizedPath = toPosixPath(filePath);
   if (normalizedPath === "index") {
     return ".";
   }
   return normalizedPath.replace(/\/index$/, "");
+}
+
+function toSourceCodeHref(routePath) {
+  return routePath === "." ? "/source-code" : `/source-code/${routePath}`;
 }
 
 function toPosixPath(filePath) {
