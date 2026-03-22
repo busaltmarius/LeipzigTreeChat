@@ -11,6 +11,14 @@ const ROUTER_NODE_ID = "router";
 const REQUEST_CLARIFICATION_NODE_ID = "request_clarification";
 const QUESTION_REWRITE_NODE_ID = "question_rewrite";
 
+/**
+ * Builds the chatbot state graph with the package's standard node wiring.
+ *
+ * @param printMessage Called whenever the graph produces an assistant message for the user.
+ * @param getUserInput Resolves the next user input whenever the graph waits for input.
+ * @param onMetadata Optional observer for progress and error metadata emitted by the nodes.
+ * @returns A compiled LangGraph instance that drives the chatbot conversation loop.
+ */
 export const ChatBotGraph = (
   printMessage: (message: BaseMessage) => Promise<void>,
   getUserInput: () => Promise<string>,

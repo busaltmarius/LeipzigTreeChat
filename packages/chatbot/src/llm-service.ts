@@ -7,8 +7,14 @@ import { QanaryClarificationQuestion, QanaryFinalAnswer } from "./state/qanary-t
 
 globalThis.AI_SDK_LOG_WARNINGS = false;
 
+/**
+ * OpenRouter client type used by the chatbot's LLM service layer.
+ */
 export type OpenRouterClient = ReturnType<typeof createOpenRouter>;
 
+/**
+ * Wraps failures from outbound LLM operations with the originating operation name.
+ */
 export class LLMServiceError extends Data.TaggedError("LLMServiceError")<{
   readonly operation: string;
   readonly reason: unknown;
@@ -18,6 +24,9 @@ export class LLMServiceError extends Data.TaggedError("LLMServiceError")<{
   }
 }
 
+/**
+ * Effect service that provides access to the configured OpenRouter client.
+ */
 export class OpenRouter extends Context.Tag("OpenRouter")<
   OpenRouter,
   {
@@ -81,6 +90,9 @@ type LLMServiceInterface = {
   ) => Effect.Effect<string, LLMServiceError, never>;
 };
 
+/**
+ * Effect service that wraps all LLM-backed chatbot text generation.
+ */
 export class LLMService extends Context.Tag("LLMService")<LLMService, LLMServiceInterface>() {
   static Live = Layer.effect(
     LLMService,

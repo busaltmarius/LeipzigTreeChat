@@ -1,3 +1,6 @@
+/**
+ * Base system prompt used for chatbot answer and clarification generation.
+ */
 export const CHATBOT_PERSONA = [
   "Du bist ein Chatbot, der zu Themen rund um Bäume in Leipzig (Sachsen, Deutschland) Auskunft gibt. ",
   "Nutze dafür AUSSCHLIESSLICH dir bereitgestellte Informationen und Daten und allgemein bekanntes Weltwissen. ",

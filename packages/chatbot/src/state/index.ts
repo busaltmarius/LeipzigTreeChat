@@ -16,6 +16,9 @@ export {
   QanaryFinalAnswer,
 } from "./qanary-types.js";
 
+/**
+ * High-level conversation mode used by the router to pick the next node.
+ */
 export type Chatmode = "USER_QUESTION" | "CLARIFICATION" | "RESPONSE";
 
 /**
@@ -51,6 +54,9 @@ export const AgentStateAnnotation = Annotation.Root({
   has_ended: Annotation<boolean>(),
 });
 
+/**
+ * Concrete chatbot state shape produced by `AgentStateAnnotation`.
+ */
 export type AgentState = typeof AgentStateAnnotation.State;
 
 /**

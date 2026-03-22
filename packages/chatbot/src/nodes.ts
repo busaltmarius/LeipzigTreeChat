@@ -38,6 +38,13 @@ const NodeLoggerLayer = (nodeName: string) =>
 type LangGraphRuntimeEnvironment =
   Parameters<typeof runLangGraphRuntime>[0] extends Effect.Effect<any, any, infer R> ? R : never;
 
+/**
+ * Runs a node effect inside the shared chatbot runtime and emits timing logs.
+ *
+ * @param nodeName Name used for scoped logging.
+ * @param effect Effect implementing the node behavior.
+ * @returns The resolved node result.
+ */
 const runTimedNode = async <A, E>(
   nodeName: string,
   effect: Effect.Effect<A, E, LangGraphRuntimeEnvironment>
@@ -58,6 +65,7 @@ const runTimedNode = async <A, E>(
  * Constructor for Nodes with type-safe routing between them.
  *
  * @param printMessage - Function to print messages, used for updating the user interface
+ * @param onMetadata - Optional callback for progress and error metadata updates
  * @param nodes - The list of node IDs used in the routing, serves to guarantee type safety for node transitions
  * @returns The Node constructors with the injected type information
  */

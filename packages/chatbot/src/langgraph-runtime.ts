@@ -12,4 +12,7 @@ const layer = Layer.mergeAll(
 
 const LangGraphRuntime = ManagedRuntime.make(layer);
 
+/**
+ * Runs an Effect with the chatbot's live runtime dependencies installed.
+ */
 export const runLangGraphRuntime = LangGraphRuntime.runPromise;

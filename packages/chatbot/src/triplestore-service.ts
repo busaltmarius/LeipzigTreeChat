@@ -19,6 +19,10 @@ export class SPARQLError extends Data.TaggedError("SPARQLError")<{ reason: any }
 }
 
 type QanaryItemType = "QanaryFinalAnswer" | "QanaryClarificationAnswer" | "QanaryClarificationQuestion";
+
+/**
+ * Indicates that the requested Qanary annotation type was not present in the graph.
+ */
 export class NotFoundError extends Data.TaggedError("NotFoundError")<{ itemType: QanaryItemType }> {
   constructor(itemType: QanaryItemType) {
     super({ itemType });
@@ -33,6 +37,9 @@ type TriplestoreInterface = {
    * Loads all non-empty clarification annotations from the given named graph.
    */
   readonly queryClarifications: (graphUri: string) => Effect.Effect<Array<QanaryClarificationQuestion>, SPARQLError>;
+  /**
+   * Loads the most recent non-empty final answer annotation from the given named graph.
+   */
   readonly queryFinalAnswer: (graphUri: string) => Effect.Effect<QanaryFinalAnswer, NotFoundError | SPARQLError>;
 };
 
