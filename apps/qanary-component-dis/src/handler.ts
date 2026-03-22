@@ -61,7 +61,6 @@ async function disambiguateNERResults(message: IQanaryMessage): Promise<void> {
     hasResult: outcome.result !== null,
   });
     if (!outcome.result) return true;
-    console.log(`BIN IM BELOW THRESHOLD CODE`);
     const entityType = annotation.entityType as keyof typeof FUZZY_THRESHOLDS;
     const threshold = FUZZY_THRESHOLDS[entityType] ?? 0.75;
     return outcome.result.score < threshold;
@@ -70,8 +69,6 @@ async function disambiguateNERResults(message: IQanaryMessage): Promise<void> {
   // Generate clarification questions for ambiguous disambiguations (multiple candidates)
   const ambiguousResults = outcomes.filter(({ outcome }) => outcome.candidates.length > 1);
   if (ambiguousResults.length > 0 || belowThresholdResults.length > 0) {
-        console.log(`BIN IM BELOW THRESHOLD CODE${belowThresholdResults.length}`);
-
     try {
       const question = await getQuestion(message);
       if (question) {
