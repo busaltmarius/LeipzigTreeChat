@@ -275,6 +275,10 @@ export const Nodes = <const N extends string[]>(
         const { questionAnsweringNode, requestClarificationNode, responseNode } = routingConfig;
         const program = Effect.gen(function* () {
           yield* Effect.logDebug("State: ", state);
+          if (state.clarification) {
+              yield* Effect.logDebug("Number of open questions: ", state.clarification.openQuestions().length);
+              yield* Effect.logDebug("Number of resolved questions: ", state.clarification.resolvedQuestions().length);
+          }
 
           if (
             state.clarification?.hasOpenQuestions() &&
