@@ -29,16 +29,16 @@ bun install
 
 Run these from the repository root unless noted otherwise.
 
-| Command | Purpose |
-| --- | --- |
-| `bun run dev` | Start workspace development processes via Turborepo |
-| `bun run build` | Build workspace apps and packages |
-| `bun run clean` | Clean workspace build outputs |
-| `bun run format-and-lint` | Check formatting and linting with Biome |
-| `bun run format-and-lint:fix` | Apply Biome fixes |
-| `bun run tsdoc` | Generate TSDoc output for workspace packages |
-| `bun run docs:reference` | Generate source-reference pages for the docs site |
-| `bun run docs:build` | Generate source-reference pages and build the docs site |
+| Command                       | Purpose                                                 |
+| ----------------------------- | ------------------------------------------------------- |
+| `bun run dev`                 | Start workspace development processes via Turborepo     |
+| `bun run build`               | Build workspace apps and packages                       |
+| `bun run clean`               | Clean workspace build outputs                           |
+| `bun run format-and-lint`     | Check formatting and linting with Biome                 |
+| `bun run format-and-lint:fix` | Apply Biome fixes                                       |
+| `bun run tsdoc`               | Generate TSDoc output for workspace packages            |
+| `bun run docs:reference`      | Generate source-reference pages for the docs site       |
+| `bun run docs:build`          | Generate source-reference pages and build the docs site |
 
 ## Local Setup
 
@@ -55,6 +55,8 @@ Use the detailed guide in
 for the full setup sequence.
 
 ## Documentation
+
+The hosted documentation is available under https://busaltmarius.github.io/LeipzigTreeChat.
 
 - Main docs source:
   [`docs/src/content/docs/`](./docs/src/content/docs/)
