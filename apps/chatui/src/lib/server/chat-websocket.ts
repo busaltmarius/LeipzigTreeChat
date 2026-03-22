@@ -17,6 +17,8 @@ import {
   serializeChatSession,
 } from "$lib/server/chat-session";
 
+import { env } from '$env/dynamic/private';
+
 const CHAT_SOCKET_PORT = Number.parseInt(process.env.CHATUI_WS_PORT ?? "3031", 10);
 const INVALID_MESSAGE_ERROR = "Die Nachricht konnte nicht verarbeitet werden.";
 const INVALID_SESSION_ERROR = "Die Sitzung ist ungültig. Lade die Seite neu.";
@@ -126,6 +128,12 @@ const getSessionIdFromRequest = (request: IncomingMessage): string | null => {
 
 const registerConnection = (socket: WebSocket, request: IncomingMessage) => {
   const sessionId = getSessionIdFromRequest(request);
+
+
+  // Important workaround to load necessary environment variables correctly
+  process.env.OPENROUTER_API_KEY = env.OPENROUTER_API_KEY;
+  process.env.QANARY_API_BASE_URL = env.QANARY_API_BASE_URL;
+  process.env.TRIPLESTORE_URL = env.TRIPLESTORE_URL;
 
   if (!sessionId) {
     const errorMessage: ChatSocketErrorMessage = {
