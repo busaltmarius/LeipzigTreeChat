@@ -99,7 +99,7 @@ export class LLMService extends Context.Tag("LLMService")<LLMService, LLMService
     Effect.gen(function* () {
       const openrouter = yield* OpenRouter;
       const openrouterClient = yield* openrouter.client();
-      const deepseek_v3_2 = openrouterClient.chat("deepseek/deepseek-v3.2");
+      const llmModel = openrouterClient.chat("google/gemini-2.0-flash-001");
       const generateTextEffect = (
         operation: string,
         messages: NonNullable<Parameters<typeof generateText>[0]["messages"]>
@@ -107,7 +107,7 @@ export class LLMService extends Context.Tag("LLMService")<LLMService, LLMService
         Effect.tryPromise({
           try: () =>
             generateText({
-              model: deepseek_v3_2,
+              model: llmModel,
               messages,
             }),
           catch: (reason: unknown) => new LLMServiceError(operation, reason),

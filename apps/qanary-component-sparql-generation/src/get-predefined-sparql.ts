@@ -21,35 +21,34 @@ const PREDEFINED_SPARQL_BY_RELATION_TYPE: Partial<Record<KnownRelationType, stri
         lg_vocab:bezirk {{district}} ;
         lg_vocab:wassersumme ?amount .
     }`,
-  SPONSORED_TREES: `
+  AMOUNT_SPONSORED_TREES: `
     PREFIX bk_vocab: <urn:de:leipzig:trees:vocab:baumkataster:>
 
-    SELECT ?tree ?treeName ?street
+    SELECT (COUNT(DISTINCT ?tree) AS ?treeCount)
     WHERE {
-    ?tree a bk_vocab:Tree ;
-            bk_vocab:ga_lang_deutsch ?treeName ;
-            bk_vocab:strasse ?street ;
+      ?tree a bk_vocab:Tree ;
             bk_vocab:status_patenbaum ?patenStatus .
-    
-    # Assuming sponsored trees have a non-empty status string
-        FILTER(?patenStatus = "vergeben") 
+
+      FILTER(STR(?patenStatus) = "vergeben") 
     }`,
   WATERABLE_TREES_AT_ADDRESS: `
     PREFIX geo1: <http://www.w3.org/2003/01/geo/wgs84_pos#>
     PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
     PREFIX bk_vocab: <urn:de:leipzig:trees:vocab:baumkataster:>
 
-    SELECT ?tree ?treeName
+    SELECT ?treeName ?treeXRaw ?treeYRaw ?treeStreet
     WHERE {
-      BIND({{utmAddressCoordinatesX}} AS ?centerY)
-      BIND({{utmAddressCoordinatesY}} AS ?centerX)
+      BIND({{utmAddressCoordinatesY}} AS ?centerY)
+      BIND({{utmAddressCoordinatesX}} AS ?centerX)
       
-      BIND(1000.0 AS ?r) # 1km radius
+      BIND(250.0 AS ?r) # 250 meters radius
 
       ?tree a bk_vocab:Tree ;
             geo1:lat ?treeYRaw ;
             geo1:long ?treeXRaw ;
-            bk_vocab:ga_lang_deutsch ?treeName .
+            bk_vocab:gattung ?treeName .
+
+      OPTIONAL { ?tree bk_vocab:strasse ?treeStreet . }
             
       BIND(xsd:double(?treeYRaw) AS ?treeY)
       BIND(xsd:double(?treeXRaw) AS ?treeX)
@@ -68,12 +67,16 @@ const PREDEFINED_SPARQL_BY_RELATION_TYPE: Partial<Record<KnownRelationType, stri
     PREFIX lg_vocab: <urn:de:leipzig:trees:vocab:leipziggiesst:>
     PREFIX owl: <http://www.w3.org/2002/07/owl#>
 
-    SELECT ?tree ?treeId
+    SELECT ?treeId ?treeXRaw ?treeYRaw ?treeStreet
     WHERE {
     # 1. Match the tree species
     ?tree a bk_vocab:Tree ;
-            bk_vocab:ga_lang_deutsch {{species}} ;
+            bk_vocab:gattung {{species}} ;
+            geo1:lat ?treeYRaw ;
+            geo1:long ?treeXRaw ;
             bk_vocab:baumnummer ?treeId .
+
+    OPTIONAL { ?tree bk_vocab:strasse ?treeStreet . }
             
     # 2. Follow the mapping node that connects the Tree to the Watering Record
     ?mappingNode owl:sameAs ?tree .
@@ -89,7 +92,7 @@ const PREDEFINED_SPARQL_BY_RELATION_TYPE: Partial<Record<KnownRelationType, stri
     PREFIX bk_vocab: <urn:de:leipzig:trees:vocab:baumkataster:>
     PREFIX kita_vocab: <urn:de:leipzig:trees:vocab:kitas:>
 
-    SELECT ?tree ?treeName
+    SELECT ?treeName ?treeStreet ?treeXRaw ?treeYRaw
     WHERE {
     # 1. Dynamically grab the Kita's coordinates
     {{kitaUrn}} a kita_vocab:Kita ;
@@ -100,13 +103,15 @@ const PREDEFINED_SPARQL_BY_RELATION_TYPE: Partial<Record<KnownRelationType, stri
     BIND(xsd:double(?kitaXRaw) AS ?kitaX)
     
     # Radius in meters
-    BIND(1000.0 AS ?r)
+    BIND(250.0 AS ?r) # 250 meters radius
 
     # 2. Grab the trees and their coordinates
     ?tree a bk_vocab:Tree ;
-            bk_vocab:ga_lang_deutsch ?treeName ;
+            bk_vocab:gattung ?treeName ;
             geo1:lat ?treeYRaw ;
             geo1:long ?treeXRaw .
+
+    OPTIONAL { ?tree bk_vocab:strasse ?treeStreet . }
             
     BIND(xsd:double(?treeYRaw) AS ?treeY)
     BIND(xsd:double(?treeXRaw) AS ?treeX)
@@ -122,13 +127,12 @@ const PREDEFINED_SPARQL_BY_RELATION_TYPE: Partial<Record<KnownRelationType, stri
 
     FILTER(?dist2 <= (?r * ?r))
     }`,
-  UNKNOWN: `
-  `,
+  UNKNOWN: ``,
 };
 
 const REQUIRED_PLACEHOLDERS_BY_RELATION_TYPE: Partial<Record<KnownRelationType, SparqlPlaceholderName[]>> = {
   AMOUNT_WATERED_DISTRICT: ["district"],
-  SPONSORED_TREES: [],
+  AMOUNT_SPONSORED_TREES: [],
   WATERABLE_TREES_AT_ADDRESS: ["utmAddressCoordinatesX", "utmAddressCoordinatesY"],
   TREES_BY_SPECIES_DISTRICT: ["species", "district"],
   WATERABLE_TREES_AT_KITA: ["kitaUrn"],

@@ -14,10 +14,11 @@ description: Sample questions for Baumbart.
 
 - Welche Informationen kann man aus dem Baumkataster auslesen?
 - Wie viel wurde im Stadtteil Connewitz gegossen?
-- Welche Bäume haben Gießpaten?
+- Wie viele Bäume haben Gießpaten?
 - Gibt es Patenbäume in meiner Nähe?
 - Welche Bäume kann ich in der Umgebung meiner Kita gießen?
-- Welchen Baum kann ich in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig heute gießen?
+- Welche Bäume kann ich in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig gießen?
+- Welche Bäume kann ich in der Nähe der "SOS-Kinderdorf Kita Virchowstraße" gießen?
 
 ### Mit zusätzlichen Annahmen oder Logik
 

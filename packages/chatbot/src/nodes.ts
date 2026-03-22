@@ -195,7 +195,7 @@ export const Nodes = <const N extends string[]>(
           client.execute,
           Effect.flatMap(HttpClientResponse.filterStatusOk),
           Effect.flatMap(HttpClientResponse.schemaBodyJson(QanaryResponse)),
-          Effect.timeout("60 seconds"),
+          Effect.timeout("120 seconds"),
           Effect.scoped,
           Effect.either
         );
@@ -275,6 +275,10 @@ export const Nodes = <const N extends string[]>(
         const { questionAnsweringNode, requestClarificationNode, responseNode } = routingConfig;
         const program = Effect.gen(function* () {
           yield* Effect.logDebug("State: ", state);
+          if (state.clarification) {
+              yield* Effect.logDebug("Number of open questions: ", state.clarification.openQuestions().length);
+              yield* Effect.logDebug("Number of resolved questions: ", state.clarification.resolvedQuestions().length);
+          }
 
           if (
             state.clarification?.hasOpenQuestions() &&

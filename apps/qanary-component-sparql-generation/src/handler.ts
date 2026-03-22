@@ -48,20 +48,21 @@ const fillSparqlPlaceholders = (
   const city = getBestInstanceValue(annotationInfo, "CITY");
   const kitaUrn = getBestInstanceUrn(annotationInfo, "KITA");
 
-  const replacements: Record<string, string> = {
-    district: district ? `"${escapeSparqlString(district)}"` : "",
-    species: species ? `"${escapeSparqlString(species)}"` : "",
-    street: street ? `"${escapeSparqlString(street)}"` : "",
-    streetNumber: streetNumber ? `"${escapeSparqlString(streetNumber)}"` : "",
-    zip: zip ? `"${escapeSparqlString(zip)}"` : "",
-    city: city ? `"${escapeSparqlString(city)}"` : "",
-    kitaUrn: kitaUrn ? `<${kitaUrn}>` : "",
-    utmAddressCoordinatesX: utmCoordinates ? `${utmCoordinates.x}` : "",
-    utmAddressCoordinatesY: utmCoordinates ? `${utmCoordinates.y}` : "",
+  const replacements: Record<string, string | undefined> = {
+    district: district ? `"${escapeSparqlString(district)}"` : undefined,
+    species: species ? `"${escapeSparqlString(species)}"` : undefined,
+    street: street ? `"${escapeSparqlString(street)}"` : undefined,
+    streetNumber: streetNumber ? `"${escapeSparqlString(streetNumber)}"` : undefined,
+    zip: zip ? `"${escapeSparqlString(zip)}"` : undefined,
+    city: city ? `"${escapeSparqlString(city)}"` : undefined,
+    kitaUrn: kitaUrn ? `<${kitaUrn}>` : undefined,
+    utmAddressCoordinatesX: utmCoordinates ? `${utmCoordinates.x}` : undefined,
+    utmAddressCoordinatesY: utmCoordinates ? `${utmCoordinates.y}` : undefined,
   };
 
   return queryTemplate.replace(PLACEHOLDER_REGEX, (_, placeholder: string) => {
-    return replacements[placeholder] ?? `{{${placeholder}}}`;
+    const replacement = replacements[placeholder];
+    return replacement !== undefined ? replacement : `{{${placeholder}}}`;
   });
 };
 
@@ -121,7 +122,7 @@ export const handler: IQanaryComponentMessageHandler = async (message: IQanaryMe
   // 3. Load predefined SPARQL request depending on the relation
   const sparqlTemplate = getSparqlTemplate(relationType);
 
-  if (!sparqlTemplate) {
+  if (!sparqlTemplate || sparqlTemplate.trim() === "") {
     console.warn("No predefined SPARQL query for relation:", relationType);
     return message;
   }
