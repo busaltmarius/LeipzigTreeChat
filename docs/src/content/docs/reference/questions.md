@@ -16,13 +16,24 @@ description: Sample questions for Baumbart.
 - Wie viele Bäume haben Gießpaten?
 - Welche Bäume kann ich in der Nähe der Adresse Karl-Liebknecht-Str. 132, 04277 Leipzig gießen?
 - Gibt es Tilia Bäume in Connewitz?
-- Welche Bäume kann ich in der Nähe der "SOS-Kinderdorf Kita Virchowstraße" gießen?
-- Gibt es Patenbäume in meiner Nähe?
+- Welche Bäume kann ich in der Nähe der 'SOS-Kinderdorf Kita Virchowstraße' gießen?
+
 - Wie viele Liter Wasser wurden insgesamt auf alle Winter-Linden gegossen?
 - Wie hoch ist die gesamte Wassersumme, die für die Bäume entlang der Karl-Liebknecht-Straße erfasst wurde?
+- Wie viele einzelne Gießungen sind für Eichen im System protokolliert?
+- Zeige mir die Gießprotokolle für alle Jungbäume, deren Pflanzjahr 2022 oder später ist.
+- Wie viele Patenbäume gibt es aktuell im Ortsteil Südvorstadt?
+- Für wie viele Bäume in Plagwitz ist eine Nachpflanzung geplant?
+- Welche 10 Bäume haben den größten Stammdurchmesser im Ortsteil Connewitz?
+- Wie hoch ist die Gesamtkapazität aller Kindertageseinrichtungen im Ortsteil Schleußig?
+- Welche Baumarten wachsen in einem Radius von 250 Metern um die Kita 'SOS-Kinderdorf Kita Virchowstraße'?
+- Welche Bäume in der Nähe von Kitas des freien Trägers 'Amt für Jugend und Familie' müssen gegossen werden?
+
+
 
 
 - Welche Bäume kann ich in der Umgebung meiner Kita gießen?
+- Gibt es Patenbäume in meiner Nähe?
 - Welche Informationen kann man aus dem Baumkataster auslesen?
 
 ### Mit zusätzlichen Annahmen oder Logik
