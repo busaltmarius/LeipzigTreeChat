@@ -60,7 +60,7 @@ async function disambiguateNERResults(message: IQanaryMessage): Promise<void> {
       threshold: FUZZY_THRESHOLDS[annotation.entityType as keyof typeof FUZZY_THRESHOLDS] ?? 0.75,
       hasResult: outcome.result !== null,
     });
-    if (!outcome.result) return true;
+    if (!outcome.result) return false;
     const entityType = annotation.entityType as keyof typeof FUZZY_THRESHOLDS;
     const threshold = FUZZY_THRESHOLDS[entityType] ?? 0.75;
     return outcome.result.score < threshold;

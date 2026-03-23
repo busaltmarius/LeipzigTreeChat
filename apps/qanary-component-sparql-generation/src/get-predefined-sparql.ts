@@ -53,10 +53,7 @@ const PREDEFINED_SPARQL_BY_RELATION_TYPE: Partial<Record<KnownRelationType, stri
       ?tree a bk_vocab:Tree ;
             geo1:lat ?treeYRaw ;
             geo1:long ?treeXRaw ;
-            bk_vocab:ga_id ?speciesResource .
-
-      ?speciesResource a bk_vocab:Species ;
-            ga_lang_deutsch ?treeName .
+            bk_vocab:gattung ?treeName .
 
       OPTIONAL { ?tree bk_vocab:strasse ?treeStreet . }
             
