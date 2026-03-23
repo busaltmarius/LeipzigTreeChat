@@ -4,13 +4,13 @@
   font-family: "Avenir Next", "IBM Plex Sans", "Segoe UI", sans-serif;
   color: #191813;
   background: rgba(154, 201, 136, 0.24);
-  background: #EBE6D6 50%;
+  background: #ebe6d6 50%;
 }
 
 html {
   min-height: 100%;
   /* background-color: #f2ecdd; */
-  background: #EBE6D6;
+  background: #ebe6d6;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -21,7 +21,7 @@ body {
   background: rgba(154, 201, 136, 0.24);
   background: rgba(37, 152, 94, 0.16);
   background: rgba(255, 255, 255, 0.88);
-  background: #EBE6D6;
+  background: #ebe6d6;
   /*
 		radial-gradient(circle at top center, rgba(255, 255, 255, 0.88), transparent 34%),
 		radial-gradient(circle at 18% 14%, rgba(154, 201, 136, 0.24), transparent 22%),
