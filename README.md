@@ -4,6 +4,9 @@ Baumbart is a monorepo for the Leipzig tree chatbot. It contains the web UI,
 the CLI, the shared chatbot runtime, several Qanary components, and the
 documentation site.
 
+- [Project Description](./project-report/main.pdf)
+- [Project Poster](./poster/poster.pdf)
+
 ## Repository Layout
 
 - `apps/chatui`: SvelteKit web frontend for the chatbot
