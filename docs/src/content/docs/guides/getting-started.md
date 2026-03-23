@@ -91,6 +91,8 @@ Update the new `.env` files with real values:
     - `SPRING_BOOT_ADMIN_URL` should stay `http://localhost:8080/`
     - `QANARY_PORT` should keep the port from the example file
     - `OPENROUTER_API_KEY` must be filled in for the LLM-backed components
+- In `apps/qanary-component-sparql-generation/.env`:
+    - `NEOGEOCODER_EMAIL` must be set to a valid email address for OpenStreetMap geocoding requests
 - In the root `.env`:
     - `VIRTUOSO_DBA_PASSWORD` is required by `docker compose`
     - `OPENROUTER_API_KEY` is reused by the benchmark command

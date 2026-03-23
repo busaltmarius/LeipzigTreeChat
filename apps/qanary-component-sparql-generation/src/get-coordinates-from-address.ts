@@ -10,7 +10,7 @@ const options: NodeGeocoder.Options = {
   provider: "openstreetmap",
   timeout: 10000,
   formatter: null,
-  email: "eric.behrendt@stud.htwk-leipzig.de",
+  email: process.env.NEOGEOCODER_EMAIL,
 };
 
 const geocoder = NodeGeocoder(options);
