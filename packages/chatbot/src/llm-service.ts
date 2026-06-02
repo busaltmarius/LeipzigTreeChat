@@ -99,7 +99,7 @@ export class LLMService extends Context.Tag("LLMService")<LLMService, LLMService
     Effect.gen(function* () {
       const openrouter = yield* OpenRouter;
       const openrouterClient = yield* openrouter.client();
-      const llmModel = openrouterClient.chat("google/gemini-2.0-flash-001");
+      const llmModel = openrouterClient.chat("google/gemini-2.5-flash-lite");
       const generateTextEffect = (
         operation: string,
         messages: NonNullable<Parameters<typeof generateText>[0]["messages"]>
